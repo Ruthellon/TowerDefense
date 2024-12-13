@@ -94,7 +94,7 @@ export class PathFinder {
   // A Function to find the shortest path between
   // a given source cell to a destination cell according
   // to A* Search Algorithm
-  public static aStarSearch(grid: number[][], src: number[], dest: number[]) {
+  public static AStarSearch(grid: number[][], src: number[], dest: number[]) {
     // If the source is out of range
     if (this.isValid(src[0], src[1]) == false) {
       console.log("Source is invalid\n");
