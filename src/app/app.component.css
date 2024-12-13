@@ -1,0 +1,47 @@
+/* Grid container for layout */
+.grid-container {
+  display: grid;
+  grid-template-rows: 5% 90% 5%; /* 75% for canvas, 25% for button */
+  grid-template-columns: 5% 90% 5%;
+  height: 100vh; /* Full viewport height */
+  width: 100%; /* Full viewport width */
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+/* Canvas styling */
+canvas {
+  width: 1600px; /* Full width of the grid cell */
+  height: 900px; /* Full height of the grid cell */
+  min-width: 1600px;
+  min-height: 900px;
+  max-width: 1600px;
+  max-height: 900px;
+  display: block;
+  grid-row: 2;
+  grid-column: 2;
+}
+
+/* Button container styling */
+.button-container {
+  display: grid;
+  place-items: center; /* Centers button both horizontally and vertically */
+  grid-row: 3;
+  grid-column: 2;
+}
+
+/* Button styling */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+  button:hover {
+    background-color: #0056b3;
+  }
