@@ -1,46 +1,38 @@
 import { AppComponent } from "../app.component";
-import { Vector3 } from "../Utility/classes.model";
+import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { IGameObject } from "./gameobject.interface";
 
 export class Block extends IGameObject {
 
-  speedX: number = 10;
-  speedY: number = 10;
-  directionX: number;
-  directionY: number;
+  speedX: number = 1;
+  speedY: number = 1;
 
   override OnCollision(collision: IGameObject) {
-    this.directionX *= -1;
-    this.directionY *= -1;
   }
 
   constructor() {
     super();
-    this.directionX = Math.random() * 10;
-    this.directionY = Math.random() * 10;
   }
 
+  private pointOnPath: number = -1;
+  private directionX: number = 0;
+  private directionY: number = 0;
   Update(deltaTime: number): void {
-    this.location.X += (this.speedX * deltaTime) * this.directionX;
-    this.location.Y += (this.speedY * deltaTime) * this.directionY;
+    if (this.path.length > 0) {
+      let localX = (this.path[this.pointOnPath].X * 64) - this.location.X;
+      let localY = (this.path[this.pointOnPath].Y * 64) - this.location.Y;
+      if (Math.abs(localX) < 5 && Math.abs(localY) < 5 && this.pointOnPath >= 0) {
 
-    if (this.location.X > (Game.CANVAS_WIDTH - this.size.X)) {
-      this.directionX = -(Math.random() * 10);
-      this.location.X = (Game.CANVAS_WIDTH - this.size.X);
-    }
-    else if (this.location.X < 0) {
-      this.directionX = (Math.random() * 10);
-      this.location.X = 0;
-    }
+        this.pointOnPath--;
+        this.directionX = (this.path[this.pointOnPath].X * 64) - this.location.X;
+        this.directionY = (this.path[this.pointOnPath].Y * 64) - this.location.Y;
+      }
 
-    if (this.location.Y > (Game.CANVAS_HEIGHT - this.size.Y)) {
-      this.directionY = -(Math.random() * 10);
-      this.location.Y = (Game.CANVAS_HEIGHT - this.size.Y);
-    }
-    else if (this.location.Y < 0) {
-      this.directionY = (Math.random() * 10);
-      this.location.Y = 0;
+      this.location.X += (this.speedX * deltaTime) * this.directionX;
+      this.location.Y += (this.speedY * deltaTime) * this.directionY;
+
+      
     }
   }
 
@@ -49,5 +41,30 @@ export class Block extends IGameObject {
       Game.CONTEXT.fillStyle = this.Color;
 
     Game.CONTEXT.fillRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
+  }
+
+  private path: Vector2[] = [];
+  public SetPath(path: Vector2[]) {
+    if (path.length === 0)
+      return;
+
+    if (path.length === this.path.length) {
+      let same: boolean = true;
+      for (let i = 0; i < path.length; i++) {
+        same = same && path[i].isEqual(this.path[i]);
+      }
+
+      if (same)
+        return;
+    }
+
+    this.path = path;
+
+    if (this.pointOnPath === -1)
+      this.pointOnPath = path.length - 1;
+
+
+    this.directionX = (this.path[this.pointOnPath].X * 64) - this.location.X;
+    this.directionY = (this.path[this.pointOnPath].Y * 64) - this.location.Y;
   }
 }

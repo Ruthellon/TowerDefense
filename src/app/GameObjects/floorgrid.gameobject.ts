@@ -11,6 +11,9 @@ export class FloorGrid extends IGameObject {
   private gridColumns: number = 0;
   private gridRows: number = 0;
 
+  public get Path(): Vector2[] {
+    return this.path;
+  }
   constructor() {
     super();
 
@@ -58,10 +61,10 @@ export class FloorGrid extends IGameObject {
     }
   }
 
-  private path: any[] = [];
+  private path: Vector2[] = [];
   public CalculatePath(): boolean {
-    let tempPath = PathFinder.AStarSearch(this.grid, this.gridRows, this.gridColumns, new Vector2(0, 5), new Vector2(this.gridColumns - 1, 5));
-    
+    let tempPath = PathFinder.AStarSearch(this.grid, new Vector2(this.gridColumns, this.gridRows), new Vector2(0, 5), new Vector2(this.gridColumns - 1, 5));
+
     if (tempPath.length > 0) {
       this.path = tempPath;
       return true;
@@ -69,6 +72,8 @@ export class FloorGrid extends IGameObject {
     else
       return false;
   }
+
+  
 
   private savedSquares: Rect[] = [];
 
@@ -112,7 +117,7 @@ export class FloorGrid extends IGameObject {
     Game.CONTEXT.lineWidth = 1;
     let width = (Game.CANVAS_WIDTH / this.gridSize);
     let height = (Game.CANVAS_HEIGHT / this.gridSize);
-    Game.CONTEXT.strokeStyle = this.Color!;
+    Game.CONTEXT.strokeStyle = `${this.color}80`;
     for (let i = 1; i < width; i++) {
       Game.CONTEXT.beginPath();
       Game.CONTEXT.moveTo(this.gridSize * i, 0);
@@ -132,11 +137,11 @@ export class FloorGrid extends IGameObject {
       Game.CONTEXT.strokeStyle = '#0000ff';
       this.path.forEach((p) => {
         Game.CONTEXT.beginPath();
-        Game.CONTEXT.moveTo(p[1] * this.gridSize, p[0] * this.gridSize);
-        Game.CONTEXT.lineTo((p[1] + 1) * this.gridSize, p[0] * this.gridSize);
-        Game.CONTEXT.lineTo((p[1] + 1) * this.gridSize, (p[0] + 1) * this.gridSize);
-        Game.CONTEXT.lineTo(p[1] * this.gridSize, (p[0] + 1) * this.gridSize);
-        Game.CONTEXT.lineTo(p[1] * this.gridSize, p[0] * this.gridSize);
+        Game.CONTEXT.moveTo(p.X * this.gridSize, p.Y * this.gridSize);
+        Game.CONTEXT.lineTo((p.X + 1) * this.gridSize, p.Y * this.gridSize);
+        Game.CONTEXT.lineTo((p.X + 1) * this.gridSize, (p.Y + 1) * this.gridSize);
+        Game.CONTEXT.lineTo(p.X * this.gridSize, (p.Y + 1) * this.gridSize);
+        Game.CONTEXT.lineTo(p.X * this.gridSize, p.Y * this.gridSize);
         Game.CONTEXT.stroke();
       });
     }

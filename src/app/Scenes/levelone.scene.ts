@@ -12,8 +12,13 @@ export class LevelOneScene extends IScene {
     return this.gameObjects;
   }
 
+  private floorGrid: FloorGrid = new FloorGrid();
   override Update(deltaTime: number): void {
-     
+    this.gameObjects.forEach((gameObject) => {
+      if (gameObject !== this.floorGrid) {
+        (gameObject as Block).SetPath(this.floorGrid.Path);
+      }
+    });
     super.Update(deltaTime);
   }
 
@@ -25,18 +30,18 @@ export class LevelOneScene extends IScene {
   }
 
   Load(): void {
-    let floorGrid = new FloorGrid();
-    floorGrid.SetColor('#ff0000');
-    floorGrid.SetShouldHighlight(true);
+    this.floorGrid = new FloorGrid();
+    this.floorGrid.SetColor('#ff0000');
+    this.floorGrid.SetShouldHighlight(true);
 
-    this.gameObjects.push(floorGrid);
+    this.gameObjects.push(this.floorGrid);
 
-    //let block = new Block();
-    //block.SetColor('#ffffff');
-    //block.SetLocation(0, Game.CANVAS_HEIGHT / 2, 2);
-    //block.SetSize(32, 32);
+    let block = new Block();
+    block.SetColor('#ffffff');
+    block.SetLocation(0, Game.CANVAS_HEIGHT / 2, 2);
+    block.SetSize(64, 64);
 
-    //this.gameObjects.push(block);
+    this.gameObjects.push(block);
     //for (let i = 0; i < 2500; i++) {
     //  let block = new Block();
     //  block.SetColor('#ffffff');
