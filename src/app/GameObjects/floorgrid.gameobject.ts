@@ -8,6 +8,8 @@ export class FloorGrid extends IGameObject {
   private gridSize: number = 0;
   private shouldHighlight: boolean = false;
   private grid: number[][] = [];
+  private gridColumns: number = 0;
+  private gridRows: number = 0;
 
   constructor() {
     super();
@@ -35,20 +37,37 @@ export class FloorGrid extends IGameObject {
       });
 
       if (isOpen) {
-        this.savedSquares.push(newSquare);
+        let x = Math.floor((this.bottomRight.X - (this.gridSize / 2)) / this.gridSize);
+        let y = Math.floor((this.bottomRight.Y - (this.gridSize / 2)) / this.gridSize);
 
-        let col = Math.floor((this.bottomRight.X - (this.gridSize / 2)) / this.gridSize);
-        let row = Math.floor((this.bottomRight.Y - (this.gridSize / 2)) / this.gridSize);
-
-        this.grid[col][row] = 1;
-        console.log(`( ${col} , ${row} )`);
-        console.log(this.grid);
+        this.grid[x][y] = 1;
+        this.grid[Math.max(0, x - 1)][y] = 1;
+        this.grid[Math.max(0, x - 1)][Math.max(0, y - 1)] = 1;
+        this.grid[x][Math.max(0, y - 1)] = 1;
+        
+        if (!this.CalculatePath()) {
+          this.grid[x][y] = 0;
+          this.grid[Math.max(0, x - 1)][y] = 0;
+          this.grid[Math.max(0, x - 1)][Math.max(0, y - 1)] = 0;
+          this.grid[x][Math.max(0, y - 1)] = 0;
+        }
+        else {
+          this.savedSquares.push(newSquare);
+        }
       }
     }
   }
 
-  public CalculatePath(obstacles: IGameObject[]): void {
+  private path: any[] = [];
+  public CalculatePath(): boolean {
+    let tempPath = PathFinder.AStarSearch(this.grid, this.gridRows, this.gridColumns, new Vector2(0, 5), new Vector2(this.gridColumns - 1, 5));
     
+    if (tempPath.length > 0) {
+      this.path = tempPath;
+      return true;
+    }
+    else
+      return false;
   }
 
   private savedSquares: Rect[] = [];
@@ -107,16 +126,19 @@ export class FloorGrid extends IGameObject {
       Game.CONTEXT.stroke();
     }
 
-    if (this.topLeft && this.bottomRight) {
-      Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.lineWidth = 2;
-      Game.CONTEXT.beginPath();
-      Game.CONTEXT.moveTo(this.topLeft.X, this.topLeft.Y);
-      Game.CONTEXT.lineTo(this.bottomRight.X, this.topLeft.Y);
-      Game.CONTEXT.lineTo(this.bottomRight.X, this.bottomRight.Y);
-      Game.CONTEXT.lineTo(this.topLeft.X, this.bottomRight.Y);
-      Game.CONTEXT.lineTo(this.topLeft.X, this.topLeft.Y);
-      Game.CONTEXT.stroke();
+    Game.CONTEXT.lineWidth = 2;
+
+    if (this.path.length > 0) {
+      Game.CONTEXT.strokeStyle = '#0000ff';
+      this.path.forEach((p) => {
+        Game.CONTEXT.beginPath();
+        Game.CONTEXT.moveTo(p[1] * this.gridSize, p[0] * this.gridSize);
+        Game.CONTEXT.lineTo((p[1] + 1) * this.gridSize, p[0] * this.gridSize);
+        Game.CONTEXT.lineTo((p[1] + 1) * this.gridSize, (p[0] + 1) * this.gridSize);
+        Game.CONTEXT.lineTo(p[1] * this.gridSize, (p[0] + 1) * this.gridSize);
+        Game.CONTEXT.lineTo(p[1] * this.gridSize, p[0] * this.gridSize);
+        Game.CONTEXT.stroke();
+      });
     }
 
     if (this.savedSquares.length > 0) {
@@ -132,16 +154,27 @@ export class FloorGrid extends IGameObject {
       });
     }
 
+    if (this.topLeft && this.bottomRight) {
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.moveTo(this.topLeft.X, this.topLeft.Y);
+      Game.CONTEXT.lineTo(this.bottomRight.X, this.topLeft.Y);
+      Game.CONTEXT.lineTo(this.bottomRight.X, this.bottomRight.Y);
+      Game.CONTEXT.lineTo(this.topLeft.X, this.bottomRight.Y);
+      Game.CONTEXT.lineTo(this.topLeft.X, this.topLeft.Y);
+      Game.CONTEXT.stroke();
+    }
+
     Game.CONTEXT.lineWidth = 1;
   }
 
   private createGrid() {
     this.grid = [];
-    let columns = (Game.CANVAS_WIDTH / this.gridSize);
-    let rows = (Game.CANVAS_HEIGHT / this.gridSize);
-    for (let i = 0; i < columns; i++) {
+    this.gridColumns = Math.floor(Game.CANVAS_WIDTH / this.gridSize);
+    this.gridRows = Math.floor(Game.CANVAS_HEIGHT / this.gridSize);
+    for (let i = 0; i < this.gridColumns; i++) {
       let row = [];
-      for (let j = 0; j < rows; j++) {
+      for (let j = 0; j < this.gridRows; j++) {
         row.push(0);
       }
       this.grid.push(row);

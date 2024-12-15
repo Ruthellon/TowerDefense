@@ -1,3 +1,4 @@
+import { Vector2 } from "./classes.model";
 
 export class cell {
   parent_i: number;
@@ -21,105 +22,71 @@ export class PathFinder {
   private static ROW_COUNT: number = 0;
   private static COL_COUNT: number = 0;
 
-  public static SetGridDimensions(rows: number, cols: number) {
-    this.ROW_COUNT = rows;
-    this.COL_COUNT = cols;
+  private static isValid(x: number, y: number) {
+    return (x >= 0) && (x < this.COL_COUNT) && (y >= 0) && (y < this.ROW_COUNT);
   }
 
-  // A Utility Function to check whether given cell (row, col)
-  // is a valid cell or not.
-  private static isValid(row: number, col: number) {
-    // Returns true if this.ROW_COUNT number and column number
-    // is in range
-    return (row >= 0) && (row < this.ROW_COUNT) && (col >= 0) && (col < this.COL_COUNT);
+  private static isBlocked(grid: number[][], point: Vector2) {
+    return grid[point.X][point.Y] === 1;
   }
 
-  // A Utility Function to check whether the given cell is
-  // blocked or not
-  private static isUnBlocked(grid: number[][], row: number, col: number) {
-    // Returns true if the cell is not blocked else false
-    if (grid[row][col] == 1)
-      return (true);
-    else
-      return (false);
+  private static isDestination(dest: Vector2, point: Vector2): boolean {
+    return point.isEqual(dest);
   }
 
-  // A Utility Function to check whether destination cell has
-  // been reached or not
-  private static isDestination(row: number, col: number, dest: number[]) {
-    if (row == dest[0] && col == dest[1])
-      return (true);
-    else
-      return (false);
+  private static calculateHValue(point: Vector2, dest: Vector2) {
+    return (Math.sqrt(Math.pow(dest.X - point.X, 2) + Math.pow(dest.Y - point.Y, 2)));
   }
 
-  // A Utility Function to calculate the 'h' heuristics.
-  private static calculateHValue(row: number, col: number, dest: number[]) {
-    // Return using the distance formula
-    return (Math.sqrt((row - dest[0]) * (row - dest[0]) + (col - dest[1]) * (col - dest[1])));
-  }
-
-  // A Utility Function to trace the path from the source
-  // to destination
-  private static tracePath(cellDetails: cell[][], dest: number[]) {
-    console.log("The Path is ");
-    let row = dest[0];
-    let col = dest[1];
+  private static tracePath(cellDetails: cell[][], dest: Vector2): Vector2[] {
+    let y = dest.Y;
+    let x = dest.X;
 
     // stack<Pair> Path;
-    let Path = [];
-
-    while (!(cellDetails[row][col].parent_i == this.ROW_COUNT && cellDetails[row][col].parent_j == col)) {
-      Path.push([row, col]);
-      let temp_row = cellDetails[row][col].parent_i;
-      let temp_col = cellDetails[row][col].parent_j;
-      this.ROW_COUNT = temp_row;
-      col = temp_col;
+    let Path: Vector2[] = [];
+    while (!(cellDetails[x][y].parent_i == y && cellDetails[x][y].parent_j == x)) {
+      Path.push(new Vector2(x, y));
+      let tempX = cellDetails[x][y].parent_i;
+      let tempY = cellDetails[x][y].parent_j;
+      x = tempX;
+      y = tempY;
     }
 
-    Path.push([row, col]);
-    while (Path.length > 0) {
-      let p = Path[0];
-      Path.shift();
+    Path.push(new Vector2(x,y));
 
-      if (p[0] == 2 || p[0] == 1) {
-        console.log("-> (" + p[0] + ", " + (p[1] - 1) + ")");
-      }
-      else console.log("-> (" + p[0] + ", " + p[1] + ")");
-    }
-
-    return;
+    return Path;
   }
 
   // A Function to find the shortest path between
   // a given source cell to a destination cell according
   // to A* Search Algorithm
-  public static AStarSearch(grid: number[][], src: number[], dest: number[]) {
+  public static AStarSearch(grid: number[][], gridSize: Vector2, src: Vector2, dest: Vector2): any[] {
+    this.COL_COUNT = gridSize.X;
+    this.ROW_COUNT = gridSize.Y;
+
     // If the source is out of range
-    if (this.isValid(src[0], src[1]) == false) {
+    if (!this.isValid(src.X, src.Y)) {
       console.log("Source is invalid\n");
-      return;
+      return [];
     }
 
     // If the destination is out of range
-    if (this.isValid(dest[0], dest[1]) == false) {
+    if (!this.isValid(dest.X, src.Y)) {
       console.log("Destination is invalid\n");
-      return;
+      return [];
     }
 
     // Either the source or the destination is blocked
-    if (this.isUnBlocked(grid, src[0], src[1]) == false
-      || this.isUnBlocked(grid, dest[0], dest[1])
-      == false) {
+    if (this.isBlocked(grid, src) ||
+      this.isBlocked(grid, dest)) {
       console.log("Source or the destination is blocked\n");
-      return;
+      return [];
     }
 
     // If the destination cell is the same as source cell
-    if (this.isDestination(src[0], src[1], dest)
-      == true) {
+    if (this.isDestination(src, dest)) {
       console.log("We are already at the destination\n");
-      return;
+      return [];
     }
 
     // Create a closed list and initialise it to false which
@@ -151,7 +118,7 @@ export class PathFinder {
     }
 
     // Initialising the parameters of the starting node
-    i = src[0], j = src[1];
+    i = src.X, j = src.Y;
     cellDetails[i][j].f = 0;
     cellDetails[i][j].g = 0;
     cellDetails[i][j].h = 0;
@@ -212,28 +179,26 @@ export class PathFinder {
       let gNew, hNew, fNew;
 
       //----------- 1st Successor (North) ------------
-
       // Only process this cell if this is a valid one
-      if (this.isValid(i - 1, j) == true) {
+      if (this.isValid(i - 1, j)) {
+        let vector = new Vector2(i - 1, j);
+
         // If the destination cell is the same as the
         // current successor
-        if (this.isDestination(i - 1, j, dest) == true) {
+        if (this.isDestination(vector, dest)) {
           // Set the Parent of the destination cell
           cellDetails[i - 1][j].parent_i = i;
           cellDetails[i - 1][j].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
-        else if (closedList[i - 1][j] == false
-          && this.isUnBlocked(grid, i - 1, j)
-          == true) {
+        else if (!closedList[i - 1][j]
+          && !this.isBlocked(grid, vector)) {
           gNew = cellDetails[i][j].g + 1;
-          hNew = this.calculateHValue(i - 1, j, dest);
+          hNew = this.calculateHValue(vector, dest);
           fNew = gNew + hNew;
 
           // If it isn’t on the open list, add it to
@@ -261,24 +226,22 @@ export class PathFinder {
       //----------- 2nd Successor (South) ------------
 
       // Only process this cell if this is a valid one
-      if (this.isValid(i + 1, j) == true) {
+      if (this.isValid(i + 1, j)) {
+        let vector = new Vector2(i + 1, j);
         // If the destination cell is the same as the
         // current successor
-        if (this.isDestination(i + 1, j, dest) == true) {
+        if (this.isDestination(vector, dest)) {
           // Set the Parent of the destination cell
           cellDetails[i + 1][j].parent_i = i;
           cellDetails[i + 1][j].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
         else if (closedList[i + 1][j] == false
-          && this.isUnBlocked(grid, i + 1, j)
-          == true) {
+          && !this.isBlocked(grid, i + 1, j)) {
           gNew = cellDetails[i][j].g + 1;
           hNew = this.calculateHValue(i + 1, j, dest);
           fNew = gNew + hNew;
@@ -315,17 +278,14 @@ export class PathFinder {
           cellDetails[i][j + 1].parent_i = i;
           cellDetails[i][j + 1].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
 
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
         else if (closedList[i][j + 1] == false
-          && this.isUnBlocked(grid, i, j + 1)
-          == true) {
+          && !this.isBlocked(grid, i, j + 1)) {
           gNew = cellDetails[i][j].g + 1;
           hNew = this.calculateHValue(i, j + 1, dest);
           fNew = gNew + hNew;
@@ -363,17 +323,14 @@ export class PathFinder {
           cellDetails[i][j - 1].parent_i = i;
           cellDetails[i][j - 1].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
 
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
         else if (closedList[i][j - 1] == false
-          && this.isUnBlocked(grid, i, j - 1)
-          == true) {
+          && !this.isBlocked(grid, i, j - 1)) {
           gNew = cellDetails[i][j].g + 1;
           hNew = this.calculateHValue(i, j - 1, dest);
           fNew = gNew + hNew;
@@ -412,17 +369,14 @@ export class PathFinder {
           cellDetails[i - 1][j + 1].parent_i = i;
           cellDetails[i - 1][j + 1].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
 
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
         else if (closedList[i - 1][j + 1] == false
-          && this.isUnBlocked(grid, i - 1, j + 1)
-          == true) {
+          && !this.isBlocked(grid, i - 1, j + 1)) {
           gNew = cellDetails[i][j].g + 1.414;
           hNew = this.calculateHValue(i - 1, j + 1, dest);
           fNew = gNew + hNew;
@@ -461,17 +415,14 @@ export class PathFinder {
           cellDetails[i - 1][j - 1].parent_i = i;
           cellDetails[i - 1][j - 1].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
 
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
         else if (closedList[i - 1][j - 1] == false
-          && this.isUnBlocked(grid, i - 1, j - 1)
-          == true) {
+          && !this.isBlocked(grid, i - 1, j - 1)) {
           gNew = cellDetails[i][j].g + 1.414;
           hNew = this.calculateHValue(i - 1, j - 1, dest);
           fNew = gNew + hNew;
@@ -509,17 +460,14 @@ export class PathFinder {
           cellDetails[i + 1][j + 1].parent_i = i;
           cellDetails[i + 1][j + 1].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
 
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
         else if (closedList[i + 1][j + 1] == false
-          && this.isUnBlocked(grid, i + 1, j + 1)
-          == true) {
+          && !this.isBlocked(grid, i + 1, j + 1)) {
           gNew = cellDetails[i][j].g + 1.414;
           hNew = this.calculateHValue(i + 1, j + 1, dest);
           fNew = gNew + hNew;
@@ -558,17 +506,14 @@ export class PathFinder {
           cellDetails[i + 1][j - 1].parent_i = i;
           cellDetails[i + 1][j - 1].parent_j = j;
           console.log("The destination cell is found\n");
-          this.tracePath(cellDetails, dest);
-          foundDest = true;
-          return;
+          return this.tracePath(cellDetails, dest);
         }
 
         // If the successor is already on the closed
         // list or if it is blocked, then ignore it.
         // Else do the following
         else if (closedList[i + 1][j - 1] == false
-          && this.isUnBlocked(grid, i + 1, j - 1)
-          == true) {
+          && !this.isBlocked(grid, i + 1, j - 1)) {
           gNew = cellDetails[i][j].g + 1.414;
           hNew = this.calculateHValue(i + 1, j - 1, dest);
           fNew = gNew + hNew;
@@ -604,6 +549,6 @@ export class PathFinder {
     if (foundDest == false)
       console.log("Failed to find the Destination Cell\n");
 
-    return;
+    return [];
   }
 }

@@ -1,11 +1,22 @@
 
 export class Vector2 {
-  X: number;
-  Y: number;
+  private x: number;
+  private y: number;
+
+  public get X(): number {
+    return this.x;
+  }
+  public get Y(): number {
+    return this.y;
+  }
 
   constructor(x: number, y: number) {
-    this.X = x;
-    this.Y = y;
+    this.x = x;
+    this.y = y;
+  }
+
+  public isEqual(other: Vector2): boolean {
+    return (this.X === other.X && this.Y === other.Y);
   }
 }
 
