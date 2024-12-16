@@ -8,6 +8,8 @@ export class Block extends IGameObject {
   speedX: number = 1;
   speedY: number = 1;
 
+  override color: string = '#00ff00';
+
   override OnCollision(collision: IGameObject) {
   }
 

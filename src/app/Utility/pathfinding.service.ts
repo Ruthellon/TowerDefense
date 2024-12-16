@@ -7,8 +7,6 @@ export class cell {
   g: number;
   h: number;
 
-  // this.ROW_COUNT and Column index of its parent
-  // Note that 0 <= i <= this.ROW_COUNT-1 & 0 <= j <= COL-1
   constructor() {
     this.parent_x = 0;
     this.parent_y = 0;
@@ -19,66 +17,50 @@ export class cell {
 }
 
 export class PathFinder {
-  private static ROW_COUNT: number = 0;
-  private static COL_COUNT: number = 0;
-
-  private static GRID: number[][] = [];
-  private static SOURCE: Vector2 = new Vector2(0, 0);
-  private static DEST: Vector2 = new Vector2(0, 0);
   
-  // A Function to find the shortest path between
-  // a given source cell to a destination cell according
-  // to A* Search Algorithm
-  public static AStarSearch(grid: number[][], gridSize: Vector2, src: Vector2, dest: Vector2): any[] {
-    this.COL_COUNT = gridSize.X;
-    this.ROW_COUNT = gridSize.Y;
-    this.GRID = grid;
-    this.SOURCE = src;
-    this.DEST = dest;
+  public static AStarSearch(grid: number[][], src: Vector2, dest: Vector2): any[] {
 
     // If the source is out of range
-    if (!this.isValid(src.X, src.Y)) {
+    if (!this.isValid(src.X, src.Y, grid.length, grid[0].length)) {
       console.log("Source is invalid\n");
       return [];
     }
 
     // If the destination is out of range
-    if (!this.isValid(dest.X, src.Y)) {
+    if (!this.isValid(dest.X, src.Y, grid.length, grid[0].length)) {
       console.log("Destination is invalid\n");
       return [];
     }
 
     // Either the source or the destination is blocked
-    if (this.isBlocked(grid, src) ||
-      this.isBlocked(grid, dest)) {
+    if (grid[src.X][src.Y] === 1 ||
+      grid[dest.X][dest.Y] === 1) {
       console.log("Source or the destination is blocked\n");
       return [];
     }
 
     // If the destination cell is the same as source cell
-    if (this.isDestination(src, dest)) {
+    if (src.isEqual(dest)) {
       console.log("We are already at the destination\n");
       return [];
     }
 
     // Create a closed list and initialise it to false which
     // means that no cell has been included yet 
-    let closedList = new Array(this.COL_COUNT);
-    for (let i = 0; i < this.COL_COUNT; i++) {
-      closedList[i] = new Array(this.ROW_COUNT).fill(false);
+    let closedList = new Array(grid.length);
+    for (let i = 0; i < grid.length; i++) {
+      closedList[i] = new Array(grid[i].length).fill(false);
     }
 
-    // Declare a 2D array of structure to hold the details
-    // of that cell
-    let cellDetails = new Array(this.COL_COUNT);
-    for (let i = 0; i < this.COL_COUNT; i++) {
-      cellDetails[i] = new Array(this.ROW_COUNT);
+    let cellDetails = new Array(grid.length);
+    for (let i = 0; i < grid.length; i++) {
+      cellDetails[i] = new Array(grid[i].length);
     }
 
     let x, y;
 
-    for (x = 0; x < this.COL_COUNT; x++) {
-      for (y = 0; y < this.ROW_COUNT; y++) {
+    for (x = 0; x < grid.length; x++) {
+      for (y = 0; y < grid[x].length; y++) {
         cellDetails[x][y] = new cell();
         cellDetails[x][y].f = 2147483647;
         cellDetails[x][y].g = 2147483647;
@@ -88,7 +70,6 @@ export class PathFinder {
       }
     }
 
-    // Initialising the parameters of the starting node
     x = src.X, y = src.Y;
     cellDetails[x][y].f = 0;
     cellDetails[x][y].g = 0;
@@ -104,29 +85,15 @@ export class PathFinder {
     while (openList.length > 0) {
       let p = openList.shift();
 
-      // Add this vertex to the closed list
       x = p.coord[0];
       y = p.coord[1];
       closedList[x][y] = true;
 
-      /*
-       Generating all the 8 successor of this cell
-  
-           N.W   N   N.E
-             \   |   /
-              \  |  /
-           W----Cell----E
-                / | \
-              /   |  \
-           S.W    S   S.E
-      */
-
-      // To store the 'g', 'h' and 'f' of the 8 successors
       let parent = new Vector2(x, y);
 
       //North
       let result = this.processCell(new Vector2(x, y - 1), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -134,7 +101,7 @@ export class PathFinder {
 
       //South
       result = this.processCell(new Vector2(x, y + 1), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -142,7 +109,7 @@ export class PathFinder {
 
       //East
       result = this.processCell(new Vector2(x + 1, y), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -150,7 +117,7 @@ export class PathFinder {
 
       //West
       result = this.processCell(new Vector2(x - 1, y), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -158,7 +125,7 @@ export class PathFinder {
 
       //North East
       result = this.processCell(new Vector2(x + 1, y - 1), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -166,7 +133,7 @@ export class PathFinder {
 
       //North West
       result = this.processCell(new Vector2(x - 1, y - 1), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -174,7 +141,7 @@ export class PathFinder {
 
       //South East
       result = this.processCell(new Vector2(x + 1, y + 1), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -182,7 +149,7 @@ export class PathFinder {
 
       //South West
       result = this.processCell(new Vector2(x - 1, y + 1), parent,
-        cellDetails, openList, closedList);
+        cellDetails, openList, closedList, grid, dest);
 
       if (result) {
         return this.tracePath(cellDetails, dest);
@@ -202,8 +169,8 @@ export class PathFinder {
     return [];
   }
 
-  private static isValid(x: number, y: number) {
-    return (x >= 0) && (x < this.COL_COUNT) && (y >= 0) && (y < this.ROW_COUNT);
+  private static isValid(x: number, y: number, xMax: number, yMax: number) {
+    return (x >= 0) && (x < xMax) && (y >= 0) && (y < yMax);
   }
 
   private static isBlocked(grid: number[][], point: Vector2) {
@@ -218,12 +185,13 @@ export class PathFinder {
     return (Math.sqrt(Math.pow(dest.X - point.X, 2) + Math.pow(dest.Y - point.Y, 2)));
   }
 
-  private static processCell(point: Vector2, parent: Vector2, cellDetails: any, openList: any, closedList: any): boolean {
-    if (this.isValid(point.X, point.Y)) {
+  private static processCell(point: Vector2, parent: Vector2, cellDetails: any,
+    openList: any, closedList: any, grid: number[][], dest: Vector2): boolean {
+    if (this.isValid(point.X, point.Y, grid.length, grid[0].length)) {
 
       // If the destination cell is the same as the
       // current successor
-      if (this.isDestination(point, this.DEST)) {
+      if (this.isDestination(point, dest)) {
         // Set the Parent of the destination cell
         cellDetails[point.X][point.Y].parent_x = parent.X;
         cellDetails[point.X][point.Y].parent_y = parent.Y;
@@ -234,9 +202,9 @@ export class PathFinder {
       // list or if it is blocked, then ignore it.
       // Else do the following
       else if (!closedList[point.X][point.Y]
-        && !this.isBlocked(this.GRID, point)) {
+        && !this.isBlocked(grid, point)) {
         let gNew = cellDetails[parent.X][parent.Y].g + 1;
-        let hNew = this.calculateHValue(point, this.DEST);
+        let hNew = this.calculateHValue(point, dest);
         let fNew = gNew + hNew;
 
         // If it isn’t on the open list, add it to

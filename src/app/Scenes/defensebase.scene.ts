@@ -11,6 +11,7 @@ export abstract class DefenseBaseLevel extends IScene {
   protected abstract get TurretCellSize(): number;
   protected abstract get StartingCells(): Vector2[];
   protected abstract get EndingCells(): Vector2[];
+  protected abstract get SelectedTurret(): IGameObject;
 
   private grid: number[][] = [];
   protected get Grid(): number[][] {
@@ -38,8 +39,7 @@ export abstract class DefenseBaseLevel extends IScene {
       this.grid.push(row);
     }
 
-    this.thePath = PathFinder.AStarSearch(this.grid, new Vector2(this.gridColumns, this.gridRows), this.StartingCells[0], this.EndingCells[0]);
-
+    this.thePath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
   }
 
   private previousMouse: Vector2 | null = null;
@@ -92,7 +92,7 @@ export abstract class DefenseBaseLevel extends IScene {
     Game.CONTEXT.lineWidth = 5;
 
     if (this.thePath.length > 0) {
-      Game.CONTEXT.strokeStyle = '#4444ee';
+      Game.CONTEXT.strokeStyle = '#2222ff';
       this.thePath.forEach((path) => {
         Game.CONTEXT.strokeRect((path.X * this.GridCellSize) + 5, ((path.Y * this.GridCellSize) + remainder) + 5,
           this.GridCellSize - 10, this.GridCellSize - 10);
@@ -125,13 +125,16 @@ export abstract class DefenseBaseLevel extends IScene {
       return false;
 
     this.grid[cell.X][cell.Y] = 1;
-    let tempPath = PathFinder.AStarSearch(this.grid, new Vector2(this.gridColumns, this.gridRows), this.StartingCells[0], this.EndingCells[0]);
+    let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
 
     if (tempPath.length === 0) {
       this.grid[cell.X][cell.Y] = 0;
       return false;
     }
     else {
+      this.GameObjects.forEach((obj) => {
+        obj.UpdatePath(this.grid, this.GridCellSize, this.EndingCells[0])
+      });
       this.thePath = tempPath;
       this.obstacles.push(cell);
       return true;
