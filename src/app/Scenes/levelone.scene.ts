@@ -4,11 +4,24 @@ import { FloorGrid } from "../GameObjects/floorgrid.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
+import { DefenseBaseLevel } from "./defensebase.scene";
 import { IScene } from "./scene.interface";
 
-export class LevelOneScene extends IScene {
+export class LevelOneScene extends DefenseBaseLevel {
+  protected get StartingCells(): Vector2[] {
+    return [new Vector2(0,2)];
+  }
+  protected override get EndingCells(): Vector2[] {
+    return [new Vector2(9,2)]
+  }
+  protected get TurretCellSize(): number {
+    return 160;
+  }
+  protected get GridCellSize(): number {
+    return 160;
+  }
   gameObjects: IGameObject[] = [];
-  protected get GameObjects(): IGameObject[] {
+  protected override get GameObjects(): IGameObject[] {
     return this.gameObjects;
   }
 
@@ -23,17 +36,11 @@ export class LevelOneScene extends IScene {
   }
 
   override Draw(deltaTime: number): void {
-    Game.CONTEXT!.fillStyle = '#000000';
-    Game.CONTEXT!.fillRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
-
     super.Draw(deltaTime);
   }
 
-  Load(): void {
-    this.floorGrid = new FloorGrid();
-    this.floorGrid.SetColor('#ff0000');
-    this.floorGrid.SetShouldHighlight(true);
-
+  override Load(): void {
+    super.Load();
     this.gameObjects.push(this.floorGrid);
 
     let block = new Block();
@@ -42,14 +49,5 @@ export class LevelOneScene extends IScene {
     block.SetSize(64, 64);
 
     this.gameObjects.push(block);
-    //for (let i = 0; i < 2500; i++) {
-    //  let block = new Block();
-    //  block.SetColor('#ffffff');
-    //  block.SetLocation(Math.min(AppComponent.CANVAS_WIDTH - 15, Math.random() * AppComponent.CANVAS_WIDTH),
-    //    Math.min(AppComponent.CANVAS_HEIGHT - 15, Math.random() * AppComponent.CANVAS_HEIGHT), 1);
-    //  block.SetSize(10, 10);
-    //  block.SetCollisionBox(10, 10);
-    //  this.gameObjects.push(block);
-    //}
   }
 }
