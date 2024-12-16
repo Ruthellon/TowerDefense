@@ -11,6 +11,10 @@ export class Vector2 {
   public isEqual(other: Vector2): boolean {
     return (this.X === other.X && this.Y === other.Y);
   }
+
+  public distanceTo(other: Vector2): number {
+    return Math.sqrt(Math.pow((this.X - other.X), 2) + Math.pow((this.Y - other.Y), 2));
+  }
 }
 
 export class Vector3 {
@@ -72,10 +76,17 @@ export class Rect {
     this.bottomLeft = new Vector2(x, y + height);
   }
 
-  public static IsOverlapping(rect1: Rect, rect2: Rect): boolean {
-    return (rect1.X < rect2.bottomRight.X &&
-      rect2.X < rect1.bottomRight.X &&
-      rect1.Y < rect2.bottomRight.Y &&
-      rect2.Y < rect1.bottomRight.Y);
+  public IsOverlapping(other: Rect): boolean {
+    return (this.X < other.bottomRight.X &&
+      other.X < this.bottomRight.X &&
+      this.Y < other.bottomRight.Y &&
+      other.Y < this.bottomRight.Y);
+  }
+
+  public ContainsPoint(point: Vector2): boolean {
+    return (point.X >= this.X &&
+      point.X <= (this.X + this.width) &&
+      point.Y >= this.Y &&
+      point.Y <= (this.Y + this.height));
   }
 }

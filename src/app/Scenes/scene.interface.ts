@@ -13,7 +13,7 @@ export abstract class IScene {
     this.GameObjects.forEach((obj) => {
       if (obj.CollisionBox) {
         this.colliderLocations.forEach((collider) => {
-          if (Rect.IsOverlapping(obj.CollisionBox!, collider.CollisionBox!)) {
+          if (collider.CollisionBox!.IsOverlapping(obj.CollisionBox!)) {
             obj.OnCollision(collider);
             collider.OnCollision(obj);
           }
@@ -32,5 +32,10 @@ export abstract class IScene {
     this.GameObjects.forEach((obj) => {
       obj.Draw(deltaTime);
     });
+  }
+
+  LoadGameObject(gameObject: IGameObject) {
+    gameObject.Load();
+    this.GameObjects.push(gameObject);
   }
 }

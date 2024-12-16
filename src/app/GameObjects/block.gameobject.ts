@@ -17,25 +17,34 @@ export class Block extends IGameObject {
     super();
   }
 
-  private pointOnPath: number = -1;
+  private gridSize: number = 0;
+  private pointOnPath: number = 0;
   private directionX: number = 0;
   private directionY: number = 0;
+  private target: Vector2 | null = null;
   Update(deltaTime: number): void {
-    if (this.path.length > 0) {
-      let localX = (this.path[this.pointOnPath].X * 64) - this.location.X;
-      let localY = (this.path[this.pointOnPath].Y * 64) - this.location.Y;
-      if (Math.abs(localX) < 5 && Math.abs(localY) < 5 && this.pointOnPath >= 0) {
+    if (this.path.length === 0)
+      return;
 
-        this.pointOnPath--;
-        this.directionX = (this.path[this.pointOnPath].X * 64) - this.location.X;
-        this.directionY = (this.path[this.pointOnPath].Y * 64) - this.location.Y;
+    if (this.target === null)
+      return;
+
+    let distanceTo = this.target.distanceTo(new Vector2(this.location.X, this.location.Y));
+
+    if (distanceTo <= 1) {
+      this.pointOnPath++;
+
+      if (this.pointOnPath < this.path.length) {
+        this.target = new Vector2(this.path[this.pointOnPath].X + (this.gridSize / 2) - (this.Size.X / 2),
+          this.path[this.pointOnPath].Y + (this.gridSize / 2) - (this.Size.Y / 2));
+
+        this.directionX = this.target.X - this.location.X;
+        this.directionY = this.target.Y - this.location.Y;
       }
-
-      this.location.X += (this.speedX * deltaTime) * this.directionX;
-      this.location.Y += (this.speedY * deltaTime) * this.directionY;
-
-      
     }
+
+    this.location.X += (this.speedX * deltaTime) * this.directionX;
+    this.location.Y += (this.speedY * deltaTime) * this.directionY;
   }
 
   Draw(deltaTime: number): void {
@@ -46,27 +55,15 @@ export class Block extends IGameObject {
   }
 
   private path: Vector2[] = [];
-  public SetPath(path: Vector2[]) {
-    if (path.length === 0)
-      return;
-
-    if (path.length === this.path.length) {
-      let same: boolean = true;
-      for (let i = 0; i < path.length; i++) {
-        same = same && path[i].isEqual(this.path[i]);
-      }
-
-      if (same)
-        return;
-    }
-
+  public SetPath(path: Vector2[], gridSize: number) {
     this.path = path;
+    this.gridSize = gridSize;
+    this.pointOnPath = 0;
 
-    if (this.pointOnPath === -1)
-      this.pointOnPath = path.length - 1;
+    this.target = new Vector2(this.path[this.pointOnPath].X + (gridSize / 2) - (this.Size.X / 2),
+      this.path[this.pointOnPath].Y + (gridSize / 2) - (this.Size.Y / 2));
 
-
-    this.directionX = (this.path[this.pointOnPath].X * 64) - this.location.X;
-    this.directionY = (this.path[this.pointOnPath].Y * 64) - this.location.Y;
+    this.directionX = this.target.X - this.location.X;
+    this.directionY = this.target.Y - this.location.Y;
   }
 }

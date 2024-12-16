@@ -33,15 +33,24 @@ export abstract class IGameObject {
 
   abstract Update(deltaTime: number): void;
   abstract Draw(deltaTime: number): void;
+  ///////
+  //
+  // FOR FUTURE USE
+  // When allowing obstacle adding DURING the match
+  //
+  ///////
+  //UpdatePath(grid: number[][], gridSize:number, dest: Vector2): boolean {
+  //  let startingCell = new Vector2(this.location.X / gridSize, this.location.Y / gridSize)
+  //  let tempPath = PathFinder.AStarSearch(grid, startingCell, dest);
 
-  UpdatePath(grid: number[][], gridSize:number, dest: Vector2): boolean {
-    let startingCell = new Vector2(this.location.X / gridSize, this.location.Y / gridSize)
-    let tempPath = PathFinder.AStarSearch(grid, startingCell, dest);
+  //  if (tempPath.length > 0)
+  //    return true;
 
-    if (tempPath.length > 0)
-      return true;
+  //  return false;
+  //}
 
-    return false;
+  Load(): void {
+
   }
 
   SetLocation(x: number, y: number, z: number): void {

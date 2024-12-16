@@ -123,37 +123,37 @@ export class PathFinder {
         return this.tracePath(cellDetails, dest);
       }
 
-      //North East
-      result = this.processCell(new Vector2(x + 1, y - 1), parent,
-        cellDetails, openList, closedList, grid, dest);
+      ////North East
+      //result = this.processCell(new Vector2(x + 1, y - 1), parent,
+      //  cellDetails, openList, closedList, grid, dest);
 
-      if (result) {
-        return this.tracePath(cellDetails, dest);
-      }
+      //if (result) {
+      //  return this.tracePath(cellDetails, dest);
+      //}
 
-      //North West
-      result = this.processCell(new Vector2(x - 1, y - 1), parent,
-        cellDetails, openList, closedList, grid, dest);
+      ////North West
+      //result = this.processCell(new Vector2(x - 1, y - 1), parent,
+      //  cellDetails, openList, closedList, grid, dest);
 
-      if (result) {
-        return this.tracePath(cellDetails, dest);
-      }
+      //if (result) {
+      //  return this.tracePath(cellDetails, dest);
+      //}
 
-      //South East
-      result = this.processCell(new Vector2(x + 1, y + 1), parent,
-        cellDetails, openList, closedList, grid, dest);
+      ////South East
+      //result = this.processCell(new Vector2(x + 1, y + 1), parent,
+      //  cellDetails, openList, closedList, grid, dest);
 
-      if (result) {
-        return this.tracePath(cellDetails, dest);
-      }
+      //if (result) {
+      //  return this.tracePath(cellDetails, dest);
+      //}
 
-      //South West
-      result = this.processCell(new Vector2(x - 1, y + 1), parent,
-        cellDetails, openList, closedList, grid, dest);
+      ////South West
+      //result = this.processCell(new Vector2(x - 1, y + 1), parent,
+      //  cellDetails, openList, closedList, grid, dest);
 
-      if (result) {
-        return this.tracePath(cellDetails, dest);
-      }
+      //if (result) {
+      //  return this.tracePath(cellDetails, dest);
+      //}
 
       openList = openList.sort((a, b) => a.val - b.val);
     }
