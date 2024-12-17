@@ -1,9 +1,15 @@
-import { Rect } from "../Utility/classes.model";
+import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
+import { Base } from "./base.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 
-export class Button extends IGameObject {
+export class Button extends Base {
+  public override OnCollision(collision: IGameObject): void {
+  }
+  public override get Value(): number | null {
+    return null;
+  }
 
   override color = '#999999';
   private altColor = '#ffffff'
@@ -24,7 +30,6 @@ export class Button extends IGameObject {
 
   private downClicked = false;
   override Update(deltaTime: number): void {
-    super.Update(deltaTime);
     if (Game.MOUSE_CLICKED && this.buttonRect.ContainsPoint(Game.MOUSE_LOCATION)) {
       this.pressed = false;
       this.downClicked = true;
@@ -37,12 +42,12 @@ export class Button extends IGameObject {
 
   Draw(deltaTime: number): void {
     Game.CONTEXT.fillStyle = this.color;
-    Game.CONTEXT.fillRect(this.location.X, this.location.Y,
+    Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,
       this.Size.X, this.Size.Y);
 
     Game.CONTEXT.lineWidth = 5;
     Game.CONTEXT.strokeStyle = this.altColor;
-    Game.CONTEXT.strokeRect(this.location.X, this.location.Y,
+    Game.CONTEXT.strokeRect(this.Location.X, this.Location.Y,
       this.Size.X, this.Size.Y);
 
 

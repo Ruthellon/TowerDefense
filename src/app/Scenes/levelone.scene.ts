@@ -1,6 +1,8 @@
 import { AppComponent } from "../app.component";
+import { Attacker } from "../GameObjects/attacker.gameobject";
 import { Block } from "../GameObjects/block.gameobject";
 import { Button } from "../GameObjects/button.gameobject";
+import { Defender } from "../GameObjects/defender.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Turret } from "../GameObjects/turret.gameobject";
 import { Wall } from "../GameObjects/wall.gameobject";
@@ -36,8 +38,8 @@ export class LevelOneScene extends DefenseBaseLevel {
     return 100;
   }
 
-  private selectedObstacle: number = 1;
-  protected get SelectedTurret(): IGameObject {
+  private selectedObstacle: number = 0;
+  protected get SelectedTurret(): Defender {
     let obstacle: any;
     if (this.selectedObstacle === 0) {
       obstacle = new Wall();
@@ -50,6 +52,7 @@ export class LevelOneScene extends DefenseBaseLevel {
     return obstacle;
   }
 
+  override attackers: Attacker[] = [];
   gameObjects: IGameObject[] = [];
   protected override get GameObjects(): IGameObject[] {
     return this.gameObjects;
@@ -73,6 +76,7 @@ export class LevelOneScene extends DefenseBaseLevel {
         mon.SetPath(this.ThePath, this.GridCellSize);
 
         this.LoadGameObject(mon);
+        this.attackers.push(mon);
         this.enemiesSpawned++;
 
         this.secondsToMonster = 1;
@@ -104,6 +108,10 @@ export class LevelOneScene extends DefenseBaseLevel {
     if (this.startButton.Pressed) {
       this.secondsToStart = 0;
     }
+
+    if (this.restartButton.Pressed) {
+      Game.SetTheScene('levelone');
+    }
   }
 
   override Draw(deltaTime: number): void {
@@ -113,6 +121,7 @@ export class LevelOneScene extends DefenseBaseLevel {
   private wallButton: Button = new Button();
   private turretButton: Button = new Button();
   private startButton: Button = new Button();
+  private restartButton: Button = new Button();
   override Load(): void {
     super.Load();
 
@@ -128,9 +137,14 @@ export class LevelOneScene extends DefenseBaseLevel {
     this.startButton.SetSize(this.GridCellSize, this.GridCellSize);
     this.startButton.SetText('Start');
 
+    this.restartButton.SetLocation((this.GridCellSize * 5), 0, 10);
+    this.restartButton.SetSize(this.GridCellSize, this.GridCellSize);
+    this.restartButton.SetText('Restart');
+
     this.LoadGameObject(this.wallButton);
     this.LoadGameObject(this.turretButton);
     this.LoadGameObject(this.startButton);
+    this.LoadGameObject(this.restartButton);
   }
 
   protected SetCredits(): void {
@@ -138,6 +152,6 @@ export class LevelOneScene extends DefenseBaseLevel {
   }
 
   protected SetSecondsToStart(): void {
-    this.secondsToStart = 60;
+    this.secondsToStart = 120;
   }
 }

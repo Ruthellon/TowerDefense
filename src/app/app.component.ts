@@ -43,8 +43,6 @@ export class AppComponent implements AfterViewInit {
   }
 
   constructor() {
-    Game.AddScenes('instructions', new InstructionsScene());
-    Game.AddScenes('levelone', new LevelOneScene());
   }
 
   ngAfterViewInit(): void {

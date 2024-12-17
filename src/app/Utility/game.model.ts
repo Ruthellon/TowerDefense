@@ -1,3 +1,5 @@
+import { InstructionsScene } from "../Scenes/instructions.scene";
+import { LevelOneScene } from "../Scenes/levelone.scene";
 import { IScene } from "../Scenes/scene.interface";
 import { Vector2 } from "./classes.model";
 
@@ -30,20 +32,19 @@ export class Game {
     return this.theScene;
   }
 
-  private static theScenes: any = [];
-  public static AddScenes(sceneName: string, sceneObj: IScene) {
-    this.theScenes.push({ name: sceneName, scene: sceneObj });
-  }
-
   public static SetTheScene(scene: string): boolean {
-    for (let i = 0; i < this.theScenes.length; i++) {
-      if (this.theScenes[i].name === scene) {
-        this.theScene = this.theScenes[i].scene;
-        this.theScene.Load();
-        return true;
-      }
+    if (scene === 'instructions') {
+      this.theScene = new InstructionsScene();
     }
-    return false;
+    else if (scene === 'levelone') {
+      this.theScene = new LevelOneScene();
+    }
+    else {
+      return false;
+    }
+
+    this.theScene.Load();
+    return true;
   }
 
   public static SetCanvasContext(canvas: CanvasRenderingContext2D): void {

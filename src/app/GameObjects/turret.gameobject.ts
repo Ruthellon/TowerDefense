@@ -1,12 +1,32 @@
 import { Game } from "../Utility/game.model";
+import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
-export class Turret extends IGameObject {
-  override canShoot = true;
-  override damage = 5;
-  override range = 150;
-  override shootingCooldown = 1;
-  override cost = 10;
+export class Turret extends Defender {
+  private cost = 10;
+  public override get Cost(): number | null {
+    return this.cost;
+  }
+  private shootingCooldown = 1;
+  public override get ShootingCooldown(): number {
+    return this.shootingCooldown;
+  }
+  private damage = 5;
+  public override get Damage(): number {
+    return this.damage;
+  }
+  private range = 150;
+  public override get Range(): number {
+    return this.range;
+  }
+  public override get Value(): number | null {
+    return null;
+  }
+  public override Load(): void {
+  }
+  public override OnCollision(collision: IGameObject): void {
+  }
+
   override color = '#888888';
 
   override Update(deltaTime: number): void {

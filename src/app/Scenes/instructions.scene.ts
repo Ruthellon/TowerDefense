@@ -1,10 +1,11 @@
 import { Button } from "../GameObjects/button.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Game } from "../Utility/game.model";
+import { BaseLevel } from "./base.scene";
 import { IScene } from "./scene.interface";
 
 
-export class InstructionsScene extends IScene {
+export class InstructionsScene extends BaseLevel {
   gameObjects: IGameObject[] = [];
   protected override get GameObjects(): IGameObject[] {
     return this.gameObjects;
@@ -39,7 +40,7 @@ export class InstructionsScene extends IScene {
     Game.CONTEXT.fillStyle = '#ffffff';
     Game.CONTEXT.font = '18px serif';
     Game.CONTEXT.textAlign = "center";
-    Game.CONTEXT.fillText('The object is to destroy the monsters before they reach the other side.', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 - 50);
+    Game.CONTEXT.fillText('The objective is to destroy the monsters before they reach the other side.', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 - 50);
     Game.CONTEXT.fillText('Build Turrets and Walls to lead the monsters along a path of your choosing.', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2);
     Game.CONTEXT.fillText("But be careful, you have a limited number of *credits* and once the monsters start coming you'll no longer be able to place Walls or Turrets.", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 50);
     Game.CONTEXT.fillText("The game ends when you defeat all the monsters, or lose 10 life. Refresh to restart whenever.", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 100);

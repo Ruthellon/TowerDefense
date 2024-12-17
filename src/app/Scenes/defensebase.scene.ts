@@ -1,17 +1,20 @@
+import { Attacker } from "../GameObjects/attacker.gameobject";
+import { Defender } from "../GameObjects/defender.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Rect, Vector2 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { PathFinder } from "../Utility/pathfinding.service";
+import { BaseLevel } from "./base.scene";
 import { IScene } from "./scene.interface";
 
 
 
-export abstract class DefenseBaseLevel extends IScene {
+export abstract class DefenseBaseLevel extends BaseLevel {
   protected abstract get GridCellSize(): number;
   protected abstract get TurretCellSize(): number;
   protected abstract get StartingCells(): Vector2[];
   protected abstract get EndingCells(): Vector2[];
-  protected abstract get SelectedTurret(): IGameObject;
+  protected abstract get SelectedTurret(): Defender;
   protected abstract get PlayerHealth(): number;
   protected abstract get TotalEnemies(): number;
 
@@ -63,7 +66,8 @@ export abstract class DefenseBaseLevel extends IScene {
   }
 
   private remainder: number = 0;
-
+  protected attackers: Attacker[] = [];
+  protected defenders: Defender[] = [];
   Load(): void {
     this.SetCredits();
     this.SetSecondsToStart();
@@ -117,28 +121,19 @@ export abstract class DefenseBaseLevel extends IScene {
 
     super.Update(deltaTime);
 
-    let enemies: IGameObject[] = [];
-    let turrets: IGameObject[] = [];
-    this.GameObjects.forEach((obj) => {
-      if (obj.IsEnemy) {
-        enemies.push(obj);
+    this.attackers.forEach((obj) => {
+      if (obj.Health <= 0) {
+        if (obj.Value)
+          this.credits += obj.Value;
 
-        if (obj.Health <= 0) {
-          if (obj.Value)
-            this.credits += obj.Value;
-
-          this.enemyCount++;
-          this.DestroyGameObject(obj);
-        }
-      }
-      else if (obj.CanShoot) {
-        turrets.push(obj);
+        this.enemyCount++;
+        this.DestroyGameObject(obj);
       }
     });
-
-    if (enemies.length > 0 && turrets.length > 0) {
-      turrets.forEach((turret) => {
-        turret.FindTarget(enemies);
+    
+    if (this.attackers.length > 0 && this.defenders.length > 0) {
+      this.defenders.forEach((turret) => {
+        turret.FindTarget(this.attackers);
       });
     }
 
@@ -235,7 +230,7 @@ export abstract class DefenseBaseLevel extends IScene {
     Game.CONTEXT.lineWidth = 5;
 
     if (this.thePath.length > 0) {
-      Game.CONTEXT.strokeStyle = '#2222ff22';
+      Game.CONTEXT.strokeStyle = '#2222ff88';
       this.thePath.forEach((path) => {
         Game.CONTEXT.strokeRect(path.X + 5, path.Y + 5,
           this.GridCellSize - 10, this.GridCellSize - 10);
@@ -257,14 +252,28 @@ export abstract class DefenseBaseLevel extends IScene {
     if (!this.grid)
       return false;
 
-    if (!this.canBuild)
-      return false;
-
     if (this.grid[cell.X][cell.Y] === 1)
       return false;
 
     if (this.SelectedTurret.Cost && this.Credits < this.SelectedTurret.Cost)
       return false;
+
+    if (!this.canBuild) {
+      if (this.grid[cell.X][cell.Y] === 2)
+        return false;
+
+      this.grid[cell.X][cell.Y] = 1;
+      let newObstacle = this.SelectedTurret;
+      newObstacle.SetLocation((cell.X * this.GridCellSize),
+        ((cell.Y * this.GridCellSize) + this.remainder), 5);
+
+      if (newObstacle.Cost)
+        this.credits -= newObstacle.Cost;
+
+      this.LoadGameObject(newObstacle);
+      this.defenders.push(newObstacle);
+      return true;
+    }
 
     this.grid[cell.X][cell.Y] = 1;
     let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
@@ -279,7 +288,15 @@ export abstract class DefenseBaseLevel extends IScene {
       //  allGood = allGood && obj.UpdatePath(this.grid, this.GridCellSize, this.EndingCells[0])
       //});
       this.thePath = [];
+      for (let x = 0; x < this.grid.length; x++) {
+        for (let y = 0; y < this.grid[x].length; y++) {
+          if (this.grid[x][y] === 2)
+            this.grid[x][y] = 0;
+        }
+      }
+
       for (let i = tempPath.length - 1; i >= 0; i--) {
+        this.grid[tempPath[i].X][tempPath[i].Y] = 2;
         let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize),
           (tempPath[i].Y * this.GridCellSize) + this.remainder);
 
@@ -293,6 +310,7 @@ export abstract class DefenseBaseLevel extends IScene {
       if (newObstacle.Cost)
         this.credits -= newObstacle.Cost;
 
+      this.defenders.push(newObstacle);
       this.LoadGameObject(newObstacle);
 
       return true;

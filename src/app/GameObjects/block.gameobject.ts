@@ -1,20 +1,21 @@
 import { AppComponent } from "../app.component";
 import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
+import { Attacker } from "./attacker.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
-export class Block extends IGameObject {
+export class Block extends Attacker {
+  public override get Value(): number | null {
+    return 1;
+  }
+  public OnCollision(collision: IGameObject): void {
+  }
   override health = 60;
-  override isEnemy = true;
-  override value = 1;
 
   speedX: number = 1;
   speedY: number = 1;
 
   override color: string = '#00ff00';
-
-  override OnCollision(collision: IGameObject) {
-  }
 
   private startingHealth = 0;
 
@@ -24,7 +25,6 @@ export class Block extends IGameObject {
   private directionY: number = 0;
   private target: Vector2 | null = null;
   override Update(deltaTime: number): void {
-    super.Update(deltaTime);
     if (this.path.length === 0)
       return;
 
@@ -63,7 +63,6 @@ export class Block extends IGameObject {
   }
 
   override Load(): void {
-    super.Load();
     this.startingHealth = this.health;
   }
 
