@@ -4,6 +4,7 @@ import { IGameObject } from "./gameobject.interface";
 
 
 export class Button extends IGameObject {
+
   override color = '#999999';
   private altColor = '#ffffff'
   private text = 'PUSH ME';
@@ -22,7 +23,8 @@ export class Button extends IGameObject {
   private buttonRect = new Rect(0, 0, 0, 0);
 
   private downClicked = false;
-  Update(deltaTime: number): void {
+  override Update(deltaTime: number): void {
+    super.Update(deltaTime);
     if (Game.MOUSE_CLICKED && this.buttonRect.ContainsPoint(Game.MOUSE_LOCATION)) {
       this.pressed = false;
       this.downClicked = true;

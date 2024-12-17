@@ -4,6 +4,9 @@ import { Game } from "../Utility/game.model";
 import { IGameObject } from "./gameobject.interface";
 
 export class Block extends IGameObject {
+  override health = 60;
+  override isEnemy = true;
+  override value = 1;
 
   speedX: number = 1;
   speedY: number = 1;
@@ -13,16 +16,15 @@ export class Block extends IGameObject {
   override OnCollision(collision: IGameObject) {
   }
 
-  constructor() {
-    super();
-  }
+  private startingHealth = 0;
 
   private gridSize: number = 0;
   private pointOnPath: number = 0;
   private directionX: number = 0;
   private directionY: number = 0;
   private target: Vector2 | null = null;
-  Update(deltaTime: number): void {
+  override Update(deltaTime: number): void {
+    super.Update(deltaTime);
     if (this.path.length === 0)
       return;
 
@@ -48,10 +50,25 @@ export class Block extends IGameObject {
   }
 
   Draw(deltaTime: number): void {
-    if (this.Color)
-      Game.CONTEXT.fillStyle = this.Color;
-
+    Game.CONTEXT.fillStyle = '#000000';
     Game.CONTEXT.fillRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
+    if (this.Color) {
+      Game.CONTEXT.strokeStyle = this.Color;
+      Game.CONTEXT.fillStyle = this.Color;
+    }
+    let percentFilled = (this.health / this.startingHealth);
+    
+    Game.CONTEXT.strokeRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
+    Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
+  }
+
+  override Load(): void {
+    super.Load();
+    this.startingHealth = this.health;
+  }
+
+  override SetDamage(damage: number) {
+    super.SetDamage(damage);
   }
 
   private path: Vector2[] = [];

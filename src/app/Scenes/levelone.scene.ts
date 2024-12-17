@@ -10,34 +10,62 @@ import { DefenseBaseLevel } from "./defensebase.scene";
 import { IScene } from "./scene.interface";
 
 export class LevelOneScene extends DefenseBaseLevel {
+  protected get TotalEnemies(): number {
+    return 50;
+  }
+  private playerHealth = 10;
+  protected get PlayerHealth(): number {
+    return this.playerHealth;
+  }
+  protected override ReduceHealth(reduceBy: number): void {
+    this.playerHealth -= reduceBy;
+  }
+  private startingCells = [new Vector2(0, 4)];
   protected get StartingCells(): Vector2[] {
-    return [new Vector2(0,3)];
+    return this.startingCells;
   }
+  private endingCells = [new Vector2(14, 4)];
   protected override get EndingCells(): Vector2[] {
-    return [new Vector2(12,3)]
+    return this.endingCells;
   }
+
   protected get TurretCellSize(): number {
     return 100;
   }
   protected get GridCellSize(): number {
     return 100;
   }
-  private selectedObstacle: IGameObject = new Wall();
+
+  private selectedObstacle: number = 1;
   protected get SelectedTurret(): IGameObject {
-    return this.selectedObstacle;
+    let obstacle: any;
+    if (this.selectedObstacle === 0) {
+      obstacle = new Wall();
+      obstacle.SetSize(this.GridCellSize, this.GridCellSize);
+    }
+    else if (this.selectedObstacle === 1) {
+      obstacle = new Turret();
+      obstacle.SetSize(this.GridCellSize, this.GridCellSize);
+    }
+    return obstacle;
   }
+
   gameObjects: IGameObject[] = [];
   protected override get GameObjects(): IGameObject[] {
     return this.gameObjects;
   }
-
-  secondsToStart: number = 5;
+  private enemiesSpawned = 0;
   secondsToMonster: number = 0;
   override Update(deltaTime: number): void {
+    if (this.IsGameOver) {
+      return;
+    }
+
     super.Update(deltaTime);
 
     if (this.secondsToStart <= 0) {
-      if (this.secondsToMonster <= 0) {
+      this.canBuild = false;
+      if (this.secondsToMonster <= 0 && this.enemiesSpawned < this.TotalEnemies) {
         console.log('NEW MONSTER');
         let mon = new Block();
         mon.SetLocation(this.StartingCells[0].X - this.GridCellSize, Game.CANVAS_HEIGHT / 2, 2);
@@ -45,8 +73,9 @@ export class LevelOneScene extends DefenseBaseLevel {
         mon.SetPath(this.ThePath, this.GridCellSize);
 
         this.LoadGameObject(mon);
+        this.enemiesSpawned++;
 
-        this.secondsToMonster = 5;
+        this.secondsToMonster = 1;
       }
       else {
         this.secondsToMonster -= deltaTime;
@@ -58,20 +87,22 @@ export class LevelOneScene extends DefenseBaseLevel {
 
     for (let i = 0; i < this.gameObjects.length; i++) {
       if (this.gameObjects[i].Location.X > Game.CANVAS_WIDTH) {
-        console.log('remove object');
-        this.gameObjects.splice(i, 1);
-        i--;
+        this.DestroyGameObject(this.gameObjects[i]);
+        this.ReduceHealth(1);
+        this.enemyCount++;
       }
     }
 
     if (this.wallButton.Pressed) {
-      this.selectedObstacle = new Wall();
-      this.selectedObstacle.SetSize(this.GridCellSize, this.GridCellSize);
+      this.selectedObstacle = 0;
     }
 
     if (this.turretButton.Pressed) {
-      this.selectedObstacle = new Turret();
-      this.selectedObstacle.SetSize(this.GridCellSize, this.GridCellSize);
+      this.selectedObstacle = 1;
+    }
+
+    if (this.startButton.Pressed) {
+      this.secondsToStart = 0;
     }
   }
 
@@ -81,6 +112,7 @@ export class LevelOneScene extends DefenseBaseLevel {
 
   private wallButton: Button = new Button();
   private turretButton: Button = new Button();
+  private startButton: Button = new Button();
   override Load(): void {
     super.Load();
 
@@ -92,7 +124,20 @@ export class LevelOneScene extends DefenseBaseLevel {
     this.turretButton.SetSize(this.GridCellSize, this.GridCellSize);
     this.turretButton.SetText('Turret');
 
+    this.startButton.SetLocation((this.GridCellSize * 3), 0, 10);
+    this.startButton.SetSize(this.GridCellSize, this.GridCellSize);
+    this.startButton.SetText('Start');
+
     this.LoadGameObject(this.wallButton);
     this.LoadGameObject(this.turretButton);
+    this.LoadGameObject(this.startButton);
+  }
+
+  protected SetCredits(): void {
+    this.credits = 100;
+  }
+
+  protected SetSecondsToStart(): void {
+    this.secondsToStart = 60;
   }
 }

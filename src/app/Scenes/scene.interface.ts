@@ -7,8 +7,19 @@ export abstract class IScene {
   protected abstract get GameObjects(): IGameObject[];
   abstract Load(): void;
 
+  private objectsToDestroy: IGameObject[] = [];
   private colliderLocations: IGameObject[] = [];
   Update(deltaTime: number): void {
+    for (let i = 0; i < this.objectsToDestroy.length; i++) {
+      for (let j = 0; j < this.GameObjects.length; j++) {
+        if (this.objectsToDestroy[i] === this.GameObjects[j]) {
+          this.GameObjects.splice(j, 1);
+          break;
+        }
+      }
+    }
+    this.objectsToDestroy = [];
+
     this.colliderLocations = [];
     this.GameObjects.forEach((obj) => {
       if (obj.CollisionBox) {
@@ -37,5 +48,9 @@ export abstract class IScene {
   LoadGameObject(gameObject: IGameObject) {
     gameObject.Load();
     this.GameObjects.push(gameObject);
+  }
+
+  DestroyGameObject(gameObject: IGameObject) {
+    this.objectsToDestroy.push(gameObject);
   }
 }

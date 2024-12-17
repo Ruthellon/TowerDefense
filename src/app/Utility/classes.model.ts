@@ -27,6 +27,10 @@ export class Vector3 {
     this.Y = y;
     this.Z = z;
   }
+
+  public distanceTo(other: Vector3): number {
+    return Math.sqrt(Math.pow((this.X - other.X), 2) + Math.pow((this.Y - other.Y), 2));
+  }
 }
 
 export class Rect {

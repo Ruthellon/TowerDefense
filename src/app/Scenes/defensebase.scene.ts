@@ -12,6 +12,17 @@ export abstract class DefenseBaseLevel extends IScene {
   protected abstract get StartingCells(): Vector2[];
   protected abstract get EndingCells(): Vector2[];
   protected abstract get SelectedTurret(): IGameObject;
+  protected abstract get PlayerHealth(): number;
+  protected abstract get TotalEnemies(): number;
+
+  protected abstract SetCredits(): void;
+  protected abstract SetSecondsToStart(): void;
+  protected abstract ReduceHealth(reduceBy: number): void;
+
+  protected enemyCount: number = 0;
+  protected get EnemyCount(): number {
+    return this.enemyCount;
+  }
 
   private thePath: Vector2[] = [];
   protected get ThePath(): Vector2[] {
@@ -34,30 +45,58 @@ export abstract class DefenseBaseLevel extends IScene {
   protected get GRID_RECT(): Rect {
     return this.gridRect;
   }
+  protected credits: number = 0;
+  protected get Credits(): number {
+    return this.credits;
+  }
+  protected secondsToStart: number = 0;
+  protected get SecondsToStart(): number {
+    return this.secondsToStart;
+  }
+  protected canBuild: boolean = true;
+  protected get CanBuild(): boolean {
+    return this.canBuild;
+  }
+  protected isGameOver: boolean = false;
+  public get IsGameOver(): boolean {
+    return this.isGameOver;
+  }
 
   private remainder: number = 0;
 
   Load(): void {
-    this.remainder = Math.floor((this.GRID_RECT.Height % this.GridCellSize) / 2);
+    this.SetCredits();
+    this.SetSecondsToStart();
+
+    this.remainder = Math.floor((Game.CANVAS_HEIGHT % this.GridCellSize) / 2);
 
     this.grid = [];
-    this.gridColumns = Math.floor(this.GRID_RECT.Width / this.GridCellSize);
-    this.gridRows = Math.floor(this.GRID_RECT.Height / this.GridCellSize);
+    this.gridColumns = Math.floor(Game.CANVAS_WIDTH / this.GridCellSize);
+    this.gridRows = Math.floor(Game.CANVAS_HEIGHT / this.GridCellSize);
     for (let i = 0; i < this.gridColumns; i++) {
       let row = [];
       for (let j = 0; j < this.gridRows; j++) {
-        row.push(0);
+        if (j === 0 || j === this.gridRows - 1 ||
+          i === 0 || i === this.gridColumns - 1 || i === this.gridColumns - 2)
+          row.push(1);
+        else
+          row.push(0);
       }
       this.grid.push(row);
     }
+
+    this.grid[this.StartingCells[0].X][this.StartingCells[0].Y] = 0;
+    this.grid[this.EndingCells[0].X][this.EndingCells[0].Y] = 0;
+    console.log(this.StartingCells);
+    console.log(this.grid);
 
     let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
 
     if (tempPath.length > 0) {
       this.thePath = [];
       for (let i = tempPath.length - 1; i >= 0; i--) {
-        let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize) + this.GRID_RECT.X,
-          (tempPath[i].Y * this.GridCellSize) + this.remainder + this.GRID_RECT.Y);
+        let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize),
+          (tempPath[i].Y * this.GridCellSize) + this.remainder);
 
         this.thePath.push(worldPoint);
       }
@@ -68,14 +107,49 @@ export abstract class DefenseBaseLevel extends IScene {
   private mouseCell: Vector2 | null = null;
   private mouseReset: boolean = true;
   override Update(deltaTime: number) {
+    if (this.PlayerHealth <= 0) {
+      this.isGameOver = true;
+      return;
+    }
+
+    if (this.enemyCount >= this.TotalEnemies) {
+      this.isGameOver = true;
+      return;
+    }
+
     super.Update(deltaTime);
+
+    let enemies: IGameObject[] = [];
+    let turrets: IGameObject[] = [];
+    this.GameObjects.forEach((obj) => {
+      if (obj.IsEnemy) {
+        enemies.push(obj);
+
+        if (obj.Health <= 0) {
+          if (obj.Value)
+            this.credits += obj.Value;
+
+          this.enemyCount++;
+          this.DestroyGameObject(obj);
+        }
+      }
+      else if (obj.CanShoot) {
+        turrets.push(obj);
+      }
+    });
+
+    if (enemies.length > 0 && turrets.length > 0) {
+      turrets.forEach((turret) => {
+        turret.FindTarget(enemies);
+      });
+    }
 
     if (!this.previousMouse || !this.previousMouse.isEqual(Game.MOUSE_LOCATION)) {
       this.previousMouse = Game.MOUSE_LOCATION;
 
       if (this.GRID_RECT.ContainsPoint(Game.MOUSE_LOCATION)) {
-        this.mouseCell = new Vector2(Math.floor((Game.MOUSE_LOCATION.X - this.GRID_RECT.X) / this.GridCellSize),
-          Math.floor(((Game.MOUSE_LOCATION.Y - this.GRID_RECT.Y) - this.remainder) / this.GridCellSize));
+        this.mouseCell = new Vector2(Math.floor((Game.MOUSE_LOCATION.X) / this.GridCellSize),
+          Math.floor(((Game.MOUSE_LOCATION.Y) - this.remainder) / this.GridCellSize));
       }
       else {
         this.mouseCell = null;
@@ -94,6 +168,51 @@ export abstract class DefenseBaseLevel extends IScene {
   override Draw(deltaTime: number) {
     Game.CONTEXT!.fillStyle = '#111111';
     Game.CONTEXT!.fillRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
+
+    if (this.isGameOver) {
+      Game.CONTEXT.fillStyle = '#ffffff';
+      Game.CONTEXT.font = '64px serif';
+      Game.CONTEXT.textAlign = "center";
+      Game.CONTEXT.fillText('GAME OVER', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2);
+
+      if (this.PlayerHealth <= 0) {
+        Game.CONTEXT.fillStyle = '#ffffff';
+        Game.CONTEXT.font = '32px serif';
+        Game.CONTEXT.textAlign = "center";
+        Game.CONTEXT.fillText('You Lost!', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 75);
+      }
+      else {
+        Game.CONTEXT.fillStyle = '#ffffff';
+        Game.CONTEXT.font = '32px serif';
+        Game.CONTEXT.textAlign = "center";
+        Game.CONTEXT.fillText('You Won!', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 75);
+      }
+
+      Game.CONTEXT.fillStyle = '#ffffff';
+      Game.CONTEXT.font = '32px serif';
+      Game.CONTEXT.textAlign = "center";
+      Game.CONTEXT.fillText('Refresh To Play Again', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
+      return;
+    }
+
+    if (this.secondsToStart > 0) {
+      Game.CONTEXT.fillStyle = '#ffffff';
+      Game.CONTEXT.font = '16px serif';
+      Game.CONTEXT.textAlign = "center";
+      Game.CONTEXT.fillText(`Start: ${this.secondsToStart.toFixed(2)}`, this.GridCellSize * 2.5, this.GridCellSize / 2);
+    }
+
+    if (this.PlayerHealth > 0) {
+      Game.CONTEXT.fillStyle = '#ffffff';
+      Game.CONTEXT.font = '16px serif';
+      Game.CONTEXT.textAlign = "center";
+      Game.CONTEXT.fillText(`Health: ${this.PlayerHealth}`, Game.CANVAS_WIDTH / 2, this.GridCellSize / 2);
+    }
+
+    Game.CONTEXT.fillStyle = '#ffffff';
+    Game.CONTEXT.font = '16px serif';
+    Game.CONTEXT.textAlign = "center";
+    Game.CONTEXT.fillText(`Credits: ${this.credits.toFixed(0)}`, Game.CANVAS_WIDTH - this.GridCellSize * 2.5, this.GridCellSize / 2);
 
     Game.CONTEXT.lineWidth = 1;
     let width = Math.ceil(this.GRID_RECT.Width / this.GridCellSize);
@@ -127,7 +246,7 @@ export abstract class DefenseBaseLevel extends IScene {
 
     if (this.mouseCell) {
       Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect((this.mouseCell.X * this.GridCellSize) + this.GRID_RECT.X, (this.mouseCell.Y * this.GridCellSize) + this.remainder + this.GRID_RECT.Y,
+      Game.CONTEXT.strokeRect((this.mouseCell.X * this.GridCellSize), (this.mouseCell.Y * this.GridCellSize) + this.remainder,
         this.GridCellSize, this.GridCellSize);
     }
 
@@ -140,7 +259,13 @@ export abstract class DefenseBaseLevel extends IScene {
     if (!this.grid)
       return false;
 
+    if (!this.canBuild)
+      return false;
+
     if (this.grid[cell.X][cell.Y] === 1)
+      return false;
+
+    if (this.SelectedTurret.Cost && this.Credits < this.SelectedTurret.Cost)
       return false;
 
     this.grid[cell.X][cell.Y] = 1;
@@ -157,15 +282,18 @@ export abstract class DefenseBaseLevel extends IScene {
       //});
       this.thePath = [];
       for (let i = tempPath.length - 1; i >= 0; i--) {
-        let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize) + this.GRID_RECT.X,
-          (tempPath[i].Y * this.GridCellSize) + this.remainder + this.GRID_RECT.Y);
+        let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize),
+          (tempPath[i].Y * this.GridCellSize) + this.remainder);
 
         this.thePath.push(worldPoint);
       }
 
       let newObstacle = this.SelectedTurret;
-      newObstacle.SetLocation((cell.X * this.GridCellSize) + this.GRID_RECT.X,
-        ((cell.Y * this.GridCellSize) + this.remainder + this.GRID_RECT.Y), 5);
+      newObstacle.SetLocation((cell.X * this.GridCellSize),
+        ((cell.Y * this.GridCellSize) + this.remainder), 5);
+
+      if (newObstacle.Cost)
+        this.credits -= newObstacle.Cost;
 
       this.LoadGameObject(newObstacle);
 

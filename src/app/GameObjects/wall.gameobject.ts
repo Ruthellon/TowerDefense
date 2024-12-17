@@ -5,8 +5,8 @@ import { IGameObject } from "./gameobject.interface";
 export class Wall extends IGameObject {
   override color = '#ff0000';
 
-  Update(deltaTime: number): void {
-
+  override Update(deltaTime: number): void {
+    super.Update(deltaTime);
   }
 
   Draw(deltaTime: number): void {
