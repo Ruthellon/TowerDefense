@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import { IScene } from './Scenes/scene.interface';
 import { LevelOneScene } from './Scenes/levelone.scene';
 import { Game } from './Utility/game.model';
+import { InstructionsScene } from './Scenes/instructions.scene';
 
 @Component({
     selector: 'app-root',
@@ -15,12 +16,6 @@ export class AppComponent implements AfterViewInit {
   @ViewChild('canvasElement', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
   private canvas!: HTMLCanvasElement;
   private context!: CanvasRenderingContext2D | null;
-
-  private scenes: IScene[] = [
-    new LevelOneScene()
-  ];
-
-  private currentScene: IScene;
 
   @HostListener('window:resize')
   onResize(): void {
@@ -48,7 +43,8 @@ export class AppComponent implements AfterViewInit {
   }
 
   constructor() {
-    this.currentScene = this.scenes[0];
+    Game.AddScenes('instructions', new InstructionsScene());
+    Game.AddScenes('levelone', new LevelOneScene());
   }
 
   ngAfterViewInit(): void {
@@ -61,21 +57,22 @@ export class AppComponent implements AfterViewInit {
     this.canvas.onpointerup = this.onMouseUp.bind(this);
     this.canvas.onpointermove = this.onMouseMove.bind(this);
 
-    this.currentScene.Load();
-
     this.adjustCanvasSize();
+
+    Game.SetTheScene('instructions');
+
     this.animate(0);
   }
 
   private update(deltaTime: number) {
-    this.currentScene.Update(deltaTime);
+    Game.TheScene.Update(deltaTime);
   }
 
   private draw(deltaTime: number) {
     if (Game.CONTEXT) {
       Game.CONTEXT.clearRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
 
-      this.currentScene.Draw(deltaTime);
+      Game.TheScene.Draw(deltaTime);
     }
   }
 

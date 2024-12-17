@@ -87,8 +87,6 @@ export abstract class DefenseBaseLevel extends IScene {
 
     this.grid[this.StartingCells[0].X][this.StartingCells[0].Y] = 0;
     this.grid[this.EndingCells[0].X][this.EndingCells[0].Y] = 0;
-    console.log(this.StartingCells);
-    console.log(this.grid);
 
     let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
 

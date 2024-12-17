@@ -1,3 +1,4 @@
+import { IScene } from "../Scenes/scene.interface";
 import { Vector2 } from "./classes.model";
 
 export class Game {
@@ -23,6 +24,26 @@ export class Game {
   private static mouseClick: boolean = false;
   public static get MOUSE_CLICKED(): boolean {
     return this.mouseClick;
+  }
+  private static theScene: any = [];
+  public static get TheScene(): IScene {
+    return this.theScene;
+  }
+
+  private static theScenes: any = [];
+  public static AddScenes(sceneName: string, sceneObj: IScene) {
+    this.theScenes.push({ name: sceneName, scene: sceneObj });
+  }
+
+  public static SetTheScene(scene: string): boolean {
+    for (let i = 0; i < this.theScenes.length; i++) {
+      if (this.theScenes[i].name === scene) {
+        this.theScene = this.theScenes[i].scene;
+        this.theScene.Load();
+        return true;
+      }
+    }
+    return false;
   }
 
   public static SetCanvasContext(canvas: CanvasRenderingContext2D): void {
