@@ -76,6 +76,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     defender.SetSize(this.GridCellSize, this.GridCellSize);
     return defender;
   }
+  protected get SelectedDefenderColor(): string {
+    if (this.selectedDefender === eDefenderTypes.BasicTurret) {
+      return '#888888';
+    }
+    else {
+      return '#ff0000';
+    }
+  }
   protected playerHealth: number = 0;
   protected ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;
@@ -312,7 +320,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     }
 
     if (this.mouseCell) {
-      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeStyle = this.SelectedDefenderColor;
       Game.CONTEXT.strokeRect((this.mouseCell.X * this.GridCellSize), (this.mouseCell.Y * this.GridCellSize) + this.remainder,
         this.GridCellSize, this.GridCellSize);
     }
@@ -333,6 +341,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     wallButton.SetSize(this.GridCellSize, this.GridCellSize);
     wallButton.SetText('Wall');
     wallButton.SetId(eDefenderTypes.Wall)
+    wallButton.SetAltColor('#ff0000');
     this.defenderButtons.push(wallButton);
     this.LoadGameObject(wallButton);
 
@@ -342,6 +351,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       turretButton.SetSize(this.GridCellSize, this.GridCellSize);
       turretButton.SetText('Turret');
       turretButton.SetId(eDefenderTypes.BasicTurret);
+      turretButton.SetAltColor('#888888');
       this.defenderButtons.push(turretButton);
       this.LoadGameObject(turretButton);
     }

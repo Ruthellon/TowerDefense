@@ -51,8 +51,8 @@ export class Button extends Base {
 
     Game.CONTEXT.lineWidth = 5;
     Game.CONTEXT.strokeStyle = this.altColor;
-    Game.CONTEXT.strokeRect(this.Location.X, this.Location.Y,
-      this.Size.X, this.Size.Y);
+    Game.CONTEXT.strokeRect(this.Location.X + 3, this.Location.Y + 3,
+      this.Size.X - 6, this.Size.Y - 6);
 
 
     Game.CONTEXT.fillStyle = '#000000';
@@ -74,5 +74,9 @@ export class Button extends Base {
 
   public SetId(id: number) {
     this.id = id;
+  }
+
+  public SetAltColor(color: string) {
+    this.altColor = color;
   }
 }
