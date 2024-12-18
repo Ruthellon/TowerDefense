@@ -4,8 +4,12 @@ import { Base } from "./base.gameobject";
 export abstract class Defender extends Base {
   public abstract get Cost(): number | null;
   public abstract get ShootingCooldown(): number;
-  public abstract get Damage(): number;
   public abstract get Range(): number;
+
+  protected damage: number = 0;
+  public get Damage(): number {
+    return this.damage;
+  }
 
   protected enemyInRange: Attacker | null = null;
   protected get EnemyInRange(): Attacker | null {
@@ -57,5 +61,9 @@ export abstract class Defender extends Base {
         }
       }
     }
+  }
+
+  public SetDamage(damage: number): void {
+    this.damage = damage;
   }
 }

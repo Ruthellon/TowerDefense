@@ -11,20 +11,31 @@ export class InstructionsScene extends BaseLevel {
     return this.gameObjects;
   }
 
-  startButton = new Button();
+  startLevel1Button = new Button();
+  startLevel2Button = new Button();
   Load(): void {
-    this.startButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, Game.CANVAS_HEIGHT - 200, 10);
-    this.startButton.SetSize(200, 100);
-    this.startButton.SetText('Start Game');
+    this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 300, Game.CANVAS_HEIGHT - 200, 10);
+    this.startLevel1Button.SetSize(200, 100);
+    this.startLevel1Button.SetText('Start Level 1');
+    this.LoadGameObject(this.startLevel1Button);
 
-    this.LoadGameObject(this.startButton);
+    this.startLevel2Button.SetLocation((Game.CANVAS_WIDTH / 2) + 100, Game.CANVAS_HEIGHT - 200, 10);
+    this.startLevel2Button.SetSize(200, 100);
+    this.startLevel2Button.SetText('Start Level 2');
+    this.LoadGameObject(this.startLevel2Button);
+
   }
 
   override Update(deltaTime: number) {
     super.Update(deltaTime);
 
-    if (this.startButton.Pressed) {
+    if (this.startLevel1Button.Pressed) {
       Game.SetTheScene('levelone');
+      return;
+    }
+    if (this.startLevel2Button.Pressed) {
+      Game.SetTheScene('leveltwo');
+      return;
     }
   }
 

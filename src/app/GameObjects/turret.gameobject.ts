@@ -11,10 +11,6 @@ export class Turret extends Defender {
   public override get ShootingCooldown(): number {
     return this.shootingCooldown;
   }
-  private damage = 5;
-  public override get Damage(): number {
-    return this.damage;
-  }
   private range = 150;
   public override get Range(): number {
     return this.range;
@@ -23,7 +19,9 @@ export class Turret extends Defender {
     return null;
   }
   public override Load(): void {
+    this.SetDamage(3);
   }
+
   public override OnCollision(collision: IGameObject): void {
   }
 

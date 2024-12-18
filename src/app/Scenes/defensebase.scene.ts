@@ -29,6 +29,9 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected abstract get SecondsBetweenMonsters(): number;
   protected abstract get SecondsToStart(): number;
 
+  protected abstract CreateNewAttacker(attackerCount: number): Attacker;
+  protected abstract PlayerWonScreen(): void;
+
   protected gameObjects: IGameObject[] = [];
   protected get GameObjects(): IGameObject[] {
     return this.gameObjects;
@@ -53,10 +56,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected get GridRows(): number {
     return this.gridRows;
   }
-  private gridRect = new Rect(100, 100, Game.CANVAS_WIDTH - 300, Game.CANVAS_HEIGHT - 200);
-  protected get GRID_RECT(): Rect {
-    return this.gridRect;
-  }
   protected canBuild: boolean = true;
   protected get CanBuild(): boolean {
     return this.canBuild;
@@ -80,6 +79,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected playerHealth: number = 0;
   protected ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;
+  }
+
+  private gridRect = new Rect(100, 100, Game.CANVAS_WIDTH - 300, Game.CANVAS_HEIGHT - 200);
+  private get GRID_RECT(): Rect {
+    return this.gridRect;
   }
 
   private remainder: number = 0;
@@ -114,13 +118,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     if (tempPath.length > 0) {
       this.thePath = [];
       for (let i = tempPath.length - 1; i >= 0; i--) {
+        this.grid[tempPath[i].X][tempPath[i].Y] = 2;
         let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize),
           (tempPath[i].Y * this.GridCellSize) + this.remainder);
 
         this.thePath.push(worldPoint);
       }
 
-      this.lastCoordinate = new Vector3(this.thePath[this.thePath.length - 1].X, this.thePath[this.thePath.length - 1].Y, 0);
+      this.lastCoordinate = new Vector3(this.thePath[this.thePath.length - 1].X + (this.GridCellSize / 2), this.thePath[this.thePath.length - 1].Y + (this.GridCellSize / 2), 0);
     }
   }
   private secondsToStart = 0;
@@ -147,9 +152,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       this.canBuild = false;
       if (this.secondsSinceLastMonster <= 0 && this.enemiesSpawned < this.TotalEnemies) {
         console.log('NEW MONSTER');
-        let mon = new Block();
+        let mon = this.CreateNewAttacker(this.enemiesSpawned);
         mon.SetLocation(this.StartingCells[0].X - this.GridCellSize, Game.CANVAS_HEIGHT / 2, 2);
-        mon.SetSize(40, 40);
         mon.SetPath(this.ThePath, this.GridCellSize);
 
         this.LoadGameObject(mon);
@@ -169,7 +173,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     for (let i = 0; i < this.attackers.length; i++) {
       let attacker = this.attackers[i];
       let attackerDied = false;
-      if (attacker.Location.distanceTo(this.lastCoordinate) < 10) {
+      if (attacker.CenterMassLocation.distanceTo(this.lastCoordinate) < 10) {
         this.ReduceHealth(1);
 
         attackerDied = true;
@@ -238,25 +242,23 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       Game.CONTEXT.fillStyle = '#ffffff';
       Game.CONTEXT.font = '64px serif';
       Game.CONTEXT.textAlign = "center";
-      Game.CONTEXT.fillText('GAME OVER', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2);
+      Game.CONTEXT.fillText('ROUND OVER', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2);
 
       if (this.playerHealth <= 0) {
         Game.CONTEXT.fillStyle = '#ffffff';
         Game.CONTEXT.font = '32px serif';
         Game.CONTEXT.textAlign = "center";
         Game.CONTEXT.fillText('You Lost!', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 75);
-      }
-      else {
+
         Game.CONTEXT.fillStyle = '#ffffff';
         Game.CONTEXT.font = '32px serif';
         Game.CONTEXT.textAlign = "center";
-        Game.CONTEXT.fillText('You Won!', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 75);
+        Game.CONTEXT.fillText('Refresh To Play Again', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
+      }
+      else {
+        this.PlayerWonScreen();
       }
 
-      Game.CONTEXT.fillStyle = '#ffffff';
-      Game.CONTEXT.font = '32px serif';
-      Game.CONTEXT.textAlign = "center";
-      Game.CONTEXT.fillText('Refresh To Play Again', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
       return;
     }
 
