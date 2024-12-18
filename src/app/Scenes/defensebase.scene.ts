@@ -121,15 +121,18 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     super.Update(deltaTime);
 
-    this.attackers.forEach((obj) => {
-      if (obj.Health <= 0) {
-        if (obj.Value)
-          this.credits += obj.Value;
+    for (let i = 0; i < this.attackers.length; i++) {
+      let attacker = this.attackers[i];
+      if (attacker.Health <= 0) {
+        if (attacker.Value)
+          this.credits += attacker.Value;
 
         this.enemyCount++;
-        this.DestroyGameObject(obj);
+        this.DestroyGameObject(attacker);
+        this.attackers.splice(i, 1);
+        i--;
       }
-    });
+    };
     
     if (this.attackers.length > 0 && this.defenders.length > 0) {
       this.defenders.forEach((turret) => {
@@ -190,20 +193,20 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     if (this.secondsToStart > 0) {
       Game.CONTEXT.fillStyle = '#ffffff';
-      Game.CONTEXT.font = '16px serif';
+      Game.CONTEXT.font = '24px serif';
       Game.CONTEXT.textAlign = "center";
-      Game.CONTEXT.fillText(`Start: ${this.secondsToStart.toFixed(2)}`, this.GridCellSize * 2.5, this.GridCellSize / 2);
+      Game.CONTEXT.fillText(`Start: ${this.secondsToStart.toFixed(2)}`, this.GridCellSize * 2, this.GridCellSize / 2);
     }
 
     if (this.PlayerHealth > 0) {
       Game.CONTEXT.fillStyle = '#ffffff';
-      Game.CONTEXT.font = '16px serif';
+      Game.CONTEXT.font = '24px serif';
       Game.CONTEXT.textAlign = "center";
       Game.CONTEXT.fillText(`Health: ${this.PlayerHealth}`, Game.CANVAS_WIDTH / 2, this.GridCellSize / 2);
     }
 
     Game.CONTEXT.fillStyle = '#ffffff';
-    Game.CONTEXT.font = '16px serif';
+    Game.CONTEXT.font = '24px serif';
     Game.CONTEXT.textAlign = "center";
     Game.CONTEXT.fillText(`Credits: ${this.credits.toFixed(0)}`, Game.CANVAS_WIDTH - this.GridCellSize * 2.5, this.GridCellSize / 2);
 

@@ -10,7 +10,7 @@ export class Block extends Attacker {
   }
   public OnCollision(collision: IGameObject): void {
   }
-  override health = 60;
+  override health = 55;
 
   speedX: number = 1;
   speedY: number = 1;
@@ -33,7 +33,7 @@ export class Block extends Attacker {
 
     let distanceTo = this.target.distanceTo(new Vector2(this.location.X, this.location.Y));
 
-    if (distanceTo <= 1) {
+    if (distanceTo <= 1 || distanceTo > 1000) {
       this.pointOnPath++;
 
       if (this.pointOnPath < this.path.length) {

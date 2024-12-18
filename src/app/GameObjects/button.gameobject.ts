@@ -52,8 +52,9 @@ export class Button extends Base {
 
 
     Game.CONTEXT.fillStyle = '#000000';
-    Game.CONTEXT.font = '16px serif';
+    Game.CONTEXT.font = '24px serif';
     Game.CONTEXT.textAlign = "center";
+    Game.CONTEXT.textBaseline = "middle";
     Game.CONTEXT.fillText(this.text, this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2));
 
     Game.CONTEXT.lineWidth = 1;
