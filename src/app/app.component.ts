@@ -58,6 +58,7 @@ export class AppComponent implements AfterViewInit {
     this.adjustCanvasSize();
 
     Game.SetTheScene('instructions');
+    Game.SetStartingCredits(100);
 
     this.animate(0);
   }

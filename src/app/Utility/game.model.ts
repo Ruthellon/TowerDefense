@@ -31,6 +31,10 @@ export class Game {
   public static get TheScene(): IScene {
     return this.theScene;
   }
+  private static credits: number = 0;
+  public static get Credits(): number {
+    return this.credits;
+  }
 
   public static SetTheScene(scene: string): boolean {
     if (scene === 'instructions') {
@@ -65,5 +69,21 @@ export class Game {
 
   public static SetHeight(height: number): void {
     this.canvas_height = height;
+  }
+
+  public static SetStartingCredits(credits: number): void {
+    this.credits = credits;
+  }
+
+  public static SubtractCredits(subtrahend: number): void {
+    this.credits -= subtrahend;
+
+    if (this.credits <= 0) {
+      this.credits = 0;
+    }
+  }
+
+  public static AddCredits(addend: number): void {
+    this.credits += addend;
   }
 }

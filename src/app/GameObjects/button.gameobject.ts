@@ -10,6 +10,10 @@ export class Button extends Base {
   public override get Value(): number | null {
     return null;
   }
+  private id = -1;
+  public get Id(): number {
+    return this.id;
+  }
 
   override color = '#999999';
   private altColor = '#ffffff'
@@ -66,5 +70,9 @@ export class Button extends Base {
 
   public SetText(text: string) {
     this.text = text;
+  }
+
+  public SetId(id: number) {
+    this.id = id;
   }
 }
