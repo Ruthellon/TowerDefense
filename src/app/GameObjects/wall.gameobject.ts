@@ -6,6 +6,12 @@ import { IGameObject } from "./gameobject.interface";
 
 
 export class Wall extends Defender {
+  public get UpgradeCost(): number {
+    return 0;
+  }
+  public get CanUpgrade(): boolean {
+    return false;
+  }
   public override get Cost(): number | null {
     return 0;
   }
@@ -22,15 +28,18 @@ export class Wall extends Defender {
     return null;
   }
   public override Load(): void {
+    super.Load();
   }
   public override OnCollision(collision: IGameObject): void {
   }
   override color = '#ff0000';
 
   override Update(deltaTime: number): void {
+    super.Update(deltaTime);
   }
 
   Draw(deltaTime: number): void {
+
     Game.CONTEXT.fillStyle = this.color;
     Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,
       this.Size.X, this.Size.Y);

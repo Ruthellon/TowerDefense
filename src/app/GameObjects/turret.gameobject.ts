@@ -3,6 +3,14 @@ import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 export class Turret extends Defender {
+  private upgradeCost = 5;
+  public get UpgradeCost(): number {
+    return this.upgradeCost;
+  }
+  private canUpgrade = true;
+  public get CanUpgrade(): boolean {
+    return this.canUpgrade;
+  }
   private cost = 10;
   public override get Cost(): number | null {
     return this.cost;
@@ -19,10 +27,47 @@ export class Turret extends Defender {
     return null;
   }
   public override Load(): void {
+    super.Load();
     this.SetDamage(3);
   }
 
   public override OnCollision(collision: IGameObject): void {
+  }
+
+  private level = 1;
+  public override Upgrade() {
+    if (this.level === 1) {
+      this.level = 2;
+      this.color = '#22dd22';
+      this.range = 175;
+      this.damage = 4;
+      this.shootingCooldown = .9;
+      this.upgradeCost = 10;
+    }
+    else if (this.level === 2) {
+      this.level = 3;
+      this.color = '#2222dd';
+      this.range = 200;
+      this.damage = 5;
+      this.shootingCooldown = .8;
+      this.upgradeCost = 15;
+    }
+    else if (this.level === 3) {
+      this.level = 4;
+      this.color = '#dd22dd';
+      this.range = 225;
+      this.damage = 6;
+      this.shootingCooldown = .7;
+      this.upgradeCost = 25;
+    }
+    else if (this.level === 4) {
+      this.level = 5;
+      this.canUpgrade = false;
+      this.color = '#dddd22';
+      this.range = 250;
+      this.damage = 10;
+      this.shootingCooldown = .4;
+    }
   }
 
   override color = '#888888';

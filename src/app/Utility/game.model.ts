@@ -1,5 +1,6 @@
 import { InstructionsScene } from "../Scenes/instructions.scene";
 import { LevelOneScene } from "../Scenes/levelone.scene";
+import { LevelThreeScene } from "../Scenes/levelthree.scene";
 import { LevelTwoScene } from "../Scenes/leveltwo.scene";
 import { IScene } from "../Scenes/scene.interface";
 import { Vector2 } from "./classes.model";
@@ -46,6 +47,9 @@ export class Game {
     }
     else if (scene === 'leveltwo') {
       this.theScene = new LevelTwoScene();
+    }
+    else if (scene === 'levelthree') {
+      this.theScene = new LevelThreeScene();
     }
     else {
       return false;
