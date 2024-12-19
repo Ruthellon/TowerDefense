@@ -11,6 +11,10 @@ export class Turret extends Defender {
   public get CanUpgrade(): boolean {
     return this.canUpgrade;
   }
+  private level = 1;
+  public get Level(): number {
+    return this.level;
+  }
   private cost = 10;
   public override get Cost(): number | null {
     return this.cost;
@@ -34,7 +38,6 @@ export class Turret extends Defender {
   public override OnCollision(collision: IGameObject): void {
   }
 
-  private level = 1;
   public override Upgrade() {
     if (this.level === 1) {
       this.level = 2;

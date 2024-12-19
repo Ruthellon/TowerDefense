@@ -5,6 +5,7 @@ import { Defender } from "../GameObjects/defender.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Turret } from "../GameObjects/turret.gameobject";
 import { Wall } from "../GameObjects/wall.gameobject";
+import { IAngryElfAPIService } from "../Services/angryelfapi.service.interface";
 import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { PathFinder } from "../Utility/pathfinding.service";
@@ -144,6 +145,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private mouseReset: boolean = true;
   private lastCoordinate = new Vector3(0, 0, 0);
   private selectedDefender: Defender | null = null;
+  private sentAPIMessage: boolean = false;
   override Update(deltaTime: number) {
     if (this.playerHealth <= 0) {
       this.isGameOver = true;
@@ -152,6 +154,19 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     if (this.enemyCount >= this.TotalEnemies) {
       this.isGameOver = true;
+
+      if (!this.sentAPIMessage) {
+        this.sentAPIMessage = true;
+        let level = 0;
+        if (this.CurrentSceneName === 'levelone')
+          level = 1;
+        else if (this.CurrentSceneName === 'leveltwo')
+          level = 2;
+        else if (this.CurrentSceneName === 'levelthree')
+          level = 3;
+        Game.TheAPI.SendWinInfo(level, this.playerHealth, 1, this.gatherGridInfo());
+      }
+
       return;
     }
 
@@ -501,5 +516,41 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
       return true;
     }
+  }
+
+  private gatherGridInfo(): any {
+    let rows = [];
+    for (let y = 0; y < this.grid[0].length; y++) {
+      let cells = [];
+      for (let x = 0; x < this.grid.length; x++) {
+        if (this.grid[x][y] === 1) {
+          let found = false;
+          for (let i = 0; i < this.defenders.length; i++) {
+            let xx = Math.floor(this.defenders[i].CenterMassLocation.X / this.GridCellSize);
+            let yy = Math.floor(this.defenders[i].CenterMassLocation.Y / this.GridCellSize);
+
+            if (x === xx && y === yy) {
+              found = true;
+              let cell = { defenderType: (this.defenders[i].CanUpgrade ? 3 : 2), defenderLevel: this.defenders[i].Level };
+              cells.push(cell);
+            }
+          }
+          if (!found) {
+            let cell = { defenderType: 0, defenderLevel: 0 };
+            cells.push(cell);
+          }
+        }
+        else if (this.grid[x][y] === 2) {
+          let cell = { defenderType: 1, defenderLevel: 0 };
+          cells.push(cell);
+        }
+        else {
+          let cell = { defenderType: 0, defenderLevel: 0 };
+          cells.push(cell);
+        }
+      }
+      rows.push({ cells: cells });
+    }
+    return { rows: rows };
   }
 }

@@ -12,6 +12,9 @@ export class Wall extends Defender {
   public get CanUpgrade(): boolean {
     return false;
   }
+  public get Level(): number {
+    return 0;
+  }
   public override get Cost(): number | null {
     return 1;
   }

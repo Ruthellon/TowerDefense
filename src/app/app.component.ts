@@ -3,6 +3,7 @@ import { IScene } from './Scenes/scene.interface';
 import { LevelOneScene } from './Scenes/levelone.scene';
 import { Game } from './Utility/game.model';
 import { InstructionsScene } from './Scenes/instructions.scene';
+import { IAngryElfAPIService } from './Services/angryelfapi.service.interface';
 
 @Component({
     selector: 'app-root',
@@ -33,7 +34,6 @@ export class AppComponent implements AfterViewInit {
     if (e.isPrimary) {
       let x = e.offsetX / this.multiplierX;
       let y = e.offsetY / this.multiplierY;
-      console.log(`( ${x} , ${y} )`);
       Game.SetMouseLocation(x, y);
     }
   }
@@ -50,7 +50,8 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  constructor() {
+  constructor(private api: IAngryElfAPIService) {
+
   }
 
   ngAfterViewInit(): void {
@@ -65,6 +66,7 @@ export class AppComponent implements AfterViewInit {
 
     this.adjustCanvasSize();
 
+    Game.SetTheAPI(this.api);
     Game.SetTheScene('instructions');
     Game.SetStartingCredits(100);
 

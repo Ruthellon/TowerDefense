@@ -3,6 +3,7 @@ import { LevelOneScene } from "../Scenes/levelone.scene";
 import { LevelThreeScene } from "../Scenes/levelthree.scene";
 import { LevelTwoScene } from "../Scenes/leveltwo.scene";
 import { IScene } from "../Scenes/scene.interface";
+import { IAngryElfAPIService } from "../Services/angryelfapi.service.interface";
 import { Vector2 } from "./classes.model";
 
 export class Game {
@@ -36,6 +37,15 @@ export class Game {
   private static credits: number = 0;
   public static get Credits(): number {
     return this.credits;
+  }
+
+  private static api: IAngryElfAPIService;
+  public static get TheAPI(): IAngryElfAPIService {
+    return this.api;
+  }
+
+  public static SetTheAPI(api: IAngryElfAPIService) {
+    this.api = api;
   }
 
   public static SetTheScene(scene: string): boolean {
