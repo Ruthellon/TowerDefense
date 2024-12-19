@@ -250,7 +250,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         if (this.selectedDefender.Cost) {
           if (this.canBuild)
             Game.AddCredits(this.selectedDefender.Cost);
-          else
+          else if (this.selectedDefender.Cost > 1)
             Game.AddCredits(1);
         }
 
