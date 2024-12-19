@@ -67,7 +67,7 @@ export class LevelOneScene extends DefenseBaseLevel {
 
   override Load(): void {
     super.Load();
-
+    Game.SetStartingCredits(100);
     this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, 50);
     this.nextLevelButton.SetSize(200, 100);
     this.nextLevelButton.SetText('Start Level 2');

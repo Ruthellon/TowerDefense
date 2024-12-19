@@ -124,7 +124,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     this.calculatePath();
 
-    this.lastCoordinate = new Vector3(this.thePath[this.thePath.length - 1].X + (this.GridCellSize / 2), this.thePath[this.thePath.length - 1].Y + (this.GridCellSize / 2), 0);
+    this.lastCoordinate = new Vector3((this.EndingCells[0].X * this.GridCellSize) + (this.GridCellSize / 2), (this.EndingCells[0].Y * this.GridCellSize) + (this.GridCellSize / 2), 0);
   }
 
   private secondsToStart = 0;
@@ -187,7 +187,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     for (let i = 0; i < this.attackers.length; i++) {
       let attacker = this.attackers[i];
       let attackerDied = false;
-      if (attacker.CenterMassLocation.distanceTo(this.lastCoordinate) < 25) {
+      if (attacker.CenterMassLocation.distanceTo(this.lastCoordinate) <= 25) {
         this.ReduceHealth(1);
 
         attackerDied = true;

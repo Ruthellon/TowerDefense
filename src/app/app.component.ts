@@ -68,7 +68,7 @@ export class AppComponent implements AfterViewInit {
 
     Game.SetTheAPI(this.api);
     Game.SetTheScene('instructions');
-    Game.SetStartingCredits(100);
+    Game.SetStartingCredits(0);
 
     this.animate(0);
   }
