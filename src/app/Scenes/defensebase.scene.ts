@@ -122,21 +122,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.grid[this.StartingCells[0].X][this.StartingCells[0].Y] = 0;
     this.grid[this.EndingCells[0].X][this.EndingCells[0].Y] = 0;
 
-    let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
+    this.calculatePath();
 
-    if (tempPath.length > 0) {
-      this.thePath = [];
-      for (let i = tempPath.length - 1; i >= 0; i--) {
-        this.grid[tempPath[i].X][tempPath[i].Y] = 2;
-        let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize),
-          (tempPath[i].Y * this.GridCellSize) + this.remainder);
-
-        this.thePath.push(worldPoint);
-      }
-
-      this.lastCoordinate = new Vector3(this.thePath[this.thePath.length - 1].X + (this.GridCellSize / 2), this.thePath[this.thePath.length - 1].Y + (this.GridCellSize / 2), 0);
-    }
+    this.lastCoordinate = new Vector3(this.thePath[this.thePath.length - 1].X + (this.GridCellSize / 2), this.thePath[this.thePath.length - 1].Y + (this.GridCellSize / 2), 0);
   }
+
   private secondsToStart = 0;
   private enemiesSpawned = 0;
   private secondsSinceLastMonster = 0;
@@ -197,7 +187,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     for (let i = 0; i < this.attackers.length; i++) {
       let attacker = this.attackers[i];
       let attackerDied = false;
-      if (attacker.CenterMassLocation.distanceTo(this.lastCoordinate) < 10) {
+      if (attacker.CenterMassLocation.distanceTo(this.lastCoordinate) < 25) {
         this.ReduceHealth(1);
 
         attackerDied = true;
@@ -253,6 +243,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.defenders.forEach((defender) => {
       if (defender.Pressed) {
         this.selectedDefender = defender;
+        this.upgradeButton.SetText(`Upgarde (${this.selectedDefender.UpgradeCost}cr)`);
       }
     });
 
@@ -269,6 +260,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
             Game.AddCredits(1);
         }
 
+        let gridX = Math.floor(this.selectedDefender.CenterMassLocation.X / this.GridCellSize);
+        let gridY = Math.floor(this.selectedDefender.CenterMassLocation.Y / this.GridCellSize);
+
+        this.grid[gridX][gridY] = 0;
+
+        this.calculatePath();
+
         this.DestroyGameObject(this.selectedDefender);
         let i = this.defenders.findIndex((def) => def === this.selectedDefender);
         this.attackers.splice(i, 1);
@@ -278,6 +276,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         if (Game.Credits >= this.selectedDefender.UpgradeCost) {
           Game.SubtractCredits(this.selectedDefender.UpgradeCost);
           this.selectedDefender.Upgrade();
+
+          this.upgradeButton.SetText(`Upgarde (${this.selectedDefender.UpgradeCost}cr)`);
         }
       }
     }
@@ -439,7 +439,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     this.upgradeButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 2), this.GridCellSize * 6, 10);
     this.upgradeButton.SetSize(this.GridCellSize * 2, this.GridCellSize);
-    this.upgradeButton.SetText('Upgrade');
+    this.upgradeButton.SetText(`Upgrade`);
     this.upgradeButton.Load();
 
     this.deleteButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 2), this.GridCellSize * 5, 10);
@@ -477,33 +477,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     }
 
     this.grid[cell.X][cell.Y] = 1;
-    let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
 
-    if (tempPath.length === 0) {
-      this.grid[cell.X][cell.Y] = 0;
-      return false;
-    }
-    else {
-      //let allGood = true;
-      //this.GameObjects.forEach((obj) => {
-      //  allGood = allGood && obj.UpdatePath(this.grid, this.GridCellSize, this.EndingCells[0])
-      //});
-      this.thePath = [];
-      for (let x = 0; x < this.grid.length; x++) {
-        for (let y = 0; y < this.grid[x].length; y++) {
-          if (this.grid[x][y] === 2)
-            this.grid[x][y] = 0;
-        }
-      }
-
-      for (let i = tempPath.length - 1; i >= 0; i--) {
-        this.grid[tempPath[i].X][tempPath[i].Y] = 2;
-        let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize),
-          (tempPath[i].Y * this.GridCellSize) + this.remainder);
-
-        this.thePath.push(worldPoint);
-      }
-
+    if (this.calculatePath()) {
       let newObstacle = newDefender;
       newObstacle.SetLocation((cell.X * this.GridCellSize),
         ((cell.Y * this.GridCellSize) + this.remainder), 5);
@@ -516,6 +491,39 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
       return true;
     }
+    else {
+      this.grid[cell.X][cell.Y] = 0;
+      return false;
+    }
+  }
+
+  private calculatePath(): boolean {
+    let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[0], this.EndingCells[0]);
+
+    if (tempPath.length === 0)
+      return false;
+
+    //let allGood = true;
+    //this.GameObjects.forEach((obj) => {
+    //  allGood = allGood && obj.UpdatePath(this.grid, this.GridCellSize, this.EndingCells[0])
+    //});
+    this.thePath = [];
+    for (let x = 0; x < this.grid.length; x++) {
+      for (let y = 0; y < this.grid[x].length; y++) {
+        if (this.grid[x][y] === 2)
+          this.grid[x][y] = 0;
+      }
+    }
+
+    for (let i = tempPath.length - 1; i >= 0; i--) {
+      this.grid[tempPath[i].X][tempPath[i].Y] = 2;
+      let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize),
+        (tempPath[i].Y * this.GridCellSize) + this.remainder);
+
+      this.thePath.push(worldPoint);
+    }
+
+    return true;
   }
 
   private gatherGridInfo(): any {
