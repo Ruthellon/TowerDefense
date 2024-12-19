@@ -19,29 +19,10 @@ export class Button extends Base {
   private altColor = '#ffffff'
   private text = 'PUSH ME';
 
-  private pressed: boolean = false;
-  public get Pressed(): boolean {
-    if (this.pressed) {
-      this.pressed = false;
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-
   private buttonRect = new Rect(0, 0, 0, 0);
 
-  private downClicked = false;
-  override Update(deltaTime: number): void {
-    if (Game.MOUSE_CLICKED && this.buttonRect.ContainsPoint(Game.MOUSE_LOCATION)) {
-      this.pressed = false;
-      this.downClicked = true;
-    }
-    else if (this.downClicked && !Game.MOUSE_CLICKED) {
-      this.downClicked = false;
-      this.pressed = true;
-    }
+  public Update(deltaTime: number): void {
+    this.CheckIfClicked();
   }
 
   Draw(deltaTime: number): void {
@@ -62,10 +43,6 @@ export class Button extends Base {
     Game.CONTEXT.fillText(this.text, this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2));
 
     Game.CONTEXT.lineWidth = 1;
-  }
-
-  override Load() {
-    this.buttonRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
   public SetText(text: string) {

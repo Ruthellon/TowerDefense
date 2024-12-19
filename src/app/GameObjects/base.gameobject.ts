@@ -1,4 +1,5 @@
 import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
+import { Game } from "../Utility/game.model";
 import { IGameObject } from "./gameobject.interface";
 
 
@@ -13,6 +14,19 @@ export abstract class Base extends IGameObject {
   public get Size(): Vector2 {
     return this.size;
   }
+  protected pressed: boolean = false;
+  public get Pressed(): boolean {
+    if (this.pressed) {
+      this.pressed = false;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  public get CenterMassLocation(): Vector3 {
+    return new Vector3(this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2), this.location.Z);
+  }
 
   protected color: string | null = null;
   protected get Color(): string | null {
@@ -26,9 +40,13 @@ export abstract class Base extends IGameObject {
   public get CollisionBox(): Rect | null {
     return this.collisionBox;
   }
+  protected objectRect: Rect = new Rect(0, 0, 0, 0);
+  protected get ObjectRect(): Rect {
+    return this.objectRect;
+  }
 
-  public get CenterMassLocation(): Vector3 {
-    return new Vector3(this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2), this.location.Z);
+  public Load() {
+    this.objectRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
   public SetLocation(x: number, y: number, z: number): void {
@@ -49,5 +67,16 @@ export abstract class Base extends IGameObject {
 
   public SetCollisionBox(x: number, y: number, width: number, height: number): void {
     this.collisionBox = new Rect(x, y, width, height);
+  }
+  private downClicked = false;
+  protected CheckIfClicked(): void {
+    if (Game.MOUSE_CLICKED && this.ObjectRect.ContainsPoint(Game.MOUSE_LOCATION)) {
+      this.pressed = false;
+      this.downClicked = true;
+    }
+    else if (this.downClicked && !Game.MOUSE_CLICKED && this.ObjectRect.ContainsPoint(Game.MOUSE_LOCATION)) {
+      this.downClicked = false;
+      this.pressed = true;
+    }
   }
 }

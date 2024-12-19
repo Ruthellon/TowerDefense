@@ -3,8 +3,14 @@ import { Base } from "./base.gameobject";
 
 export abstract class Defender extends Base {
   public abstract get Cost(): number | null;
+  public abstract get CanUpgrade(): boolean;
+  public abstract get UpgradeCost(): number;
   public abstract get ShootingCooldown(): number;
   public abstract get Range(): number;
+
+  public Upgrade(): void {
+
+  }
 
   protected damage: number = 0;
   public get Damage(): number {
@@ -49,6 +55,8 @@ export abstract class Defender extends Base {
         this.enemyInRange = null;
       }
     }
+
+    this.CheckIfClicked();
   }
 
   public FindTarget(enemies: Attacker[]) {
