@@ -1,9 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { IScene } from './Scenes/scene.interface';
-import { LevelOneScene } from './Scenes/levelone.scene';
 import { Game } from './Utility/game.model';
-import { InstructionsScene } from './Scenes/instructions.scene';
 import { IAngryElfAPIService } from './Services/angryelfapi.service.interface';
+import { version } from '../../package.json'
 
 @Component({
     selector: 'app-root',
@@ -13,6 +11,7 @@ import { IAngryElfAPIService } from './Services/angryelfapi.service.interface';
 })
 export class AppComponent implements AfterViewInit {
   title = 'TowerDefense';
+  version = version;
 
   @ViewChild('canvasElement', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
   private canvas!: HTMLCanvasElement;
@@ -82,6 +81,12 @@ export class AppComponent implements AfterViewInit {
       Game.CONTEXT.clearRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
 
       Game.TheScene.Draw(deltaTime);
+
+      Game.CONTEXT.fillStyle = '#ffffff';
+      Game.CONTEXT.font = '18px serif';
+      Game.CONTEXT.textAlign = "center";
+      Game.CONTEXT.fillText(`FPS: ${this.fps.toFixed(0).padStart(3, '0')}`, 50, 25);
+      Game.CONTEXT.fillText(`V: ${this.version}`, 50, 50);
     }
   }
 

@@ -1,67 +1,22 @@
-/* Flex Container */
 .flex-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px; /* Space between canvas and controls */
+  flex-wrap: nowrap;
   height: 100vh; /* Full viewport height */
-  overflow: hidden; /* Prevents unwanted scrollbars */
+  gap: 16px;
 }
 
 /* Canvas Section */
 .canvas-container {
+  flex: 1; /* Takes up available space */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1600px; /* Fixed width */
-  height: 900px; /* Fixed height */
-  flex-shrink: 0; /* Prevent shrinking */
+  overflow: hidden; /* Prevents overflow if canvas is larger */
 }
 
-/* Controls Section */
-.controls-container {
-  display: flex;
-  flex-direction: column; /* Stack controls vertically */
-  align-items: flex-start; /* Align to the top-left of the canvas */
-  gap: 8px; /* Space between FPS and button */
-  flex-shrink: 1; /* Shrink when space is limited */
-}
-
-/* Full Screen Button Styling */
-#fullscreen-button {
-  width: 100px; /* Fixed width */
-  height: 100px; /* Fixed height */
-  font-size: 14px; /* Adjusted for square layout */
-  font-weight: bold;
-  color: white;
-  background: linear-gradient(90deg, #4caf50, #81c784); /* Gradient background */
-  border: none;
-  border-radius: 10px; /* Rounded corners for a soft square */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-  cursor: pointer;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; /* Smooth hover animations */
-  text-transform: uppercase; /* Makes text uppercase for a modern feel */
-  line-height: 1.2; /* Ensures text stays centered */
-}
-
-  #fullscreen-button:hover {
-    transform: scale(1.1); /* Slight zoom on hover */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
-    background: linear-gradient(90deg, #388e3c, #66bb6a); /* Darker gradient on hover */
-  }
-
-  #fullscreen-button:active {
-    transform: scale(1.05); /* Slight reduction on click */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Softer shadow on click */
-    background: linear-gradient(90deg, #2e7d32, #4caf50); /* Subtle change on click */
-  }
-
-
-
-/* Responsive Design */
-@media (max-width: 1600px) { /* Adjust breakpoint based on canvas + controls */
-  .controls-container {
-    display: none; /* Hide controls first when space is tight */
-  }
+canvas {
+  width: 100%; /* Stays proportional */
+  height: auto;
+  max-width: 1600px;
+  max-height: 900px;
 }

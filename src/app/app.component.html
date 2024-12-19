@@ -3,13 +3,6 @@
 <div class="flex-container">
   <!-- Canvas Section -->
   <div class="canvas-container">
-    <canvas id="myCanvas" width="1600" height="900" #canvasElement></canvas>
-  </div>
-
-  <!-- Controls Section -->
-  <div class="controls-container">
-    <h2 id="fps-display">FPS: {{fps.toFixed(0)}}</h2>
-    <button (click)="enableFullscreen()" id="fullscreen-button">Full Screen</button>
-    <h2 id="fps-display">V: 0.1</h2>
+    <canvas id="myCanvas" #canvasElement></canvas>
   </div>
 </div>
