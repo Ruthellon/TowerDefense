@@ -16,7 +16,7 @@ export class Wall extends Defender {
     return 0;
   }
   public override get Cost(): number | null {
-    return 1;
+    return 0;
   }
   public override get ShootingCooldown(): number {
     return 0;

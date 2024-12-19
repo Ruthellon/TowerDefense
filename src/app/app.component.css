@@ -60,7 +60,7 @@
 
 
 /* Responsive Design */
-@media (max-width: 1800px) { /* Adjust breakpoint based on canvas + controls */
+@media (max-width: 1600px) { /* Adjust breakpoint based on canvas + controls */
   .controls-container {
     display: none; /* Hide controls first when space is tight */
   }
