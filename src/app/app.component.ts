@@ -19,13 +19,21 @@ export class AppComponent implements AfterViewInit {
 
   @HostListener('window:resize')
   onResize(): void {
+    if (this.canvas) {
+      this.multiplierX = this.canvas.offsetWidth / Game.CANVAS_WIDTH;
+      this.multiplierY = this.canvas.offsetHeight / Game.CANVAS_HEIGHT;
+
+    }
     //this.adjustCanvasSize();
   }
 
+  private multiplierX = 1;
+  private multiplierY = 1;
   onMouseMove(e: PointerEvent) {
     if (e.isPrimary) {
-      let x = e.offsetX;
-      let y = e.offsetY;
+      let x = e.offsetX / this.multiplierX;
+      let y = e.offsetY / this.multiplierY;
+      console.log(`( ${x} , ${y} )`);
       Game.SetMouseLocation(x, y);
     }
   }
@@ -109,6 +117,7 @@ export class AppComponent implements AfterViewInit {
     requestAnimationFrame(this.animate.bind(this));
   }
 
+  private inFullScreen: boolean = false;
   enableFullscreen(): void {
     // Enable fullscreen mode for the canvas element
     if (this.canvas.requestFullscreen) {
@@ -118,5 +127,6 @@ export class AppComponent implements AfterViewInit {
     } else if ((this.canvas as any).msRequestFullscreen) {
       (this.canvas as any).msRequestFullscreen();
     }
+    this.inFullScreen = true;
   }
 }

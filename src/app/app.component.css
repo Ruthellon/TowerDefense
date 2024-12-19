@@ -1,47 +1,67 @@
-/* Grid container for layout */
-.grid-container {
-  display: grid;
-  grid-template-rows: 5% 90% 5%; /* 75% for canvas, 25% for button */
-  grid-template-columns: 5% 90% 5%;
+/* Flex Container */
+.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px; /* Space between canvas and controls */
   height: 100vh; /* Full viewport height */
-  width: 100%; /* Full viewport width */
-  box-sizing: border-box;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: hidden; /* Prevents unwanted scrollbars */
 }
 
-/* Canvas styling */
-canvas {
-  width: 1600px; /* Full width of the grid cell */
-  height: 900px; /* Full height of the grid cell */
-  min-width: 1600px;
-  min-height: 900px;
-  max-width: 1600px;
-  max-height: 900px;
-  display: block;
-  grid-row: 2;
-  grid-column: 2;
+/* Canvas Section */
+.canvas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1600px; /* Fixed width */
+  height: 900px; /* Fixed height */
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
-/* Button container styling */
-.button-container {
-  display: grid;
-  place-items: center; /* Centers button both horizontally and vertically */
-  grid-row: 3;
-  grid-column: 2;
+/* Controls Section */
+.controls-container {
+  display: flex;
+  flex-direction: column; /* Stack controls vertically */
+  align-items: flex-start; /* Align to the top-left of the canvas */
+  gap: 8px; /* Space between FPS and button */
+  flex-shrink: 1; /* Shrink when space is limited */
 }
 
-/* Button styling */
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #007bff;
-  color: #fff;
+/* Full Screen Button Styling */
+#fullscreen-button {
+  width: 100px; /* Fixed width */
+  height: 100px; /* Fixed height */
+  font-size: 14px; /* Adjusted for square layout */
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(90deg, #4caf50, #81c784); /* Gradient background */
   border: none;
-  border-radius: 5px;
+  border-radius: 10px; /* Rounded corners for a soft square */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; /* Smooth hover animations */
+  text-transform: uppercase; /* Makes text uppercase for a modern feel */
+  line-height: 1.2; /* Ensures text stays centered */
 }
 
-  button:hover {
-    background-color: #0056b3;
+  #fullscreen-button:hover {
+    transform: scale(1.1); /* Slight zoom on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+    background: linear-gradient(90deg, #388e3c, #66bb6a); /* Darker gradient on hover */
   }
+
+  #fullscreen-button:active {
+    transform: scale(1.05); /* Slight reduction on click */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Softer shadow on click */
+    background: linear-gradient(90deg, #2e7d32, #4caf50); /* Subtle change on click */
+  }
+
+
+
+/* Responsive Design */
+@media (max-width: 1800px) { /* Adjust breakpoint based on canvas + controls */
+  .controls-container {
+    display: none; /* Hide controls first when space is tight */
+  }
+}
