@@ -4,6 +4,7 @@ import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 export class Turret extends Defender {
+  protected override location = new Vector3(0, 0, 7);
   private upgradeCost = 10;
   public get UpgradeCost(): number {
     return this.upgradeCost;
@@ -34,7 +35,6 @@ export class Turret extends Defender {
   public override Load(): void {
     super.Load();
     this.SetDamage(3);
-    this.location = new Vector3(0, 0, 7);
   }
 
   public override OnCollision(collision: IGameObject): void {
@@ -70,8 +70,8 @@ export class Turret extends Defender {
       this.canUpgrade = false;
       this.color = '#dddd22';
       this.range = 250;
-      this.damage = 10;
-      this.shootingCooldown = .4;
+      this.damage = 8;
+      this.shootingCooldown = .5;
     }
   }
 

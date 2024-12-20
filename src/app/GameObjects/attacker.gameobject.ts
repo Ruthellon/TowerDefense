@@ -63,8 +63,10 @@ export abstract class Attacker extends Base {
     }
     let percentFilled = (this.health / this.startingHealth);
 
+    Game.CONTEXT.lineWidth = 2;
     Game.CONTEXT.strokeRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
     Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
+    Game.CONTEXT.lineWidth = 1;
   }
 
   public ReduceHealth(reduceBy: number): void {

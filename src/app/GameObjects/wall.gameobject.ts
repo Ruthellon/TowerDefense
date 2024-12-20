@@ -7,6 +7,7 @@ import { IGameObject } from "./gameobject.interface";
 
 
 export class Wall extends Defender {
+  protected override location = new Vector3(0, 0, 5);
   public get UpgradeCost(): number {
     return 0;
   }
@@ -17,7 +18,7 @@ export class Wall extends Defender {
     return 0;
   }
   public override get Cost(): number | null {
-    return 1;
+    return 2;
   }
   public override get ShootingCooldown(): number {
     return 0;
@@ -33,8 +34,6 @@ export class Wall extends Defender {
   }
   public override Load(): void {
     super.Load();
-
-    this.location = new Vector3(0, 0, 5);
   }
 
   public override OnCollision(collision: IGameObject): void {
