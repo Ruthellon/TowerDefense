@@ -11,7 +11,7 @@ export class AngryElfAPI implements IAngryElfAPIService {
   constructor(private http: HttpClient) {
   }
 
-  SendWinInfo(level: number, health: number, version: number, grid: any): void {
+  SendWinInfo(level: number, health: number, version: string, grid: any): void {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

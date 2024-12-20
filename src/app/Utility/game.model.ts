@@ -45,6 +45,11 @@ export class Game {
     return this.api;
   }
 
+  private static version: string;
+  public static get Version(): string {
+    return this.version;
+  }
+
   public static SetTheAPI(api: IAngryElfAPIService) {
     this.api = api;
   }
@@ -91,6 +96,10 @@ export class Game {
 
   public static SetHeight(height: number): void {
     this.canvas_height = height;
+  }
+
+  public static SetVersion(version: string): void {
+    this.version = version;
   }
 
   public static SetStartingCredits(credits: number): void {

@@ -152,7 +152,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (!this.sentAPIMessage) {
         this.isGameOver = true;
         this.sentAPIMessage = true;
-        Game.TheAPI.SendWinInfo(this.LevelUnid, this.playerHealth, 1, this.gatherGridInfo());
+        Game.TheAPI.SendWinInfo(this.LevelUnid, this.playerHealth, Game.Version, this.gatherGridInfo());
       }
 
       this.nextLevelButton.Update(deltaTime);
