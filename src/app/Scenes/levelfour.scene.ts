@@ -5,15 +5,15 @@ import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { DefenseBaseLevel, eDefenderTypes } from "./defensebase.scene";
 
-export class LevelThreeScene extends DefenseBaseLevel {
+export class LevelFourScene extends DefenseBaseLevel {
   protected get LevelUnid(): number {
-    return 3;
+    return 4;
   }
   protected get CurrentSceneName(): string {
-    return 'levelthree';
+    return 'levelfour';
   }
   protected get NextLevelName(): string {
-    return 'levelfour';
+    return '';
   }
   protected get PlayerStartingHealth(): number {
     return 1;
@@ -54,11 +54,20 @@ export class LevelThreeScene extends DefenseBaseLevel {
   }
 
   override Draw(deltaTime: number): void {
-    super.Draw(deltaTime);
+    //super.Draw(deltaTime);
+    //Game.CONTEXT.fillStyle = '#ffffff';
+    //Game.CONTEXT.font = '22px serif';
+    //Game.CONTEXT.textAlign = "center";
+    //Game.CONTEXT.fillText('Level Three', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
+
+
+    Game.CONTEXT!.fillStyle = '#111111';
+    Game.CONTEXT!.fillRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
+
     Game.CONTEXT.fillStyle = '#ffffff';
-    Game.CONTEXT.font = '22px serif';
+    Game.CONTEXT.font = '64px serif';
     Game.CONTEXT.textAlign = "center";
-    Game.CONTEXT.fillText('Level Three', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
+    Game.CONTEXT.fillText('Coming Soon...', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2);
   }
 
   override Load(): void {

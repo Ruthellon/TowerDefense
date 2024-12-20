@@ -19,13 +19,13 @@ export class AngryElfAPI implements IAngryElfAPIService {
     };
     let body = { Level: level, Health: health, Version: version, Grid: grid };
     let json = JSON.stringify(body);
+    console.log(json);
     this.http.post(`https://api.angryelfgames.com/TowerDefense/InputWinInfo`, body, httpOptions).subscribe({
-      next: (result) => {
+      next: (result: any) => {
         //console.log(result);
       },
-      error: (err) => {
+      error: (err: any) => {
         //console.log(err);
-
       }
     })
   }

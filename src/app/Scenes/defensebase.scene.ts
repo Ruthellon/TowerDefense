@@ -5,7 +5,6 @@ import { Defender } from "../GameObjects/defender.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Turret } from "../GameObjects/turret.gameobject";
 import { Wall } from "../GameObjects/wall.gameobject";
-import { IAngryElfAPIService } from "../Services/angryelfapi.service.interface";
 import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { PathFinder } from "../Utility/pathfinding.service";
@@ -27,8 +26,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected abstract get TotalEnemies(): number;
   protected abstract get AvailableDefenders(): eDefenderTypes[];
   protected abstract get CurrentSceneName(): string;
+  protected abstract get NextLevelName(): string;
   protected abstract get SecondsBetweenMonsters(): number;
   protected abstract get SecondsToStart(): number;
+  protected abstract get LevelUnid(): number;
 
   protected abstract CreateNewAttacker(attackerCount: number): Attacker;
   protected abstract PlayerWonScreen(): void;
@@ -95,6 +96,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     return this.gridRect;
   }
 
+  private nextLevelButton = new Button();
   private remainder: number = 0;
   protected attackers: Attacker[] = [];
   protected defenders: Defender[] = [];
@@ -125,6 +127,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.calculatePath();
 
     this.lastCoordinate = new Vector3((this.EndingCells[0].X * this.GridCellSize) + (this.GridCellSize / 2), (this.EndingCells[0].Y * this.GridCellSize) + (this.GridCellSize / 2), 0);
+
+    this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, 50);
+    this.nextLevelButton.SetSize(200, 100);
+    this.nextLevelButton.SetText('Go to Next Level');
   }
 
   private secondsToStart = 0;
@@ -143,18 +149,16 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     }
 
     if (this.enemyCount >= this.TotalEnemies) {
-      this.isGameOver = true;
-
       if (!this.sentAPIMessage) {
+        this.isGameOver = true;
         this.sentAPIMessage = true;
-        let level = 0;
-        if (this.CurrentSceneName === 'levelone')
-          level = 1;
-        else if (this.CurrentSceneName === 'leveltwo')
-          level = 2;
-        else if (this.CurrentSceneName === 'levelthree')
-          level = 3;
-        Game.TheAPI.SendWinInfo(level, this.playerHealth, 1, this.gatherGridInfo());
+        Game.TheAPI.SendWinInfo(this.LevelUnid, this.playerHealth, 1, this.gatherGridInfo());
+      }
+
+      this.nextLevelButton.Update(deltaTime);
+      if (this.nextLevelButton.Pressed) {
+        Game.SetTheScene(this.NextLevelName);
+        return;
       }
 
       return;
@@ -236,7 +240,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.defenderButtons.forEach((butt) => {
       if (butt.Pressed) {
         this.newDefender = butt.Id;
+        butt.SetAltColor('#ffffff');
         this.selectedDefender = null;
+      }
+      else if (this.newDefender !== butt.Id) {
+        butt.SetAltColor('#999999');
       }
     });
 
@@ -315,6 +323,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
       else {
         this.PlayerWonScreen();
+        this.nextLevelButton.Draw(deltaTime);
       }
 
       return;
@@ -370,7 +379,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     }
 
     if (this.mouseCell) {
-      Game.CONTEXT.strokeStyle = this.SelectedDefenderColor;
+      Game.CONTEXT.strokeStyle = '#ffffff';
       Game.CONTEXT.strokeRect((this.mouseCell.X * this.GridCellSize), (this.mouseCell.Y * this.GridCellSize) + this.remainder,
         this.GridCellSize, this.GridCellSize);
     }
@@ -401,7 +410,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     wallButton.SetSize(this.GridCellSize, this.GridCellSize);
     wallButton.SetText('Wall');
     wallButton.SetId(eDefenderTypes.Wall)
-    wallButton.SetAltColor('#ff0000');
+    wallButton.SetAltColor('#ffffff');
     this.defenderButtons.push(wallButton);
     this.LoadGameObject(wallButton);
 
@@ -411,7 +420,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       turretButton.SetSize(this.GridCellSize, this.GridCellSize);
       turretButton.SetText('Turret');
       turretButton.SetId(eDefenderTypes.BasicTurret);
-      turretButton.SetAltColor('#888888');
+      turretButton.SetAltColor('#999999');
       this.defenderButtons.push(turretButton);
       this.LoadGameObject(turretButton);
     }
@@ -422,6 +431,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       samButton.SetSize(this.GridCellSize, this.GridCellSize);
       samButton.SetText('S.A.M.');
       samButton.SetId(eDefenderTypes.SAMTurret);
+      samButton.SetAltColor('#999999');
       this.defenderButtons.push(samButton);
       this.LoadGameObject(samButton);
     }

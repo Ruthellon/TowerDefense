@@ -7,6 +7,15 @@ import { Game } from "../Utility/game.model";
 import { DefenseBaseLevel, eDefenderTypes } from "./defensebase.scene";
 
 export class LevelOneScene extends DefenseBaseLevel {
+  protected get LevelUnid(): number {
+    return 1;
+  }
+  protected get CurrentSceneName(): string {
+    return 'levelone';
+  }
+  protected get NextLevelName(): string {
+    return 'leveltwo';
+  }
   protected get PlayerStartingHealth(): number {
     return 10;
   }
@@ -19,9 +28,6 @@ export class LevelOneScene extends DefenseBaseLevel {
   private availableDefenders = [eDefenderTypes.BasicTurret];
   protected get AvailableDefenders(): eDefenderTypes[] {
     return this.availableDefenders;
-  }
-  protected get CurrentSceneName(): string {
-    return 'levelone';
   }
   protected get TotalEnemies(): number {
     return 50;
@@ -45,12 +51,6 @@ export class LevelOneScene extends DefenseBaseLevel {
   }
 
   override Update(deltaTime: number): void {
-    if (this.IsGameOver) {
-      if (this.nextLevelButton.Pressed) {
-        Game.SetTheScene('leveltwo');
-        return;
-      }
-    }
     super.Update(deltaTime);
   }
 
@@ -68,9 +68,6 @@ export class LevelOneScene extends DefenseBaseLevel {
   override Load(): void {
     super.Load();
     Game.SetStartingCredits(100);
-    this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, 50);
-    this.nextLevelButton.SetSize(200, 100);
-    this.nextLevelButton.SetText('Start Level 2');
   }
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
@@ -83,18 +80,10 @@ export class LevelOneScene extends DefenseBaseLevel {
     return newAttacker;
   }
   private firstWonCall = true;
-  private nextLevelButton = new Button();
   protected PlayerWonScreen(): void {
-    if (this.firstWonCall) {
-      this.nextLevelButton.Load();
-      this.firstWonCall = false;
-    }
-
     Game.CONTEXT.fillStyle = '#ffffff';
     Game.CONTEXT.font = '32px serif';
     Game.CONTEXT.textAlign = "center";
     Game.CONTEXT.fillText('You Won!', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 75);
-    this.nextLevelButton.Update(0);
-    this.nextLevelButton.Draw(0);
   }
 }

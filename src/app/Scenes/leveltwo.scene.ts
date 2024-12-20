@@ -1,11 +1,21 @@
 
 import { Attacker } from "../GameObjects/attacker.gameobject";
 import { Block } from "../GameObjects/block.gameobject";
+import { Button } from "../GameObjects/button.gameobject";
 import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { DefenseBaseLevel, eDefenderTypes } from "./defensebase.scene";
 
 export class LevelTwoScene extends DefenseBaseLevel {
+  protected get LevelUnid(): number {
+    return 2;
+  }
+  protected get CurrentSceneName(): string {
+    return 'leveltwo';
+  }
+  protected get NextLevelName(): string {
+    return 'levelthree';
+  }
   protected get PlayerStartingHealth(): number {
     return 10;
   }
@@ -18,9 +28,6 @@ export class LevelTwoScene extends DefenseBaseLevel {
   private availableDefenders = [eDefenderTypes.BasicTurret];
   protected get AvailableDefenders(): eDefenderTypes[] {
     return this.availableDefenders;
-  }
-  protected get CurrentSceneName(): string {
-    return 'leveltwo';
   }
   protected get TotalEnemies(): number {
     return 50;
@@ -58,7 +65,7 @@ export class LevelTwoScene extends DefenseBaseLevel {
   override Load(): void {
     super.Load();
 
-    Game.SetStartingCredits(Game.Credits + 100);
+    Game.SetStartingCredits(Game.Credits + 50);
   }
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
@@ -76,10 +83,5 @@ export class LevelTwoScene extends DefenseBaseLevel {
     Game.CONTEXT.font = '32px serif';
     Game.CONTEXT.textAlign = "center";
     Game.CONTEXT.fillText('You Won!', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 75);
-
-    Game.CONTEXT.fillStyle = '#ffffff';
-    Game.CONTEXT.font = '32px serif';
-    Game.CONTEXT.textAlign = "center";
-    Game.CONTEXT.fillText('Refresh To Play Again', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
   }
 }
