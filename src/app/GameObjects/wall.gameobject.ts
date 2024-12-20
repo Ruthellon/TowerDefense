@@ -1,3 +1,4 @@
+import { Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { Attacker } from "./attacker.gameobject";
 import { Base } from "./base.gameobject";
@@ -32,7 +33,10 @@ export class Wall extends Defender {
   }
   public override Load(): void {
     super.Load();
+
+    this.location = new Vector3(0, 0, 5);
   }
+
   public override OnCollision(collision: IGameObject): void {
   }
   override color = '#ff0000';

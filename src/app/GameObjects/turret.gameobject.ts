@@ -1,9 +1,10 @@
+import { Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 export class Turret extends Defender {
-  private upgradeCost = 5;
+  private upgradeCost = 10;
   public get UpgradeCost(): number {
     return this.upgradeCost;
   }
@@ -33,6 +34,7 @@ export class Turret extends Defender {
   public override Load(): void {
     super.Load();
     this.SetDamage(3);
+    this.location = new Vector3(0, 0, 7);
   }
 
   public override OnCollision(collision: IGameObject): void {
@@ -53,7 +55,7 @@ export class Turret extends Defender {
       this.range = 200;
       this.damage = 5;
       this.shootingCooldown = .8;
-      this.upgradeCost = 15;
+      this.upgradeCost = 10;
     }
     else if (this.level === 3) {
       this.level = 4;
@@ -61,7 +63,7 @@ export class Turret extends Defender {
       this.range = 225;
       this.damage = 6;
       this.shootingCooldown = .7;
-      this.upgradeCost = 25;
+      this.upgradeCost = 20;
     }
     else if (this.level === 4) {
       this.level = 5;
