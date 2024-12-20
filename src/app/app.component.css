@@ -1,21 +1,18 @@
-.flex-container {
-  display: flex;
-  flex-wrap: nowrap;
-  height: 100vh; /* Full viewport height */
-}
-
-/* Canvas Section */
+/* Container for Centering */
 .canvas-container {
-  flex: 1; /* Takes up available space */
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* Prevents overflow if canvas is larger */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  background: #f0f0f0; /* Optional background color */
+  overflow: hidden; /* Prevent scrollbars */
 }
 
+/* Canvas Styling */
 canvas {
-  width: 100%; /* Stays proportional */
-  height: 100%;
-  max-width: 1600px;
-  max-height: 900px;
+  display: block;
+  max-width: 100%; /* Scale down to fit within the viewport width */
+  max-height: 100%; /* Scale down to fit within the viewport height */
+  aspect-ratio: 16 / 9; /* Enforce 16:9 aspect ratio */
 }
