@@ -27,9 +27,13 @@ export class Game {
   public static get MOUSE_LOCATION(): Vector2 {
     return this.mouseLocal;
   }
-  private static mouseClick: boolean = false;
-  public static get MOUSE_CLICKED(): boolean {
-    return this.mouseClick;
+  private static mousePressed: boolean = false;
+  public static get MOUSE_PRESSED(): boolean {
+    return this.mousePressed;
+  }
+  private static mousePressLocal: Vector2 = new Vector2(-1, -1);
+  public static get MOUSE_PRESS_LOCATION(): Vector2 {
+    return this.mousePressLocal;
   }
   private static theScene: any = [];
   public static get TheScene(): IScene {
@@ -86,8 +90,12 @@ export class Game {
     this.mouseLocal = new Vector2(x, y);
   }
 
-  public static SetMouseClick(down: boolean): void {
-    this.mouseClick = down;
+  public static SetMousePressed(down: boolean): void {
+    this.mousePressed = down;
+  }
+
+  public static SetMousePressLocation(x: number, y: number): void {
+    this.mousePressLocal = new Vector2(x, y);
   }
 
   public static SetWidth(width: number): void {

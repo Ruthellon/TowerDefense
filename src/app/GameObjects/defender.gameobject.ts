@@ -57,7 +57,7 @@ export abstract class Defender extends Base {
       }
     }
 
-    this.CheckIfClicked();
+    this.UpdateClick();
   }
 
   public FindTarget(enemies: Attacker[]) {

@@ -33,12 +33,12 @@ export abstract class BaseLevel extends IScene {
   }
 
   Draw(deltaTime: number): void {
-    this.GameObjects.sort((a, b) =>
+    let go = this.GameObjects.sort((a, b) =>
       a.Location.Z - b.Location.Z
     );
-    this.GameObjects.forEach((obj) => {
-      obj.Draw(deltaTime);
-    });
+    for (let i = 0; i < go.length; i++) {
+      go[i].Draw(deltaTime);
+    }
   }
 
   LoadGameObject(gameObject: IGameObject) {

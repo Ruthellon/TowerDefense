@@ -24,6 +24,22 @@ export abstract class Base extends IGameObject {
       return false;
     }
   }
+  protected clicked: boolean = false;
+  public get Clicked(): boolean {
+    if (this.clicked) {
+      this.pressed = false;
+      this.clicked = false;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  protected selected: boolean = false;
+  public get Selected(): boolean {
+    return this.selected;
+  }
+
   public get CenterMassLocation(): Vector3 {
     return new Vector3(this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2), this.location.Z);
   }
@@ -68,15 +84,28 @@ export abstract class Base extends IGameObject {
   public SetCollisionBox(x: number, y: number, width: number, height: number): void {
     this.collisionBox = new Rect(x, y, width, height);
   }
-  private downClicked = false;
-  protected CheckIfClicked(): void {
-    if (Game.MOUSE_CLICKED && this.ObjectRect.ContainsPoint(Game.MOUSE_LOCATION)) {
-      this.pressed = false;
-      this.downClicked = true;
+
+  public SetSelected(isSelected: boolean): void {
+    if (this.selected !== isSelected) {
+      this.selected = isSelected;
+
+      if (isSelected)
+        this.location.Z++;
+      else
+        this.location.Z--;
     }
-    else if (this.downClicked && !Game.MOUSE_CLICKED && this.ObjectRect.ContainsPoint(Game.MOUSE_LOCATION)) {
-      this.downClicked = false;
+  }
+
+  protected UpdateClick(): void {
+    if (Game.MOUSE_PRESSED && this.ObjectRect.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
       this.pressed = true;
+      this.clicked = false;
+    }
+    else if (this.pressed && !Game.MOUSE_PRESSED && this.ObjectRect.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
+      this.clicked = true;
+    }
+    else if (this.pressed && !Game.MOUSE_PRESSED) {
+      this.pressed = false;
     }
   }
 }

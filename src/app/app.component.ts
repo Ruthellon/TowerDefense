@@ -45,8 +45,8 @@ export class AppComponent implements AfterViewInit {
     if (e.isPrimary) {
       let x = e.offsetX / this.multiplierX;
       let y = e.offsetY / this.multiplierY;
-      Game.SetMouseLocation(x, y);
-      Game.SetMouseClick(true);
+      Game.SetMousePressLocation(x, y);
+      Game.SetMousePressed(true);
     }
   }
 
@@ -54,8 +54,8 @@ export class AppComponent implements AfterViewInit {
     if (e.isPrimary) {
       let x = e.offsetX / this.multiplierX;
       let y = e.offsetY / this.multiplierY;
-      Game.SetMouseLocation(x, y);
-      Game.SetMouseClick(false);
+      Game.SetMousePressLocation(x, y);
+      Game.SetMousePressed(false);
     }
   }
 

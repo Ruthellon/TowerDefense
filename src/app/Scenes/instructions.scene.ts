@@ -35,15 +35,15 @@ export class InstructionsScene extends BaseLevel {
   override Update(deltaTime: number) {
     super.Update(deltaTime);
 
-    if (this.startLevel1Button.Pressed) {
+    if (this.startLevel1Button.Clicked) {
       Game.SetTheScene('levelone');
       return;
     }
-    if (this.startLevel2Button.Pressed) {
+    if (this.startLevel2Button.Clicked) {
       Game.SetTheScene('leveltwo');
       return;
     }
-    if (this.startLevel3Button.Pressed) {
+    if (this.startLevel3Button.Clicked) {
       Game.SetTheScene('levelthree');
       return;
     }
