@@ -16,15 +16,19 @@ export class AppComponent implements AfterViewInit {
   @ViewChild('canvasElement', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
   private canvas!: HTMLCanvasElement;
   private context!: CanvasRenderingContext2D | null;
+  private previousWidth: number = 0;
+  private previousHeight: number = 0;
 
-  @HostListener('window:resize')
   onResize(): void {
-    if (this.canvas) {
+    if (this.canvas &&
+      (this.canvas.offsetWidth !== this.previousWidth || this.canvas.offsetHeight !== this.previousHeight)) {
+      
       this.multiplierX = this.canvas.offsetWidth / Game.CANVAS_WIDTH;
       this.multiplierY = this.canvas.offsetHeight / Game.CANVAS_HEIGHT;
 
+      this.previousWidth = this.canvas.offsetWidth;
+      this.previousHeight = this.canvas.offsetHeight;
     }
-    //this.adjustCanvasSize();
   }
 
   private multiplierX = 1;
@@ -53,6 +57,7 @@ export class AppComponent implements AfterViewInit {
 
   }
 
+  private initialWidth = 0;
   ngAfterViewInit(): void {
     this.canvas = this.canvasElement.nativeElement;
     this.context = this.canvas.getContext('2d');
@@ -62,6 +67,8 @@ export class AppComponent implements AfterViewInit {
     this.canvas.onpointerdown = this.onMouseDown.bind(this);
     this.canvas.onpointerup = this.onMouseUp.bind(this);
     this.canvas.onpointermove = this.onMouseMove.bind(this);
+    console.log(this.canvas.offsetWidth);
+    this.initialWidth = this.canvas.offsetWidth;
 
     this.adjustCanvasSize();
 
@@ -105,6 +112,8 @@ export class AppComponent implements AfterViewInit {
   fpsAverage: number = 120;
   private animate(currentTime: number) {
     let deltaTime = (currentTime - this.lastTime);
+
+    this.onResize();
     
     if (Math.floor(deltaTime) >= Math.floor(this.maxPeriod)) {
       this.lastTime = currentTime;
