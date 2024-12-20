@@ -131,6 +131,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, 50);
     this.nextLevelButton.SetSize(200, 100);
     this.nextLevelButton.SetText('Go to Next Level');
+    this.nextLevelButton.Load();
   }
 
   private secondsToStart = 0;
