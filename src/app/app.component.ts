@@ -73,7 +73,7 @@ export class AppComponent implements AfterViewInit {
     this.canvas.onpointerdown = this.onMouseDown.bind(this);
     this.canvas.onpointerup = this.onMouseUp.bind(this);
     this.canvas.onpointermove = this.onMouseMove.bind(this);
-    console.log(this.canvas.offsetWidth);
+
     this.initialWidth = this.canvas.offsetWidth;
 
     this.adjustCanvasSize();

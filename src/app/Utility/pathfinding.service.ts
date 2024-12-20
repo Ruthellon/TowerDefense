@@ -22,26 +22,22 @@ export class PathFinder {
 
     // If the source is out of range
     if (!this.isValid(src.X, src.Y, grid.length, grid[0].length)) {
-      console.log("Source is invalid\n");
       return [];
     }
 
     // If the destination is out of range
     if (!this.isValid(dest.X, src.Y, grid.length, grid[0].length)) {
-      console.log("Destination is invalid\n");
       return [];
     }
 
     // Either the source or the destination is blocked
     if (grid[src.X][src.Y] === 1 ||
       grid[dest.X][dest.Y] === 1) {
-      console.log("Source or the destination is blocked\n");
       return [];
     }
 
     // If the destination cell is the same as source cell
     if (src.isEqual(dest)) {
-      console.log("We are already at the destination\n");
       return [];
     }
 
@@ -158,14 +154,6 @@ export class PathFinder {
       openList = openList.sort((a, b) => a.val - b.val);
     }
 
-    // When the destination cell is not found and the open
-    // list is empty, then we conclude that we failed to
-    // reach the destination cell. This may happen when the
-    // there is no way to destination cell (due to
-    // blockages)
-    if (foundDest == false)
-      console.log("Failed to find the Destination Cell\n");
-
     return [];
   }
 
@@ -195,7 +183,7 @@ export class PathFinder {
         // Set the Parent of the destination cell
         cellDetails[point.X][point.Y].parent_x = parent.X;
         cellDetails[point.X][point.Y].parent_y = parent.Y;
-        console.log("The destination cell is found\n");
+
         return true;
       }
       // If the successor is already on the closed

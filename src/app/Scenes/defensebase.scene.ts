@@ -169,7 +169,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     if (this.secondsToStart <= 0) {
       this.canBuild = false;
       if (this.secondsSinceLastMonster <= 0 && this.enemiesSpawned < this.TotalEnemies) {
-        console.log('NEW MONSTER');
         let mon = this.CreateNewAttacker(this.enemiesSpawned);
         mon.SetLocation(this.StartingCells[0].X - this.GridCellSize, Game.CANVAS_HEIGHT / 2, 2);
         mon.SetPath(this.ThePath, this.GridCellSize);
