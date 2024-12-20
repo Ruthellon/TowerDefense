@@ -2,7 +2,6 @@
   display: flex;
   flex-wrap: nowrap;
   height: 100vh; /* Full viewport height */
-  gap: 16px;
 }
 
 /* Canvas Section */
@@ -16,7 +15,7 @@
 
 canvas {
   width: 100%; /* Stays proportional */
-  height: auto;
+  height: 100%;
   max-width: 1600px;
   max-height: 900px;
 }

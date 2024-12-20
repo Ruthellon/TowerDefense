@@ -43,12 +43,18 @@ export class AppComponent implements AfterViewInit {
 
   onMouseDown(e: PointerEvent) {
     if (e.isPrimary) {
+      let x = e.offsetX / this.multiplierX;
+      let y = e.offsetY / this.multiplierY;
+      Game.SetMouseLocation(x, y);
       Game.SetMouseClick(true);
     }
   }
 
   onMouseUp(e: PointerEvent) {
     if (e.isPrimary) {
+      let x = e.offsetX / this.multiplierX;
+      let y = e.offsetY / this.multiplierY;
+      Game.SetMouseLocation(x, y);
       Game.SetMouseClick(false);
     }
   }
