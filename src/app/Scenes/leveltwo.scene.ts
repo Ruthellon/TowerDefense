@@ -73,6 +73,7 @@ export class LevelTwoScene extends DefenseBaseLevel {
     newAttacker.SetStartingSpeed(10);
     newAttacker.SetStartingHealth(39);
     newAttacker.SetSize(40, 40);
+    newAttacker.SetDamage(2);
     newAttacker.SetColor('#00ff00');
     newAttacker.SetValue(2);
     return newAttacker;

@@ -12,6 +12,11 @@ export abstract class Attacker extends Base {
     return this.value;
   }
 
+  protected damage: number = 0;
+  public get Damage(): number {
+    return this.damage;
+  }
+
   private startingHealth: number = 0;
   protected health: number = 0;
   public get Health(): number {
@@ -62,6 +67,10 @@ export abstract class Attacker extends Base {
     Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
   }
 
+  public ReduceHealth(reduceBy: number): void {
+    this.health -= reduceBy;
+  }
+
   public SetStartingHealth(health: number): void {
     this.startingHealth = health;
     this.health = health;
@@ -72,7 +81,7 @@ export abstract class Attacker extends Base {
   }
 
   public SetDamage(damage: number): void {
-    this.health -= damage;
+    this.damage = damage;
   }
 
   public SetValue(val: number): void {

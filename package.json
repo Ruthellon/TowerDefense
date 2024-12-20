@@ -1,6 +1,6 @@
 {
   "name": "tower-defense",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host=127.0.0.1",

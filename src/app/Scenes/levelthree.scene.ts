@@ -16,7 +16,7 @@ export class LevelThreeScene extends DefenseBaseLevel {
     return 'levelfour';
   }
   protected get PlayerStartingHealth(): number {
-    return 1;
+    return 10;
   }
   protected override get SecondsBetweenMonsters(): number {
     return 1;
@@ -72,6 +72,7 @@ export class LevelThreeScene extends DefenseBaseLevel {
     newAttacker.SetStartingSpeed(2);
     newAttacker.SetStartingHealth(700);
     newAttacker.SetSize(60, 60);
+    newAttacker.SetDamage(10);
     newAttacker.SetColor('#00ff00');
     newAttacker.SetValue(2);
     return newAttacker;
