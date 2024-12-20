@@ -265,11 +265,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
         this.grid[gridX][gridY] = 0;
 
-        this.calculatePath();
+        if (this.canBuild)
+          this.calculatePath();
 
         this.DestroyGameObject(this.selectedDefender);
         let i = this.defenders.findIndex((def) => def === this.selectedDefender);
-        this.attackers.splice(i, 1);
+        this.defenders.splice(i, 1);
         this.selectedDefender = null;
       }
       else if (this.selectedDefender.CanUpgrade && this.upgradeButton.Pressed) {
