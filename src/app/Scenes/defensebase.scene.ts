@@ -145,6 +145,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       Game.SetTheScene(this.CurrentSceneName);
     }
 
+    if (this.settingsButton.Clicked) {
+      this.openSettings();
+    }
+
     super.Update(deltaTime);
 
     if (!this.roundStarted) {
@@ -360,7 +364,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (defender.Clicked) {
         this.selectedDefender = defender;
         defender.SetSelected(true);
-        this.upgradeButton.SetText(`Upgarde (${this.selectedDefender.UpgradeCost}cr)`);
+        this.upgradeButton.SetText(`Upgrade (${this.selectedDefender.UpgradeCost}cr)`);
       }
       else if (defender !== this.selectedDefender) {
         defender.SetSelected(false);
@@ -399,7 +403,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
           Game.SubtractCredits(this.selectedDefender.UpgradeCost);
           this.selectedDefender.Upgrade();
 
-          this.upgradeButton.SetText(`Upgarde (${this.selectedDefender.UpgradeCost}cr)`);
+          this.upgradeButton.SetText(`Upgrade (${this.selectedDefender.UpgradeCost}cr)`);
         }
       }
     }
@@ -517,8 +521,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.restartButton.SetSize(this.GridCellSize, this.GridCellSize);
     this.restartButton.SetText('Restart');
 
+    this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, 10);
+    this.settingsButton.SetSize(50, 50);
+    this.settingsButton.SetImage('/assets/images/cog.png');
+
     this.LoadGameObject(this.startButton);
     this.LoadGameObject(this.restartButton);
+    this.LoadGameObject(this.settingsButton);
 
     this.upgradeButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 2) + 10, (this.GridCellSize * 6) + 5, 10);
     this.upgradeButton.SetSize((this.GridCellSize * 2) - 20, (this.GridCellSize) - 10);
@@ -611,12 +620,17 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.enemiesSpawned++;
   }
 
+  private openSettings(): void {
+
+  }
+
   private defenderButtons: Button[] = [];
   private upgradeButton: Button = new Button();
   private deleteButton: Button = new Button();
   private nextLevelButton = new Button();
   private startButton: Button = new Button();
   private restartButton: Button = new Button();
+  private settingsButton: Button = new Button();
   private remainderX: number = 0;
   private remainderY: number = 0;
   private attackers: Attacker[] = [];

@@ -48,6 +48,10 @@ export abstract class Base extends IGameObject {
   protected get Color(): string | null {
     return this.color;
   }
+  protected sprite: HTMLImageElement | null = null;
+  protected get Sprite(): HTMLImageElement | null {
+    return this.sprite;
+  }
   protected imageLocation: string | null = null;
   protected get ImageLocation(): string | null {
     return this.imageLocation;
@@ -75,10 +79,18 @@ export abstract class Base extends IGameObject {
 
   public SetImage(imageLocal: string): void {
     this.imageLocation = imageLocal;
+    this.sprite = new Image();
+    this.sprite.src = imageLocal;
+    //this.sprite.onload = this.onload.bind(this);
   }
 
   public SetSize(width: number, height: number): void {
     this.size = new Vector2(width, height);
+
+    if (this.sprite) {
+      this.sprite.width = width;
+      this.sprite.height = height;
+    }
   }
 
   public SetCollisionBox(x: number, y: number, width: number, height: number): void {
