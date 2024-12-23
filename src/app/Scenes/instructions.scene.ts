@@ -2,7 +2,7 @@ import { Button } from "../GameObjects/button.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Game } from "../Utility/game.model";
 import { BaseLevel } from "./base.scene";
-import { IScene } from "./scene.interface";
+import { eLayerTypes, IScene } from "./scene.interface";
 
 
 export class InstructionsScene extends BaseLevel {
@@ -11,6 +11,7 @@ export class InstructionsScene extends BaseLevel {
     return this.gameObjects;
   }
 
+  private settingsButton: Button = new Button();
   startLevel1Button = new Button();
   startLevel2Button = new Button();
   startLevel3Button = new Button();
@@ -19,35 +20,41 @@ export class InstructionsScene extends BaseLevel {
   Load(): void {
     Game.SetStartingCredits(50);
 
-    this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 600, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 600, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
     this.startLevel1Button.SetSize(200, 100);
     this.startLevel1Button.SetText('Start Level 1');
     this.startLevel1Button.SetClickFunction(() => Game.SetTheScene('levelone'));
     this.LoadGameObject(this.startLevel1Button);
 
-    this.startLevel2Button.SetLocation((Game.CANVAS_WIDTH / 2) - 350, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel2Button.SetLocation((Game.CANVAS_WIDTH / 2) - 350, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
     this.startLevel2Button.SetSize(200, 100);
     this.startLevel2Button.SetText('Start Level 2');
     this.startLevel2Button.SetClickFunction(() => Game.SetTheScene('leveltwo'));
     this.LoadGameObject(this.startLevel2Button);
 
-    this.startLevel3Button.SetLocation((Game.CANVAS_WIDTH / 2) - 100, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel3Button.SetLocation((Game.CANVAS_WIDTH / 2) - 100, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
     this.startLevel3Button.SetSize(200, 100);
     this.startLevel3Button.SetText('Start Level 3');
     this.startLevel3Button.SetClickFunction(() => Game.SetTheScene('levelthree'));
     this.LoadGameObject(this.startLevel3Button);
 
-    this.startLevel4Button.SetLocation((Game.CANVAS_WIDTH / 2) + 150, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel4Button.SetLocation((Game.CANVAS_WIDTH / 2) + 150, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
     this.startLevel4Button.SetSize(200, 100);
     this.startLevel4Button.SetText('Start Level 4');
     this.startLevel4Button.SetClickFunction(() => Game.SetTheScene('levelfour'));
     this.LoadGameObject(this.startLevel4Button);
 
-    this.startLevel5Button.SetLocation((Game.CANVAS_WIDTH / 2) + 400, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel5Button.SetLocation((Game.CANVAS_WIDTH / 2) + 400, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
     this.startLevel5Button.SetSize(200, 100);
     this.startLevel5Button.SetText('Start Level 5');
     this.startLevel5Button.SetClickFunction(() => Game.SetTheScene('levelfive'));
     this.LoadGameObject(this.startLevel5Button);
+
+    this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
+    this.settingsButton.SetSize(50, 50);
+    this.settingsButton.SetImage('/assets/images/cog.png');
+    this.settingsButton.SetClickFunction(() => this.openSettings());
+    this.LoadGameObject(this.settingsButton);
   }
 
   override Update(deltaTime: number) {
@@ -57,6 +64,8 @@ export class InstructionsScene extends BaseLevel {
   override Draw(deltaTime: number) {
     Game.CONTEXT!.fillStyle = '#111111';
     Game.CONTEXT!.fillRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
+
+    super.Draw(deltaTime);
 
     Game.CONTEXT.fillStyle = '#ffffff';
     Game.CONTEXT.font = '64px serif';
@@ -76,6 +85,33 @@ export class InstructionsScene extends BaseLevel {
     Game.CONTEXT.fillText("Look out for new 'Upgrade' and 'Delete' buttons when selecting defenders on the field!", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
     Game.CONTEXT.fillText("Press 'Start Level' to begin!", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 250);
 
-    super.Draw(deltaTime);
+    if (this.settingsOpen) {
+      Game.CONTEXT!.fillStyle = '#555555';
+      Game.CONTEXT!.fillRect((Game.CANVAS_WIDTH / 2) - 250, 50, 500, Game.CANVAS_HEIGHT - 250);
+
+      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 250, 50, 500, Game.CANVAS_HEIGHT - 250);
+
+      // Draw the rectangle (input box)
+      Game.CONTEXT.strokeStyle = '#000'; // Border color
+      Game.CONTEXT.lineWidth = 2;
+      Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 150, 150, 300, 40);
+
+      // Draw the text inside the input box
+      Game.CONTEXT.font = '20px Arial';
+      Game.CONTEXT.fillStyle = '#000'; // Text color
+      Game.CONTEXT.textBaseline = 'middle';
+      Game.CONTEXT.fillText('Testing testing testing testing', (Game.CANVAS_WIDTH / 2) - 130, 150 + 20);
+    }
   }
+
+  private openSettings(): void {
+    if (this.settingsOpen)
+      this.settingsOpen = false;
+    else
+      this.settingsOpen = true;
+  }
+
+  private settingsOpen: boolean = false;
 }

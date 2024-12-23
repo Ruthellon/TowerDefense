@@ -9,18 +9,12 @@ import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { ePathCellStatus, PathFinder } from "../Utility/pathfinding.service";
 import { BaseLevel } from "./base.scene";
+import { eLayerTypes } from "./scene.interface";
 
 export enum eDefenderTypes {
   Wall,
   BasicTurret,
   SAMTurret
-}
-
-export enum eLayerTypes {
-  Background = 1,
-  Object = 25,
-  Boundary = 50,
-  UI = 75
 }
 
 export abstract class DefenseBaseLevel extends BaseLevel {
