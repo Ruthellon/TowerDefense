@@ -1,5 +1,12 @@
 import { Vector2 } from "./classes.model";
 
+export enum ePathCellStatus {
+  Open = 0,
+  Path = 1,
+  OutOfBounds = 2,
+  Blocked = 3,
+}
+
 export class cell {
   parent_x: number;
   parent_y: number;
@@ -31,8 +38,8 @@ export class PathFinder {
     }
 
     // Either the source or the destination is blocked
-    if (grid[src.X][src.Y] === 1 ||
-      grid[dest.X][dest.Y] === 1) {
+    if (grid[src.X][src.Y] >= ePathCellStatus.Blocked ||
+      grid[dest.X][dest.Y] >= ePathCellStatus.Blocked) {
       return [];
     }
 
@@ -162,7 +169,7 @@ export class PathFinder {
   }
 
   private static isBlocked(grid: number[][], point: Vector2) {
-    return grid[point.X][point.Y] === 1;
+    return grid[point.X][point.Y] >= ePathCellStatus.OutOfBounds;
   }
 
   private static isDestination(dest: Vector2, point: Vector2): boolean {

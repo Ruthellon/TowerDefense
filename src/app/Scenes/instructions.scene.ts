@@ -15,49 +15,43 @@ export class InstructionsScene extends BaseLevel {
   startLevel2Button = new Button();
   startLevel3Button = new Button();
   startLevel4Button = new Button();
+  startLevel5Button = new Button();
   Load(): void {
     Game.SetStartingCredits(50);
 
-    this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 550, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 600, Game.CANVAS_HEIGHT - 150, 10);
     this.startLevel1Button.SetSize(200, 100);
     this.startLevel1Button.SetText('Start Level 1');
+    this.startLevel1Button.SetClickFunction(() => Game.SetTheScene('levelone'));
     this.LoadGameObject(this.startLevel1Button);
 
-    this.startLevel2Button.SetLocation((Game.CANVAS_WIDTH / 2) - 250, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel2Button.SetLocation((Game.CANVAS_WIDTH / 2) - 350, Game.CANVAS_HEIGHT - 150, 10);
     this.startLevel2Button.SetSize(200, 100);
     this.startLevel2Button.SetText('Start Level 2');
+    this.startLevel2Button.SetClickFunction(() => Game.SetTheScene('leveltwo'));
     this.LoadGameObject(this.startLevel2Button);
 
-    this.startLevel3Button.SetLocation((Game.CANVAS_WIDTH / 2) + 50, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel3Button.SetLocation((Game.CANVAS_WIDTH / 2) - 100, Game.CANVAS_HEIGHT - 150, 10);
     this.startLevel3Button.SetSize(200, 100);
     this.startLevel3Button.SetText('Start Level 3');
+    this.startLevel3Button.SetClickFunction(() => Game.SetTheScene('levelthree'));
     this.LoadGameObject(this.startLevel3Button);
 
-    this.startLevel4Button.SetLocation((Game.CANVAS_WIDTH / 2) + 350, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel4Button.SetLocation((Game.CANVAS_WIDTH / 2) + 150, Game.CANVAS_HEIGHT - 150, 10);
     this.startLevel4Button.SetSize(200, 100);
     this.startLevel4Button.SetText('Start Level 4');
+    this.startLevel4Button.SetClickFunction(() => Game.SetTheScene('levelfour'));
     this.LoadGameObject(this.startLevel4Button);
+
+    this.startLevel5Button.SetLocation((Game.CANVAS_WIDTH / 2) + 400, Game.CANVAS_HEIGHT - 150, 10);
+    this.startLevel5Button.SetSize(200, 100);
+    this.startLevel5Button.SetText('Start Level 5');
+    this.startLevel5Button.SetClickFunction(() => Game.SetTheScene('levelfive'));
+    this.LoadGameObject(this.startLevel5Button);
   }
 
   override Update(deltaTime: number) {
     super.Update(deltaTime);
-
-    if (this.startLevel1Button.Clicked) {
-      Game.SetTheScene('levelone');
-      return;
-    }
-    if (this.startLevel2Button.Clicked) {
-      Game.SetTheScene('leveltwo');
-      return;
-    }
-    if (this.startLevel3Button.Clicked) {
-      Game.SetTheScene('levelthree');
-      return;
-    }
-    if (this.startLevel4Button.Clicked) {
-      Game.SetTheScene('levelfour');
-      return;
-    }
   }
 
   override Draw(deltaTime: number) {

@@ -1,4 +1,5 @@
 import { InstructionsScene } from "../Scenes/instructions.scene";
+import { LevelFiveScene } from "../Scenes/levelfive.scene";
 import { LevelFourScene } from "../Scenes/levelfour.scene";
 import { LevelOneScene } from "../Scenes/levelone.scene";
 import { LevelThreeScene } from "../Scenes/levelthree.scene";
@@ -73,6 +74,9 @@ export class Game {
     }
     else if (scene === 'levelfour') {
       this.theScene = new LevelFourScene();
+    }
+    else if (scene === 'levelfive') {
+      this.theScene = new LevelFiveScene();
     }
     else {
       return false;

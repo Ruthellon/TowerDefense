@@ -7,7 +7,7 @@ import { Turret } from "../GameObjects/turret.gameobject";
 import { Wall } from "../GameObjects/wall.gameobject";
 import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
-import { PathFinder } from "../Utility/pathfinding.service";
+import { ePathCellStatus, PathFinder } from "../Utility/pathfinding.service";
 import { BaseLevel } from "./base.scene";
 
 export enum eDefenderTypes {
@@ -113,34 +113,60 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.playerHealth = this.PlayerStartingHealth;
     this.secondsToStart = this.SecondsToStart;
 
-    this.remainderX = Math.floor((this.GRID_RECT.Width % this.GridCellSize) / 2);
-    this.remainderY = Math.floor((this.GRID_RECT.Height % this.GridCellSize) / 2);
+    this.remainderX = Math.floor((Game.CANVAS_WIDTH % this.GridCellSize) / 2);
+    this.remainderY = Math.floor((Game.CANVAS_HEIGHT % this.GridCellSize) / 2);
 
     this.setButtons();
     this.setUpGrid();
 
+    let startX = 0;
+    let endX = 0;
+    for (let i = 0; i < this.gridColumns; i++) {
+      if (startX === 0 && (i * this.GridCellSize) >= 100)
+        startX += (i * this.GridCellSize);
+
+      if ((i * this.GridCellSize) > (Game.CANVAS_WIDTH - 200))
+        break;
+
+      endX = (i * this.GridCellSize);
+    }
+
+    let startY = 0;
+    let endY = 0;
+    for (let j = 0; j < this.gridColumns; j++) {
+      if (startY === 0 && (j * this.GridCellSize) >= 100)
+        startY += (j * this.GridCellSize);
+
+      if ((j * this.GridCellSize) > (Game.CANVAS_HEIGHT - 100))
+        break;
+
+      endY = (j * this.GridCellSize);
+    }
+
+    this.gridRect = new Rect(startX + this.remainderX, startY + this.remainderY, endX - startX, endY - startY);
+
     //Top Wall
     let boundary = new Boundary();
     boundary.SetLocation(0, 0, eLayerTypes.Boundary);
-    boundary.SetSize(Game.CANVAS_WIDTH, this.UICellSize);
+    boundary.SetSize(Game.CANVAS_WIDTH, this.gridRect.Y);
     this.LoadGameObject(boundary);
 
     //Left Wall
     boundary = new Boundary();
     boundary.SetLocation(0, 0, eLayerTypes.Boundary);
-    boundary.SetSize(this.UICellSize, Game.CANVAS_HEIGHT);
+    boundary.SetSize(this.gridRect.X, Game.CANVAS_HEIGHT);
     this.LoadGameObject(boundary);
 
     //Right Wall
     boundary = new Boundary();
-    boundary.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), 0, eLayerTypes.Boundary);
-    boundary.SetSize(this.UICellSize * 2, Game.CANVAS_HEIGHT);
+    boundary.SetLocation(this.gridRect.TopRight.X, 0, eLayerTypes.Boundary);
+    boundary.SetSize((Game.CANVAS_WIDTH - this.gridRect.TopRight.X), Game.CANVAS_HEIGHT);
     this.LoadGameObject(boundary);
 
     //Bottom Wall
     boundary = new Boundary();
-    boundary.SetLocation(0, Game.CANVAS_HEIGHT - this.UICellSize, eLayerTypes.Boundary);
-    boundary.SetSize(Game.CANVAS_WIDTH, this.UICellSize);
+    boundary.SetLocation(0, this.gridRect.BottomLeft.Y, eLayerTypes.Boundary);
+    boundary.SetSize(Game.CANVAS_WIDTH, (Game.CANVAS_HEIGHT - this.gridRect.BottomLeft.Y));
     this.LoadGameObject(boundary);
   }
 
@@ -176,7 +202,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
 
       if (this.playerHealth <= 0) {
-        this.restartButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
+        this.restartButton.SetLocation((Game.CANVAS_WIDTH / 2) - 140, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
         this.homeButton.SetLocation((Game.CANVAS_WIDTH / 2) + 50, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
       }
 
@@ -287,23 +313,23 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     //Draw Grid Columns
     Game.CONTEXT.lineWidth = 1;
-    let width = Math.ceil(this.GRID_RECT.Width / this.GridCellSize);
+    let width = Math.ceil(Game.CANVAS_WIDTH / this.GridCellSize);
     Game.CONTEXT.strokeStyle = `#ff000080`;
     for (let i = 0; i < width + 1; i++) {
-      let x = this.GRID_RECT.X + (this.GridCellSize * i);
+      let x = (this.GridCellSize * i) + this.remainderX;
       Game.CONTEXT.beginPath();
-      Game.CONTEXT.moveTo(x, this.GRID_RECT.Y);
-      Game.CONTEXT.lineTo(x, this.GRID_RECT.Y + this.GRID_RECT.Height);
+      Game.CONTEXT.moveTo(x, 0);
+      Game.CONTEXT.lineTo(x, Game.CANVAS_HEIGHT);
       Game.CONTEXT.stroke();
     }
 
     //Draw Grid Rows
     let height = Math.ceil(Game.CANVAS_HEIGHT / this.GridCellSize);
     for (let i = 0; i < height; i++) {
-      let y = this.GRID_RECT.Y + (this.GridCellSize * i) + this.remainderY;
+      let y = (this.GridCellSize * i) + this.remainderY;
       Game.CONTEXT.beginPath();
-      Game.CONTEXT.moveTo(this.GRID_RECT.X, y);
-      Game.CONTEXT.lineTo(this.GRID_RECT.X + this.GRID_RECT.Width, y);
+      Game.CONTEXT.moveTo(0, y);
+      Game.CONTEXT.lineTo(Game.CANVAS_WIDTH, y);
       Game.CONTEXT.stroke();
     }
 
@@ -368,8 +394,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       this.previousMouse = Game.MOUSE_LOCATION;
 
       if (this.GRID_RECT.ContainsPoint(Game.MOUSE_LOCATION)) {
-        this.mouseCell = new Vector2(Math.floor((Game.MOUSE_LOCATION.X) / this.GridCellSize),
-          Math.floor(((Game.MOUSE_LOCATION.Y) - this.remainderY) / this.GridCellSize));
+        this.mouseCell = new Vector2(Math.floor((Game.MOUSE_LOCATION.X - this.remainderX) / this.GridCellSize),
+          Math.floor((Game.MOUSE_LOCATION.Y - this.remainderY) / this.GridCellSize));
+
+        if (this.grid[this.mouseCell.X][this.mouseCell.Y] === ePathCellStatus.OutOfBounds)
+          this.mouseCell = null;
       }
       else {
         this.mouseCell = null;
@@ -460,7 +489,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     if (!this.grid)
       return false;
 
-    if (this.grid[cell.X][cell.Y] === 1)
+    if (this.grid[cell.X][cell.Y] >= ePathCellStatus.Blocked)
       return false;
 
     let newDefender = this.CreateNewDefender;
@@ -468,17 +497,17 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       return false;
 
     if (this.RoundStarted) {
-      if (this.grid[cell.X][cell.Y] === 2)
+      if (this.grid[cell.X][cell.Y] === ePathCellStatus.Path)
         return false;
 
-      this.grid[cell.X][cell.Y] = 1;
+      this.grid[cell.X][cell.Y] = ePathCellStatus.Blocked;
 
       this.createDefender(newDefender, (cell.X * this.GridCellSize) + this.remainderX, ((cell.Y * this.GridCellSize) + this.remainderY), eLayerTypes.Object + newDefender.Location.Z);
 
       return true;
     }
 
-    this.grid[cell.X][cell.Y] = 1;
+    this.grid[cell.X][cell.Y] = ePathCellStatus.Blocked;
 
     if (this.calculatePath()) {
       this.createDefender(newDefender, (cell.X * this.GridCellSize) + this.remainderX, ((cell.Y * this.GridCellSize) + this.remainderY), eLayerTypes.Object + newDefender.Location.Z);
@@ -486,7 +515,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       return true;
     }
     else {
-      this.grid[cell.X][cell.Y] = 0;
+      this.grid[cell.X][cell.Y] = ePathCellStatus.Open;
       return false;
     }
   }
@@ -513,11 +542,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       for (let y = 0; y < this.gridRows; y++) {
         let coordX = x * this.GridCellSize;
         let coordY = y * this.GridCellSize;
-        if (coordX < this.GRID_RECT.X || coordX >= this.GRID_RECT.TopRight.X ||
-          coordY < this.GRID_RECT.Y || coordY >= this.GRID_RECT.BottomRight.Y)
-          row.push(1);
+        if (coordX < this.GRID_RECT.X || (coordX + this.GridCellSize) > this.GRID_RECT.TopRight.X ||
+          coordY < this.GRID_RECT.Y || (coordY + this.GridCellSize) > this.GRID_RECT.BottomRight.Y)
+          row.push(ePathCellStatus.OutOfBounds);
         else
-          row.push(0);
+          row.push(ePathCellStatus.Open);
       }
       this.grid.push(row);
     }
@@ -615,13 +644,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.thePath = [];
     for (let x = 0; x < this.grid.length; x++) {
       for (let y = 0; y < this.grid[x].length; y++) {
-        if (this.grid[x][y] === 2)
-          this.grid[x][y] = 0;
+        if (this.grid[x][y] === ePathCellStatus.Path)
+          this.grid[x][y] = ePathCellStatus.Open;
       }
     }
 
     for (let i = tempPath.length - 1; i >= 0; i--) {
-      this.grid[tempPath[i].X][tempPath[i].Y] = 2;
+      this.grid[tempPath[i].X][tempPath[i].Y] = ePathCellStatus.Path;
       let worldPoint = new Vector2((tempPath[i].X * this.GridCellSize) + this.remainderX,
         (tempPath[i].Y * this.GridCellSize) + this.remainderY);
 
@@ -636,7 +665,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     for (let y = 0; y < this.grid[0].length; y++) {
       let cells = [];
       for (let x = 0; x < this.grid.length; x++) {
-        if (this.grid[x][y] === 1) {
+        if (this.grid[x][y] === ePathCellStatus.Blocked) {
           let found = false;
           for (let i = 0; i < this.defenders.length; i++) {
             let xx = Math.floor(this.defenders[i].CenterMassLocation.X / this.GridCellSize);
@@ -653,7 +682,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
             cells.push(cell);
           }
         }
-        else if (this.grid[x][y] === 2) {
+        else if (this.grid[x][y] === ePathCellStatus.Path) {
           let cell = { defenderType: 1, defenderLevel: 0 };
           cells.push(cell);
         }
