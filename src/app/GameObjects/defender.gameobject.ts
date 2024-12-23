@@ -39,7 +39,7 @@ export abstract class Defender extends Base {
 
   //  return false;
   //}
-  public Update(deltaTime: number) {
+  public override Update(deltaTime: number) {
     if (this.EnemyInRange) {
       if (this.cooldown <= 0) {
         this.EnemyInRange.ReduceHealth(this.Damage);

@@ -28,11 +28,11 @@ export class Button extends Base {
       this.color = '#999999';
   }
 
-  public Update(deltaTime: number): void {
+  public override Update(deltaTime: number): void {
     this.UpdateClick();
   }
 
-  Draw(deltaTime: number): void {
+  public override Draw(deltaTime: number): void {
     if (this.color) {
       Game.CONTEXT.fillStyle = this.color;
       Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,

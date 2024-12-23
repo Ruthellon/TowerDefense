@@ -16,10 +16,10 @@ export class LevelFourScene extends DefenseBaseLevel {
     return '';
   }
   protected get PlayerStartingHealth(): number {
-    return 1;
+    return 10;
   }
   protected override get SecondsBetweenMonsters(): number {
-    return 1;
+    return 1.25;
   }
   protected override get SecondsToStart(): number {
     return 120;
@@ -29,16 +29,16 @@ export class LevelFourScene extends DefenseBaseLevel {
     return this.availableDefenders;
   }
   protected get TotalEnemies(): number {
-    return 1;
+    return 50;
   }
   protected override ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;
   }
-  private startingCells = [new Vector2(0, 4)];
+  private startingCells = [new Vector2(7, 0)];
   protected get StartingCells(): Vector2[] {
     return this.startingCells;
   }
-  private endingCells = [new Vector2(14, 4)];
+  private endingCells = [new Vector2(7, 8)];
   protected override get EndingCells(): Vector2[] {
     return this.endingCells;
   }
@@ -48,26 +48,27 @@ export class LevelFourScene extends DefenseBaseLevel {
   protected get GridCellSize(): number {
     return 100;
   }
+  protected override showAttackerPath = false;
 
   override Update(deltaTime: number): void {
     super.Update(deltaTime);
   }
 
   override Draw(deltaTime: number): void {
-    //super.Draw(deltaTime);
-    //Game.CONTEXT.fillStyle = '#ffffff';
-    //Game.CONTEXT.font = '22px serif';
-    //Game.CONTEXT.textAlign = "center";
-    //Game.CONTEXT.fillText('Level Three', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
-
-
-    Game.CONTEXT!.fillStyle = '#111111';
-    Game.CONTEXT!.fillRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
-
+    super.Draw(deltaTime);
     Game.CONTEXT.fillStyle = '#ffffff';
-    Game.CONTEXT.font = '64px serif';
+    Game.CONTEXT.font = '22px serif';
     Game.CONTEXT.textAlign = "center";
-    Game.CONTEXT.fillText('Coming Soon...', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2);
+    Game.CONTEXT.fillText('Level Four', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
+
+
+    //Game.CONTEXT!.fillStyle = '#111111';
+    //Game.CONTEXT!.fillRect(0, 0, Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
+
+    //Game.CONTEXT.fillStyle = '#ffffff';
+    //Game.CONTEXT.font = '64px serif';
+    //Game.CONTEXT.textAlign = "center";
+    //Game.CONTEXT.fillText('Coming Soon...', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2);
   }
 
   override Load(): void {
@@ -78,10 +79,11 @@ export class LevelFourScene extends DefenseBaseLevel {
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
     let newAttacker = new Block();
-    newAttacker.SetStartingSpeed(2);
-    newAttacker.SetStartingHealth(650);
+    newAttacker.SetStartingSpeed(10);
+    newAttacker.SetStartingHealth(50);
     newAttacker.SetSize(60, 60);
     newAttacker.SetColor('#00ff00');
+    newAttacker.SetDamage(1);
     newAttacker.SetValue(2);
     return newAttacker;
   }

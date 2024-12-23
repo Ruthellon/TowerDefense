@@ -7,7 +7,7 @@ import { IGameObject } from "./gameobject.interface";
 
 
 export class Wall extends Defender {
-  protected override location = new Vector3(0, 0, 5);
+  protected override location = new Vector3(0, 0,-1);
   public get UpgradeCost(): number {
     return 0;
   }
@@ -40,12 +40,11 @@ export class Wall extends Defender {
   }
   override color = '#ff0000';
 
-  override Update(deltaTime: number): void {
+  public override Update(deltaTime: number): void {
     super.Update(deltaTime);
   }
 
-  Draw(deltaTime: number): void {
-
+  public override Draw(deltaTime: number): void {
     Game.CONTEXT.fillStyle = this.color;
     Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,
       this.Size.X, this.Size.Y);

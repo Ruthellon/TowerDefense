@@ -29,7 +29,7 @@ export abstract class Attacker extends Base {
 
   private distanceLeftX = 0;
   private distanceLeftY = 0;
-  public Update(deltaTime: number) {
+  public override Update(deltaTime: number) {
     if (this.path.length === 0)
       return;
 
@@ -54,7 +54,7 @@ export abstract class Attacker extends Base {
     this.location.Y = result.Y;
   }
 
-  public Draw(deltaTime: number): void {
+  public override Draw(deltaTime: number): void {
     Game.CONTEXT.fillStyle = '#000000';
     Game.CONTEXT.fillRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
     if (this.Color) {

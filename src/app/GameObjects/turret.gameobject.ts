@@ -4,7 +4,7 @@ import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 export class Turret extends Defender {
-  protected override location = new Vector3(0, 0, 7);
+  protected override location = new Vector3(0, 0, 1);
   private upgradeCost = 10;
   public get UpgradeCost(): number {
     return this.upgradeCost;
@@ -77,11 +77,11 @@ export class Turret extends Defender {
 
   override color = '#888888';
 
-  override Update(deltaTime: number): void {
+  public override Update(deltaTime: number): void {
     super.Update(deltaTime);
   }
 
-  Draw(deltaTime: number): void {
+  public override Draw(deltaTime: number): void {
     Game.CONTEXT.fillStyle = this.color;
     Game.CONTEXT.fillRect(this.location.X, this.location.Y,
       this.Size.X, this.Size.Y);

@@ -69,6 +69,18 @@ export abstract class Base extends IGameObject {
     this.objectRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
+  public Update(deltaTime: number) {
+
+  }
+
+  public Draw(deltaTime: number) {
+
+  }
+
+  public OnCollision(collision: IGameObject) {
+
+  }
+
   public SetLocation(x: number, y: number, z: number): void {
     this.location = new Vector3(x, y, z);
   }

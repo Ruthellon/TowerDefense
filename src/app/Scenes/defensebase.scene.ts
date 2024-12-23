@@ -1,5 +1,5 @@
 import { Attacker } from "../GameObjects/attacker.gameobject";
-import { Block } from "../GameObjects/block.gameobject";
+import { Boundary } from "../GameObjects/boundary.gameobject";
 import { Button } from "../GameObjects/button.gameobject";
 import { Defender } from "../GameObjects/defender.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
@@ -9,12 +9,18 @@ import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { PathFinder } from "../Utility/pathfinding.service";
 import { BaseLevel } from "./base.scene";
-import { IScene } from "./scene.interface";
 
 export enum eDefenderTypes {
   Wall,
   BasicTurret,
   SAMTurret
+}
+
+export enum eLayerTypes {
+  Background = 1,
+  Object = 25,
+  Boundary = 50,
+  UI = 75
 }
 
 export abstract class DefenseBaseLevel extends BaseLevel {
@@ -33,6 +39,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   protected abstract CreateNewAttacker(attackerCount: number): Attacker;
   protected abstract PlayerWonScreen(): void;
+
+  protected get UICellSize(): number {
+    return 100;
+  }
 
   protected gameObjects: IGameObject[] = [];
   protected get GameObjects(): IGameObject[] {
@@ -79,6 +89,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     return defender;
   }
 
+  protected showAttackerPath: boolean = true;
+
   protected playerHealth: number = 0;
   protected ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;
@@ -101,11 +113,35 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.playerHealth = this.PlayerStartingHealth;
     this.secondsToStart = this.SecondsToStart;
 
-    this.remainderX = Math.floor((Game.CANVAS_WIDTH % this.GridCellSize) / 2);
-    this.remainderY = Math.floor((Game.CANVAS_HEIGHT % this.GridCellSize) / 2);
+    this.remainderX = Math.floor((this.GRID_RECT.Width % this.GridCellSize) / 2);
+    this.remainderY = Math.floor((this.GRID_RECT.Height % this.GridCellSize) / 2);
 
     this.setButtons();
     this.setUpGrid();
+
+    //Top Wall
+    let boundary = new Boundary();
+    boundary.SetLocation(0, 0, eLayerTypes.Boundary);
+    boundary.SetSize(Game.CANVAS_WIDTH, this.UICellSize);
+    this.LoadGameObject(boundary);
+
+    //Left Wall
+    boundary = new Boundary();
+    boundary.SetLocation(0, 0, eLayerTypes.Boundary);
+    boundary.SetSize(this.UICellSize, Game.CANVAS_HEIGHT);
+    this.LoadGameObject(boundary);
+
+    //Right Wall
+    boundary = new Boundary();
+    boundary.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), 0, eLayerTypes.Boundary);
+    boundary.SetSize(this.UICellSize * 2, Game.CANVAS_HEIGHT);
+    this.LoadGameObject(boundary);
+
+    //Bottom Wall
+    boundary = new Boundary();
+    boundary.SetLocation(0, Game.CANVAS_HEIGHT - this.UICellSize, eLayerTypes.Boundary);
+    boundary.SetSize(Game.CANVAS_WIDTH, this.UICellSize);
+    this.LoadGameObject(boundary);
   }
 
   /*
@@ -143,6 +179,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     if (this.restartButton.Clicked) {
       Game.SetTheScene(this.CurrentSceneName);
+    }
+
+    if (this.homeButton.Clicked) {
+      Game.SetTheScene('instructions');
     }
 
     if (this.settingsButton.Clicked) {
@@ -262,14 +302,16 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       Game.CONTEXT.stroke();
     }
 
-    //Draw The Path
-    Game.CONTEXT.lineWidth = 5;
-    if (this.thePath.length > 0) {
-      Game.CONTEXT.strokeStyle = '#2222ff88';
-      this.thePath.forEach((path) => {
-        Game.CONTEXT.strokeRect(path.X + 5, path.Y + 5,
-          this.GridCellSize - 10, this.GridCellSize - 10);
-      });
+    if (this.showAttackerPath) {
+      //Draw The Path
+      Game.CONTEXT.lineWidth = 5;
+      if (this.thePath.length > 0) {
+        Game.CONTEXT.strokeStyle = '#2222ff88';
+        this.thePath.forEach((path) => {
+          Game.CONTEXT.strokeRect(path.X + 5, path.Y + 5,
+            this.GridCellSize - 10, this.GridCellSize - 10);
+        });
+      }
     }
 
     super.Draw(deltaTime);
@@ -278,25 +320,25 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       Game.CONTEXT.fillStyle = '#ffffff';
       Game.CONTEXT.font = '24px serif';
       Game.CONTEXT.textAlign = "center";
-      Game.CONTEXT.fillText(`Start: ${this.secondsToStart.toFixed(2)}`, this.GridCellSize * 2, this.GridCellSize / 2);
+      Game.CONTEXT.fillText(`Start: ${this.secondsToStart.toFixed(2)}`, this.UICellSize * 2, this.UICellSize / 2);
     }
 
     if (this.playerHealth > 0) {
       Game.CONTEXT.fillStyle = '#ffffff';
       Game.CONTEXT.font = '24px serif';
       Game.CONTEXT.textAlign = "center";
-      Game.CONTEXT.fillText(`Health: ${this.playerHealth}`, Game.CANVAS_WIDTH / 2, this.GridCellSize / 2);
+      Game.CONTEXT.fillText(`Health: ${this.playerHealth}`, Game.CANVAS_WIDTH / 2, this.UICellSize / 2);
     }
 
     Game.CONTEXT.fillStyle = '#ffffff';
     Game.CONTEXT.font = '24px serif';
     Game.CONTEXT.textAlign = "center";
-    Game.CONTEXT.fillText(`Credits: ${Game.Credits.toFixed(0)}`, Game.CANVAS_WIDTH - this.GridCellSize * 2.5, this.GridCellSize / 2);
+    Game.CONTEXT.fillText(`Credits: ${Game.Credits.toFixed(0)}`, Game.CANVAS_WIDTH - this.UICellSize * 2.5, this.UICellSize / 2);
 
     if (this.mouseCell) {
       Game.CONTEXT.lineWidth = 5;
       Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect((this.mouseCell.X * this.GridCellSize), (this.mouseCell.Y * this.GridCellSize) + this.remainderY,
+      Game.CONTEXT.strokeRect((this.mouseCell.X * this.GridCellSize) + this.remainderX, (this.mouseCell.Y * this.GridCellSize) + this.remainderY,
         this.GridCellSize, this.GridCellSize);
     }
 
@@ -426,7 +468,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
       this.grid[cell.X][cell.Y] = 1;
 
-      this.createDefender(newDefender, (cell.X * this.GridCellSize) + this.remainderX, ((cell.Y * this.GridCellSize) + this.remainderY), newDefender.Location.Z);
+      this.createDefender(newDefender, (cell.X * this.GridCellSize) + this.remainderX, ((cell.Y * this.GridCellSize) + this.remainderY), eLayerTypes.Object + newDefender.Location.Z);
 
       return true;
     }
@@ -434,7 +476,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.grid[cell.X][cell.Y] = 1;
 
     if (this.calculatePath()) {
-      this.createDefender(newDefender, (cell.X * this.GridCellSize) + this.remainderX, ((cell.Y * this.GridCellSize) + this.remainderY), newDefender.Location.Z);
+      this.createDefender(newDefender, (cell.X * this.GridCellSize) + this.remainderX, ((cell.Y * this.GridCellSize) + this.remainderY), eLayerTypes.Object + newDefender.Location.Z);
 
       return true;
     }
@@ -461,11 +503,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.grid = [];
     this.gridColumns = Math.floor(Game.CANVAS_WIDTH / this.GridCellSize);
     this.gridRows = Math.floor(Game.CANVAS_HEIGHT / this.GridCellSize);
-    for (let i = 0; i < this.gridColumns; i++) {
+    for (let x = 0; x < this.gridColumns; x++) {
       let row = [];
-      for (let j = 0; j < this.gridRows; j++) {
-        if (j === 0 || j === this.gridRows - 1 ||
-          i === 0 || i === this.gridColumns - 1 || i === this.gridColumns - 2)
+      for (let y = 0; y < this.gridRows; y++) {
+        let coordX = x * this.GridCellSize;
+        let coordY = y * this.GridCellSize;
+        if (coordX < this.GRID_RECT.X || coordX > this.GRID_RECT.TopRight.X ||
+          coordY < this.GRID_RECT.Y || coordY > this.GRID_RECT.BottomRight.Y)
           row.push(1);
         else
           row.push(0);
@@ -485,8 +529,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private setButtons(): void {
 
     let wallButton = new Button();
-    wallButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 2), this.GridCellSize, 10);
-    wallButton.SetSize(this.GridCellSize, this.GridCellSize);
+    wallButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), this.UICellSize, eLayerTypes.UI);
+    wallButton.SetSize(this.UICellSize, this.UICellSize);
     wallButton.SetText('Wall');
     wallButton.SetSelected(true);
     wallButton.SetId(eDefenderTypes.Wall)
@@ -495,8 +539,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     if (this.AvailableDefenders.find((defender) => defender === eDefenderTypes.BasicTurret)) {
       let turretButton = new Button();
-      turretButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 1), this.GridCellSize, 10);
-      turretButton.SetSize(this.GridCellSize, this.GridCellSize);
+      turretButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize, eLayerTypes.UI);
+      turretButton.SetSize(this.UICellSize, this.UICellSize);
       turretButton.SetText('Turret');
       turretButton.SetId(eDefenderTypes.BasicTurret);
       this.defenderButtons.push(turretButton);
@@ -505,41 +549,46 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     if (this.AvailableDefenders.find((defender) => defender === eDefenderTypes.SAMTurret)) {
       let samButton = new Button();
-      samButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 2), this.GridCellSize * 2, 10);
-      samButton.SetSize(this.GridCellSize, this.GridCellSize);
+      samButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), this.UICellSize * 2, eLayerTypes.UI);
+      samButton.SetSize(this.UICellSize, this.UICellSize);
       samButton.SetText('S.A.M.');
       samButton.SetId(eDefenderTypes.SAMTurret);
       this.defenderButtons.push(samButton);
       this.LoadGameObject(samButton);
     }
 
-    this.startButton.SetLocation((this.GridCellSize * 3), 0, 10);
-    this.startButton.SetSize(this.GridCellSize, this.GridCellSize);
+    this.startButton.SetLocation((this.UICellSize * 3) + 5, 5, eLayerTypes.UI);
+    this.startButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.startButton.SetText('Start');
 
-    this.restartButton.SetLocation((this.GridCellSize * 5), 0, 10);
-    this.restartButton.SetSize(this.GridCellSize, this.GridCellSize);
+    this.restartButton.SetLocation((this.UICellSize * 4) + 5, 5, eLayerTypes.UI);
+    this.restartButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.restartButton.SetText('Restart');
 
-    this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, 10);
+    this.homeButton.SetLocation((this.UICellSize * 5) + 5, 5, eLayerTypes.UI);
+    this.homeButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
+    this.homeButton.SetText('Home');
+
+    this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
     this.settingsButton.SetSize(50, 50);
     this.settingsButton.SetImage('/assets/images/cog.png');
 
     this.LoadGameObject(this.startButton);
     this.LoadGameObject(this.restartButton);
+    this.LoadGameObject(this.homeButton);
     this.LoadGameObject(this.settingsButton);
 
-    this.upgradeButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 2) + 10, (this.GridCellSize * 6) + 5, 10);
-    this.upgradeButton.SetSize((this.GridCellSize * 2) - 20, (this.GridCellSize) - 10);
+    this.upgradeButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 6) + 5, eLayerTypes.UI);
+    this.upgradeButton.SetSize((this.UICellSize * 2) - 20, (this.UICellSize) - 10);
     this.upgradeButton.SetText(`Upgrade`);
     this.upgradeButton.Load();
 
-    this.deleteButton.SetLocation(Game.CANVAS_WIDTH - (this.GridCellSize * 2) + 10, (this.GridCellSize * 5) + 5, 10);
-    this.deleteButton.SetSize((this.GridCellSize * 2) - 20, (this.GridCellSize) - 10);
+    this.deleteButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 5) + 5, eLayerTypes.UI);
+    this.deleteButton.SetSize((this.UICellSize * 2) - 20, (this.UICellSize) - 10);
     this.deleteButton.SetText('Delete');
     this.deleteButton.Load();
 
-    this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, 50);
+    this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
     this.nextLevelButton.SetSize(200, 100);
     this.nextLevelButton.SetText('Go to Next Level');
     this.nextLevelButton.Load();
@@ -612,7 +661,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   private spawnAttacker(): void {
     let mon = this.CreateNewAttacker(this.enemiesSpawned);
-    mon.SetLocation(this.StartingCells[0].X - this.GridCellSize, Game.CANVAS_HEIGHT / 2, 2);
+    mon.SetLocation(this.StartingCells[0].X - this.GridCellSize, Game.CANVAS_HEIGHT / 2, eLayerTypes.Object);
     mon.SetPath(this.ThePath, this.GridCellSize);
 
     this.LoadGameObject(mon);
@@ -630,6 +679,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private nextLevelButton = new Button();
   private startButton: Button = new Button();
   private restartButton: Button = new Button();
+  private homeButton: Button = new Button();
   private settingsButton: Button = new Button();
   private remainderX: number = 0;
   private remainderY: number = 0;
