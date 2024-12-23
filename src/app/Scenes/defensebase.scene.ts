@@ -152,22 +152,32 @@ export abstract class DefenseBaseLevel extends BaseLevel {
        UUUUU    P       DDDD   A     A     T     EEEEE  
   */
   override Update(deltaTime: number) {
-    if (this.playerHealth <= 0) {
-      this.isGameOver = true;
-      return;
-    }
+    this.restartButton.Update(deltaTime);
+    this.homeButton.Update(deltaTime);
 
-    if (this.enemiesRemoved >= this.TotalEnemies) {
-      if (!this.sentAPIMessage) {
-        this.isGameOver = true;
-        this.sentAPIMessage = true;
-        Game.TheAPI.SendWinInfo(this.LevelUnid, this.playerHealth, Game.Version, this.gatherGridInfo());
+    if (this.isGameOver)
+      return;
+
+    if (this.playerHealth <= 0 || this.enemiesRemoved >= this.TotalEnemies) {
+      this.isGameOver = true;
+
+      if (this.enemiesRemoved >= this.TotalEnemies) {
+        if (!this.sentAPIMessage) {
+          this.isGameOver = true;
+          this.sentAPIMessage = true;
+          Game.TheAPI.SendWinInfo(this.LevelUnid, this.playerHealth, Game.Version, this.gatherGridInfo());
+        }
+
+        this.nextLevelButton.Update(deltaTime);
+        if (this.nextLevelButton.Clicked) {
+          Game.SetTheScene(this.NextLevelName);
+          return;
+        }
       }
 
-      this.nextLevelButton.Update(deltaTime);
-      if (this.nextLevelButton.Clicked) {
-        Game.SetTheScene(this.NextLevelName);
-        return;
+      if (this.playerHealth <= 0) {
+        this.restartButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
+        this.homeButton.SetLocation((Game.CANVAS_WIDTH / 2) + 50, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
       }
 
       return;
@@ -175,14 +185,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     if (this.startButton.Clicked) {
       this.secondsToStart = 0;
-    }
-
-    if (this.restartButton.Clicked) {
-      Game.SetTheScene(this.CurrentSceneName);
-    }
-
-    if (this.homeButton.Clicked) {
-      Game.SetTheScene('instructions');
     }
 
     if (this.settingsButton.Clicked) {
@@ -270,7 +272,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         Game.CONTEXT.fillStyle = '#ffffff';
         Game.CONTEXT.font = '32px serif';
         Game.CONTEXT.textAlign = "center";
-        Game.CONTEXT.fillText('Refresh To Play Again', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
+        Game.CONTEXT.fillText('Play Again?', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
+
+        this.restartButton.Draw(deltaTime);
+        this.homeButton.Draw(deltaTime);
       }
       else {
         this.PlayerWonScreen();
@@ -508,8 +513,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       for (let y = 0; y < this.gridRows; y++) {
         let coordX = x * this.GridCellSize;
         let coordY = y * this.GridCellSize;
-        if (coordX < this.GRID_RECT.X || coordX > this.GRID_RECT.TopRight.X ||
-          coordY < this.GRID_RECT.Y || coordY > this.GRID_RECT.BottomRight.Y)
+        if (coordX < this.GRID_RECT.X || coordX >= this.GRID_RECT.TopRight.X ||
+          coordY < this.GRID_RECT.Y || coordY >= this.GRID_RECT.BottomRight.Y)
           row.push(1);
         else
           row.push(0);
@@ -523,7 +528,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.calculatePath();
 
     this.lastCoordinate = new Vector3((this.EndingCells[0].X * this.GridCellSize) + (this.GridCellSize / 2), (this.EndingCells[0].Y * this.GridCellSize) + (this.GridCellSize / 2), 0);
-
   }
 
   private setButtons(): void {
@@ -560,15 +564,18 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.startButton.SetLocation((this.UICellSize * 3) + 5, 5, eLayerTypes.UI);
     this.startButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.startButton.SetText('Start');
+    this.startButton.SetClickFunction(() => this.secondsToStart = 0);
 
     this.restartButton.SetLocation((this.UICellSize * 4) + 5, 5, eLayerTypes.UI);
     this.restartButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.restartButton.SetText('Restart');
+    this.restartButton.SetClickFunction(() => Game.SetTheScene(this.CurrentSceneName));
 
     this.homeButton.SetLocation((this.UICellSize * 5) + 5, 5, eLayerTypes.UI);
     this.homeButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.homeButton.SetText('Home');
-
+    this.homeButton.SetClickFunction(() => Game.SetTheScene('instructions'));
+    
     this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
     this.settingsButton.SetSize(50, 50);
     this.settingsButton.SetImage('/assets/images/cog.png');
@@ -591,6 +598,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
     this.nextLevelButton.SetSize(200, 100);
     this.nextLevelButton.SetText('Go to Next Level');
+    this.nextLevelButton.SetClickFunction(() => Game.SetTheScene(this.NextLevelName));
     this.nextLevelButton.Load();
   }
 

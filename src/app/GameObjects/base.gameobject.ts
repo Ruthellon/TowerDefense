@@ -24,6 +24,7 @@ export abstract class Base extends IGameObject {
       return false;
     }
   }
+  protected clickFunction: (() => void) | undefined;
   protected clicked: boolean = false;
   public get Clicked(): boolean {
     if (this.clicked) {
@@ -120,13 +121,22 @@ export abstract class Base extends IGameObject {
     }
   }
 
+  public SetClickFunction(clicked: () => void): void {
+    this.clickFunction = clicked;
+  }
+
   protected UpdateClick(): void {
     if (Game.MOUSE_PRESSED && this.ObjectRect.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
       this.pressed = true;
       this.clicked = false;
     }
     else if (this.pressed && !Game.MOUSE_PRESSED && this.ObjectRect.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
-      this.clicked = true;
+      if (this.clickFunction) {
+        this.pressed = false;
+        this.clickFunction();
+      }
+      else
+        this.clicked = true;
     }
     else if (this.pressed && !Game.MOUSE_PRESSED) {
       this.pressed = false;
