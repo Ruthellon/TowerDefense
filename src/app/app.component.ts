@@ -59,6 +59,11 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    Game.SetKeyPress(event.key);
+  }
+
   constructor(private api: IAngryElfAPIService) {
 
   }

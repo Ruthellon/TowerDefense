@@ -36,6 +36,12 @@ export class Game {
   public static get MOUSE_PRESS_LOCATION(): Vector2 {
     return this.mousePressLocal;
   }
+  private static keyPress: string | undefined;
+  public static get KEY_PRESS(): string | undefined {
+    let key = this.keyPress;
+    this.keyPress = undefined
+    return key;
+  }
   private static theScene: any = [];
   public static get TheScene(): IScene {
     return this.theScene;
@@ -100,6 +106,10 @@ export class Game {
 
   public static SetMousePressLocation(x: number, y: number): void {
     this.mousePressLocal = new Vector2(x, y);
+  }
+
+  public static SetKeyPress(key: string) {
+    this.keyPress = key;
   }
 
   public static SetWidth(width: number): void {

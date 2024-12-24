@@ -46,7 +46,7 @@ export class LevelFiveScene extends DefenseBaseLevel {
     return 100;
   }
   protected get GridCellSize(): number {
-    return 75;
+    return 60;
   }
   protected override showAttackerPath = true;
 

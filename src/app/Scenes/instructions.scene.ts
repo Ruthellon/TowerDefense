@@ -11,6 +11,8 @@ export class InstructionsScene extends BaseLevel {
     return this.gameObjects;
   }
 
+  private editStageButton: Button = new Button();
+
   private settingsButton: Button = new Button();
   startLevel1Button = new Button();
   startLevel2Button = new Button();
@@ -55,10 +57,40 @@ export class InstructionsScene extends BaseLevel {
     this.settingsButton.SetImage('/assets/images/cog.png');
     this.settingsButton.SetClickFunction(() => this.openSettings());
     this.LoadGameObject(this.settingsButton);
+
+    this.editStageButton.SetLocation(Game.CANVAS_WIDTH / 2 - 100, Game.CANVAS_HEIGHT / 2, eLayerTypes.UI);
+    this.editStageButton.SetSize(200, 100);
+    this.editStageButton.SetText('Edit Level');
+    this.editStageButton.SetClickFunction(() => Game.SetTheScene('editstage'));
+    this.editStageButton.Load();
   }
 
+  private hasPermission = false;
   override Update(deltaTime: number) {
     super.Update(deltaTime);
+
+    if (this.hasPermission) {
+      this.editStageButton.Update(deltaTime);
+    }
+
+    if (this.settingsOpen) {
+      let key = Game.KEY_PRESS;
+      if (key) {
+        if (!this.startedTyping) {
+          this.startedTyping = true;
+          this.passPhrase = '';
+        }
+
+        if (key.length === 1)
+          this.passPhrase += key;
+        else if (key === 'Backspace')
+          this.passPhrase = this.passPhrase.slice(0, -1);
+      }
+
+      if (this.passPhrase === 'I like to move it move it.') {
+        this.hasPermission = true;
+      }
+    }
   }
 
   override Draw(deltaTime: number) {
@@ -102,7 +134,12 @@ export class InstructionsScene extends BaseLevel {
       Game.CONTEXT.font = '20px Arial';
       Game.CONTEXT.fillStyle = '#000'; // Text color
       Game.CONTEXT.textBaseline = 'middle';
-      Game.CONTEXT.fillText('Testing testing testing testing', (Game.CANVAS_WIDTH / 2) - 130, 150 + 20);
+      Game.CONTEXT.textAlign = 'left';
+      Game.CONTEXT.fillText(this.passPhrase, (Game.CANVAS_WIDTH / 2) - 145, 150 + 20);
+
+      if (this.hasPermission) {
+        this.editStageButton.Draw(deltaTime);
+      }
     }
   }
 
@@ -114,4 +151,6 @@ export class InstructionsScene extends BaseLevel {
   }
 
   private settingsOpen: boolean = false;
+  private startedTyping: boolean = false;
+  private passPhrase: string = 'Enter Passphrase'
 }
