@@ -384,12 +384,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   }
 
   private updateMouseStuff(): void {
-    if (!this.previousMouse || !this.previousMouse.isEqual(Game.MOUSE_LOCATION)) {
-      this.previousMouse = Game.MOUSE_LOCATION;
+    if (!this.previousMouse || !this.previousMouse.isEqual(Game.MOUSE_PRESS_LOCATION)) {
+      this.previousMouse = Game.MOUSE_PRESS_LOCATION;
 
-      if (this.GRID_RECT.ContainsPoint(Game.MOUSE_LOCATION)) {
-        this.mouseCell = new Vector2(Math.floor((Game.MOUSE_LOCATION.X - this.remainderX) / this.GridCellSize),
-          Math.floor((Game.MOUSE_LOCATION.Y - this.remainderY) / this.GridCellSize));
+      if (this.GRID_RECT.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
+        this.mouseCell = new Vector2(Math.floor((Game.MOUSE_PRESS_LOCATION.X - this.remainderX) / this.GridCellSize),
+          Math.floor((Game.MOUSE_PRESS_LOCATION.Y - this.remainderY) / this.GridCellSize));
 
         if (this.grid[this.mouseCell.X][this.mouseCell.Y] === ePathCellStatus.OutOfBounds)
           this.mouseCell = null;

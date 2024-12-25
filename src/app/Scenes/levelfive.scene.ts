@@ -34,11 +34,11 @@ export class LevelFiveScene extends DefenseBaseLevel {
   protected override ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;
   }
-  private startingCells = [new Vector2(1, 5)];
+  private startingCells = [new Vector2(1, 7)];
   protected get StartingCells(): Vector2[] {
     return this.startingCells;
   }
-  private endingCells = [new Vector2(18, 5)];
+  private endingCells = [new Vector2(23, 7)];
   protected override get EndingCells(): Vector2[] {
     return this.endingCells;
   }
@@ -70,9 +70,9 @@ export class LevelFiveScene extends DefenseBaseLevel {
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
     let newAttacker = new Block();
-    newAttacker.SetStartingSpeed(10);
+    newAttacker.SetStartingSpeed(20);
     newAttacker.SetStartingHealth(50);
-    newAttacker.SetSize(60, 60);
+    newAttacker.SetSize(50, 50);
     newAttacker.SetColor('#00ff00');
     newAttacker.SetDamage(1);
     newAttacker.SetValue(2);

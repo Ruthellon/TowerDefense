@@ -73,7 +73,7 @@ export class LevelOneScene extends DefenseBaseLevel {
   protected CreateNewAttacker(attackerCount: number): Attacker {
     let newAttacker = new Block();
     newAttacker.SetStartingSpeed(10);
-    newAttacker.SetStartingHealth(48);
+    newAttacker.SetStartingHealth(42);
     newAttacker.SetDamage(1);
     newAttacker.SetSize(40, 40);
     newAttacker.SetColor('#00ff00');

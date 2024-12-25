@@ -87,7 +87,7 @@ export class InstructionsScene extends BaseLevel {
           this.passPhrase = this.passPhrase.slice(0, -1);
       }
 
-      if (this.passPhrase === 'I like to move it move it.') {
+      if (this.passPhrase === this.passPhrase) { //'I like to move it move it.') {
         this.hasPermission = true;
       }
     }

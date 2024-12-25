@@ -13,7 +13,7 @@ export class LevelFourScene extends DefenseBaseLevel {
     return 'levelfour';
   }
   protected get NextLevelName(): string {
-    return '';
+    return 'levelfive';
   }
   protected get PlayerStartingHealth(): number {
     return 10;
