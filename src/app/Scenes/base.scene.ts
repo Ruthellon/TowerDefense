@@ -6,6 +6,10 @@ export abstract class BaseLevel extends IScene {
   private objectsToDestroy: IGameObject[] = [];
   private colliderLocations: IGameObject[] = [];
   Update(deltaTime: number): void {
+    this.gameObjects.sort((a, b) =>
+      a.Location.Z - b.Location.Z
+    );
+
     for (let i = 0; i < this.objectsToDestroy.length; i++) {
       for (let j = 0; j < this.GameObjects.length; j++) {
         if (this.objectsToDestroy[i] === this.GameObjects[j]) {
@@ -33,11 +37,11 @@ export abstract class BaseLevel extends IScene {
   }
 
   Draw(deltaTime: number): void {
-    let go = this.GameObjects.sort((a, b) =>
+    this.gameObjects.sort((a, b) =>
       a.Location.Z - b.Location.Z
     );
-    for (let i = 0; i < go.length; i++) {
-      go[i].Draw(deltaTime);
+    for (let i = 0; i < this.GameObjects.length; i++) {
+      this.GameObjects[i].Draw(deltaTime);
     }
   }
 

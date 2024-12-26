@@ -7,7 +7,7 @@ import { IGameObject } from "./gameobject.interface";
 
 
 export class Wall extends Defender {
-  protected override location = new Vector3(0, 0,-1);
+  protected override location = new Vector3(0, 0, 1);
   public get UpgradeCost(): number {
     return 0;
   }

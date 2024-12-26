@@ -1,3 +1,4 @@
+import { Vector3 } from "../Utility/classes.model";
 import { Attacker } from "./attacker.gameobject";
 import { Base } from "./base.gameobject";
 
@@ -40,17 +41,21 @@ export abstract class Defender extends Base {
   //  return false;
   //}
   public override Update(deltaTime: number) {
+    if (this.cooldown > 0) {
+      this.cooldown -= deltaTime;
+    }
+
     if (this.EnemyInRange) {
       if (this.cooldown <= 0) {
         this.EnemyInRange.ReduceHealth(this.Damage);
 
         this.cooldown = this.ShootingCooldown;
       }
-      else if (this.cooldown > 0) {
-        this.cooldown -= deltaTime;
-      }
 
-      let distance = Math.floor(this.EnemyInRange.Location.distanceTo(this.CenterMassLocation));
+      let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
+        Math.max(this.EnemyInRange.Location.X, Math.min(this.CenterMassLocation.X, this.EnemyInRange.Location.X + this.EnemyInRange.Size.X)),
+        Math.max(this.EnemyInRange.Location.Y, Math.min(this.CenterMassLocation.Y, this.EnemyInRange.Location.Y + this.EnemyInRange.Size.Y)),
+        this.EnemyInRange.Location.Z)));
 
       if (distance > this.Range || this.EnemyInRange.Health <= 0) {
         this.enemyInRange = null;
@@ -63,7 +68,12 @@ export abstract class Defender extends Base {
   public FindTarget(enemies: Attacker[]) {
     if (!this.enemyInRange) {
       for (let i = 0; i < enemies.length; i++) {
-        let distance = Math.floor(enemies[i].CenterMassLocation.distanceTo(this.CenterMassLocation));
+        let enemy = enemies[i];
+        let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
+          Math.max(enemy.Location.X, Math.min(this.CenterMassLocation.X, enemy.Location.X + enemy.Size.X)),
+          Math.max(enemy.Location.Y, Math.min(this.CenterMassLocation.Y, enemy.Location.Y + enemy.Size.Y)),
+          enemy.Location.Z)));
+
         if (distance <= this.Range) {
           this.enemyInRange = enemies[i];
           break;

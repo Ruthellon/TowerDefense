@@ -11,6 +11,7 @@ export enum eLayerTypes {
 }
 
 export abstract class IScene {
+  protected abstract gameObjects: IGameObject[];
   protected abstract get GameObjects(): IGameObject[];
   public abstract Load(): void;
   public abstract Update(deltaTime: number): void;

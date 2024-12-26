@@ -4,7 +4,7 @@ import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 export class Turret extends Defender {
-  protected override location = new Vector3(0, 0, 1);
+  protected override location = new Vector3(0, 0, 2);
   private upgradeCost = 10;
   public get UpgradeCost(): number {
     return this.upgradeCost;
