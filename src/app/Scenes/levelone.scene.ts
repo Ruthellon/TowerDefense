@@ -29,7 +29,7 @@ export class LevelOneScene extends DefenseBaseLevel {
   protected get AvailableDefenders(): eDefenderTypes[] {
     return this.availableDefenders;
   }
-  private enemyRounds = [5, 10, 15, 25];
+  private enemyRounds = [1, 1, 1];// 5, 10, 15, 25];
   protected get EnemyRounds(): number[] {
     return this.enemyRounds;
   }
@@ -81,6 +81,7 @@ export class LevelOneScene extends DefenseBaseLevel {
     newAttacker.SetValue(2);
     return newAttacker;
   }
+
   private firstWonCall = true;
   protected PlayerWonScreen(): void {
     Game.CONTEXT.fillStyle = '#ffffff';

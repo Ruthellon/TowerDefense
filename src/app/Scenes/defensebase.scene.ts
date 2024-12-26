@@ -41,7 +41,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected get TotalEnemies(): number {
     return this.totalEnemies;
   }
-  private currentRound = 0;
+  private currentRound = -1;
   protected get CurrentRound(): number {
     return this.currentRound;
   }
@@ -192,10 +192,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       return;
     }
 
-    if (this.playerHealth <= 0 || this.enemiesRemoved >= this.TotalEnemies) {
+    if (this.playerHealth <= 0 || this.TotalEnemies <= 0) {
       this.isGameOver = true;
 
-      if (this.enemiesRemoved >= this.TotalEnemies) {
+      if (this.playerHealth > 0) {
         if (!this.sentAPIMessage) {
           this.isGameOver = true;
           this.sentAPIMessage = true;
@@ -211,10 +211,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       return;
     }
 
-    if (this.startButton.Clicked) {
-      this.secondsToStart = 0;
-    }
-
     if (this.settingsButton.Clicked) {
       this.openSettings();
     }
@@ -224,18 +220,27 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     if (!this.roundStarted) {
       if (this.secondsToStart <= 0) {
         this.roundStarted = true;
+        this.currentRound++;
       }
       else {
         this.secondsToStart -= deltaTime;
       }
     }
     else {
-      if (this.secondsSinceLastMonster <= 0 && this.enemiesSpawned < this.TotalEnemies) {
+      if (this.secondsSinceLastMonster <= 0 && this.enemiesSpawned < this.EnemyRounds[this.currentRound]) {
         this.spawnAttacker();
         this.secondsSinceLastMonster = this.SecondsBetweenMonsters;
       }
       else {
         this.secondsSinceLastMonster -= deltaTime;
+      }
+
+      if (this.enemiesRemoved >= this.EnemyRounds[this.currentRound]) {
+        this.enemiesRemoved = 0;
+        this.roundStarted = false;
+        this.secondsToStart = this.SecondsToStart;
+        this.enemiesSpawned = 0;
+        this.secondsSinceLastMonster = 0;
       }
 
       for (let i = 0; i < this.attackers.length; i++) {
@@ -255,6 +260,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
         if (attackerDied) {
           this.enemiesRemoved++;
+          this.totalEnemies--;
           this.DestroyGameObject(attacker);
           this.attackers.splice(i, 1);
           i--;
@@ -368,10 +374,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     Game.CONTEXT.textAlign = "center";
     Game.CONTEXT.fillText(`Credits: ${Game.Credits.toFixed(0)}`, Game.CANVAS_WIDTH - this.UICellSize * 2.5, this.UICellSize / 2);
 
-    if (this.mouseCell) {
+    if (this.mouseHighlightCell) {
       Game.CONTEXT.lineWidth = 5;
       Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect((this.mouseCell.X * this.GridCellSize) + this.remainderX, (this.mouseCell.Y * this.GridCellSize) + this.remainderY,
+      Game.CONTEXT.strokeRect((this.mouseHighlightCell.X * this.GridCellSize) + this.remainderX, (this.mouseHighlightCell.Y * this.GridCellSize) + this.remainderY,
         this.GridCellSize, this.GridCellSize);
     }
 
@@ -392,6 +398,22 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   }
 
   private updateMouseStuff(): void {
+    if (Game.MOUSE_LOCATION.X > 0 && Game.MOUSE_LOCATION.Y > 0) {
+      if ((this.mouseHighlightCell && !this.mouseHighlightCell.isEqual(Game.MOUSE_LOCATION)) ||
+        !this.mouseHighlightCell) {
+        if (this.GRID_RECT.ContainsPoint(Game.MOUSE_LOCATION)) {
+          this.mouseHighlightCell = new Vector2(Math.floor((Game.MOUSE_LOCATION.X - this.remainderX) / this.GridCellSize),
+            Math.floor((Game.MOUSE_LOCATION.Y - this.remainderY) / this.GridCellSize));
+
+          if (this.grid[this.mouseHighlightCell.X][this.mouseHighlightCell.Y] === ePathCellStatus.OutOfBounds)
+            this.mouseHighlightCell = null;
+        }
+        else {
+          this.mouseHighlightCell = null;
+        }
+      }
+    }
+
     if (!this.previousMouse || !this.previousMouse.isEqual(Game.MOUSE_PRESS_LOCATION)) {
       this.previousMouse = Game.MOUSE_PRESS_LOCATION;
 
@@ -572,12 +594,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       turretButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize, eLayerTypes.UI);
       turretButton.SetSize(this.UICellSize, this.UICellSize);
       turretButton.SetText('Turret');
-      wallButton.SetClickFunction(() => {
+      turretButton.SetClickFunction(() => {
         this.defenderButtons.forEach((butt) => {
           butt.SetSelected(false);
         });
-        this.newDefender = eDefenderTypes.Wall
-        wallButton.SetSelected(true);
+        this.newDefender = eDefenderTypes.BasicTurret
+        turretButton.SetSelected(true);
         this.selectedDefender = null;
       });
       this.defenderButtons.push(turretButton);
@@ -589,12 +611,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       samButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), this.UICellSize * 2, eLayerTypes.UI);
       samButton.SetSize(this.UICellSize, this.UICellSize);
       samButton.SetText('S.A.M.');
-      wallButton.SetClickFunction(() => {
+      samButton.SetClickFunction(() => {
         this.defenderButtons.forEach((butt) => {
           butt.SetSelected(false);
         });
-        this.newDefender = eDefenderTypes.Wall
-        wallButton.SetSelected(true);
+        this.newDefender = eDefenderTypes.SAMTurret
+        samButton.SetSelected(true);
         this.selectedDefender = null;
       });
       this.defenderButtons.push(samButton);
@@ -604,7 +626,9 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.startButton.SetLocation((this.UICellSize * 3) + 5, 5, eLayerTypes.UI);
     this.startButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.startButton.SetText('Start');
-    this.startButton.SetClickFunction(() => this.secondsToStart = 0);
+    this.startButton.SetClickFunction(() => {
+      this.secondsToStart = 0;
+    });
 
     this.restartButton.SetLocation((this.UICellSize * 4) + 5, 5, eLayerTypes.UI);
     this.restartButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
@@ -738,6 +762,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private secondsSinceLastMonster = 0;
   private previousMouse: Vector2 | null = null;
   private mouseCell: Vector2 | null = null;
+  private mouseHighlightCell: Vector2 | null = null;
   private previousCell: Vector2 | null = null;
   private cellPressed: boolean = false;
   private lastCoordinate = new Vector3(0, 0, 0);
