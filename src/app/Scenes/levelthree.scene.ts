@@ -28,8 +28,9 @@ export class LevelThreeScene extends DefenseBaseLevel {
   protected get AvailableDefenders(): eDefenderTypes[] {
     return this.availableDefenders;
   }
-  protected get TotalEnemies(): number {
-    return 1;
+  private enemyRounds = [5, 5, 1];
+  protected get EnemyRounds(): number[] {
+    return this.enemyRounds;
   }
   protected override ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;

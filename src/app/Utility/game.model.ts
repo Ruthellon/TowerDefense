@@ -1,3 +1,4 @@
+import { EditStage } from "../Scenes/editstage.scene";
 import { InstructionsScene } from "../Scenes/instructions.scene";
 import { LevelFiveScene } from "../Scenes/levelfive.scene";
 import { LevelFourScene } from "../Scenes/levelfour.scene";
@@ -83,6 +84,9 @@ export class Game {
     }
     else if (scene === 'levelfive') {
       this.theScene = new LevelFiveScene();
+    }
+    else if (scene === 'editstage') {
+      this.theScene = new EditStage();
     }
     else {
       return false;

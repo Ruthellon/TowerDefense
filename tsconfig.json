@@ -18,6 +18,11 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
+    "baseUrl": "./src",
+    "paths": {
+      "GameObjects/*": [ "app/GameObjects/*" ],
+      "Utility/*":  [ "app/Utility/*" ]
+    },
     "lib": [
       "ES2022",
       "dom"

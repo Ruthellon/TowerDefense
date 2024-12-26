@@ -1,4 +1,4 @@
-import { Button } from "../GameObjects/button.gameobject";
+import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Game } from "../Utility/game.model";
 import { BaseLevel } from "./base.scene";

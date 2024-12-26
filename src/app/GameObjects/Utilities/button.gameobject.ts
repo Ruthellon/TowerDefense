@@ -1,19 +1,9 @@
-import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
-import { Game } from "../Utility/game.model";
-import { Base } from "./base.gameobject";
-import { IGameObject } from "./gameobject.interface";
+import { Rect, Vector2, Vector3 } from "../../Utility/classes.model";
+import { IGameObject } from "../gameobject.interface";
+import { Game } from 'Utility/game.model'
+import { UtilityBase } from "./utilitybase.gameobject";
 
-
-export class Button extends Base {
-  public override OnCollision(collision: IGameObject): void {
-  }
-  public override get Value(): number | null {
-    return null;
-  }
-  private id = -1;
-  public get Id(): number {
-    return this.id;
-  }
+export class Button extends UtilityBase {
 
   private altColor = '#ffffff'
 
@@ -61,10 +51,6 @@ export class Button extends Base {
 
   public SetText(text: string) {
     this.text = text;
-  }
-
-  public SetId(id: number) {
-    this.id = id;
   }
 
   public SetAltColor(color: string) {

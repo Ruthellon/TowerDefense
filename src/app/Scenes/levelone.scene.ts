@@ -1,7 +1,7 @@
 
 import { Attacker } from "../GameObjects/attacker.gameobject";
 import { Block } from "../GameObjects/block.gameobject";
-import { Button } from "../GameObjects/button.gameobject";
+import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { DefenseBaseLevel, eDefenderTypes } from "./defensebase.scene";
@@ -29,8 +29,9 @@ export class LevelOneScene extends DefenseBaseLevel {
   protected get AvailableDefenders(): eDefenderTypes[] {
     return this.availableDefenders;
   }
-  protected get TotalEnemies(): number {
-    return 50;
+  private enemyRounds = [5, 10, 15, 25];
+  protected get EnemyRounds(): number[] {
+    return this.enemyRounds;
   }
   protected override ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;

@@ -1,6 +1,6 @@
 import { Attacker } from "../GameObjects/attacker.gameobject";
 import { Boundary } from "../GameObjects/boundary.gameobject";
-import { Button } from "../GameObjects/button.gameobject";
+import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { Defender } from "../GameObjects/defender.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Turret } from "../GameObjects/turret.gameobject";
@@ -23,7 +23,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected abstract get StartingCells(): Vector2[];
   protected abstract get EndingCells(): Vector2[];
   protected abstract get PlayerStartingHealth(): number;
-  protected abstract get TotalEnemies(): number;
+  protected abstract get EnemyRounds(): number[];
   protected abstract get AvailableDefenders(): eDefenderTypes[];
   protected abstract get CurrentSceneName(): string;
   protected abstract get NextLevelName(): string;
@@ -36,6 +36,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   protected get UICellSize(): number {
     return 100;
+  }
+  private totalEnemies: number = 0;
+  protected get TotalEnemies(): number {
+    return this.totalEnemies;
+  }
+  private currentRound = 0;
+  protected get CurrentRound(): number {
+    return this.currentRound;
   }
 
   protected gameObjects: IGameObject[] = [];
@@ -107,6 +115,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.playerHealth = this.PlayerStartingHealth;
     this.secondsToStart = this.SecondsToStart;
 
+    this.EnemyRounds.forEach((round) => {
+      this.totalEnemies += round;
+    });
+
     this.remainderX = Math.floor((Game.CANVAS_WIDTH % this.GridCellSize) / 2);
     this.remainderY = Math.floor((Game.CANVAS_HEIGHT % this.GridCellSize) / 2);
 
@@ -127,7 +139,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     let startY = 0;
     let endY = 0;
-    for (let j = 0; j < this.gridColumns; j++) {
+    for (let j = 0; j < this.gridRows; j++) {
       if (startY === 0 && (j * this.GridCellSize) >= 100)
         startY += (j * this.GridCellSize);
 
@@ -175,8 +187,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.restartButton.Update(deltaTime);
     this.homeButton.Update(deltaTime);
 
-    if (this.isGameOver)
+    if (this.isGameOver) {
+      this.nextLevelButton.Update(deltaTime);
       return;
+    }
 
     if (this.playerHealth <= 0 || this.enemiesRemoved >= this.TotalEnemies) {
       this.isGameOver = true;
@@ -186,12 +200,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
           this.isGameOver = true;
           this.sentAPIMessage = true;
           Game.TheAPI.SendWinInfo(this.LevelUnid, this.playerHealth, Game.Version, this.gatherGridInfo());
-        }
-
-        this.nextLevelButton.Update(deltaTime);
-        if (this.nextLevelButton.Clicked) {
-          Game.SetTheScene(this.NextLevelName);
-          return;
         }
       }
 
@@ -417,18 +425,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   private updateDefenderStuff(deltaTime: number): void {
 
-    //check if Defender Option Buttons are clicked
-    this.defenderButtons.forEach((butt) => {
-      if (butt.Clicked) {
-        this.newDefender = butt.Id;
-        butt.SetSelected(true);
-        this.selectedDefender = null;
-      }
-      else if (this.newDefender !== butt.Id) {
-        butt.SetSelected(false);
-      }
-    });
-
     //Check each defender to see if clicked
     this.defenders.forEach((defender) => {
       if (defender.Clicked) {
@@ -560,7 +556,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     wallButton.SetSize(this.UICellSize, this.UICellSize);
     wallButton.SetText('Wall');
     wallButton.SetSelected(true);
-    wallButton.SetId(eDefenderTypes.Wall)
+    wallButton.SetClickFunction(() => {
+      this.defenderButtons.forEach((butt) => {
+        butt.SetSelected(false);
+      });
+      this.newDefender = eDefenderTypes.Wall
+      wallButton.SetSelected(true);
+      this.selectedDefender = null;
+    });
     this.defenderButtons.push(wallButton);
     this.LoadGameObject(wallButton);
 
@@ -569,7 +572,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       turretButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize, eLayerTypes.UI);
       turretButton.SetSize(this.UICellSize, this.UICellSize);
       turretButton.SetText('Turret');
-      turretButton.SetId(eDefenderTypes.BasicTurret);
+      wallButton.SetClickFunction(() => {
+        this.defenderButtons.forEach((butt) => {
+          butt.SetSelected(false);
+        });
+        this.newDefender = eDefenderTypes.Wall
+        wallButton.SetSelected(true);
+        this.selectedDefender = null;
+      });
       this.defenderButtons.push(turretButton);
       this.LoadGameObject(turretButton);
     }
@@ -579,7 +589,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       samButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), this.UICellSize * 2, eLayerTypes.UI);
       samButton.SetSize(this.UICellSize, this.UICellSize);
       samButton.SetText('S.A.M.');
-      samButton.SetId(eDefenderTypes.SAMTurret);
+      wallButton.SetClickFunction(() => {
+        this.defenderButtons.forEach((butt) => {
+          butt.SetSelected(false);
+        });
+        this.newDefender = eDefenderTypes.Wall
+        wallButton.SetSelected(true);
+        this.selectedDefender = null;
+      });
       this.defenderButtons.push(samButton);
       this.LoadGameObject(samButton);
     }
