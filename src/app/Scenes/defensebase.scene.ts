@@ -663,7 +663,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.restartButton.SetLocation((this.UICellSize * 4) + 5, 5, eLayerTypes.UI);
     this.restartButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.restartButton.SetText('Restart');
-    this.restartButton.SetClickFunction(() => Game.SetTheScene(this.CurrentSceneName));
+    this.restartButton.SetClickFunction(() => {
+      Game.SetStartingCredits(0);
+      Game.SetTheScene(this.CurrentSceneName);
+    });
 
     this.homeButton.SetLocation((this.UICellSize * 5) + 5, 5, eLayerTypes.UI);
     this.homeButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
@@ -692,19 +695,19 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     this.speedButton.SetLocation((this.UICellSize * 9) + 5, 5, eLayerTypes.UI);
     this.speedButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
-    this.speedButton.SetText('x2');
+    this.speedButton.SetText('x1');
     this.speedButton.SetClickFunction(() => {
       if (this.GameSpeed === 1) {
         this.gameSpeed = 2;
-        this.speedButton.SetText('x4');
+        this.speedButton.SetText('x2');
       }
-      else if (this.GameSpeed === 2) {
-        this.gameSpeed = 4;
-        this.speedButton.SetText('x1');
-      }
+      //else if (this.GameSpeed === 2) {
+      //  this.gameSpeed = 4;
+      //  this.speedButton.SetText('x1');
+      //}
       else {
         this.gameSpeed = 1;
-        this.speedButton.SetText('x2');
+        this.speedButton.SetText('x1');
       }
     });
     

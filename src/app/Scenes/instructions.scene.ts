@@ -20,7 +20,7 @@ export class InstructionsScene extends BaseLevel {
   startLevel4Button = new Button();
   startLevel5Button = new Button();
   Load(): void {
-    Game.SetStartingCredits(50);
+    Game.SetStartingCredits(0);
 
     this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 600, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
     this.startLevel1Button.SetSize(200, 100);
