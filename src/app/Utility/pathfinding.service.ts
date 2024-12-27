@@ -1,6 +1,8 @@
 import { Vector2 } from "./classes.model";
 
 export enum ePathCellStatus {
+  EndingPoint = -2,
+  StartingPoint = -1,
   Open = 0,
   Path = 1,
   OutOfBounds = 2,

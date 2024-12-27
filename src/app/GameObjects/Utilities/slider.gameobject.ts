@@ -13,16 +13,17 @@ export class Slider extends UtilityBase {
 
     if (!this.imageLocation && !this.color)
       this.color = '#999999';
+
+    this.circleX = this.location.X + (this.size.X * ((this.currentValue - this.minValue) / this.range));
   }
 
   public override Update(deltaTime: number): void {
     this.UpdateClick();
 
     if (this.pressed) {
-      this.SetValue(Math.floor(this.maxValue * (Game.MOUSE_LOCATION.X - this.location.X) / this.size.X));
+      this.SetValue(Math.floor((Game.MOUSE_LOCATION.X - this.location.X) / this.chunks) + this.minValue);
+      this.circleX = this.location.X + (this.size.X * ((this.currentValue - this.minValue) / this.range));
     }
-
-    this.circleX = this.location.X + (this.size.X * (this.currentValue / this.maxValue));
   }
 
   public override Draw(deltaTime: number): void {
@@ -58,6 +59,8 @@ export class Slider extends UtilityBase {
   public SetValueRange(min: number, max: number) {
     this.minValue = min;
     this.maxValue = max;
+    this.range = max - min;
+    this.chunks = (this.size.X / this.range);
   }
 
   public SetValue(val: number) {
@@ -72,6 +75,8 @@ export class Slider extends UtilityBase {
   private buttonRect = new Rect(0, 0, 0, 0);
   private minValue = 0;
   private maxValue = 100;
+  private range = 100;
+  private chunks = 100;
   private currentValue = 50;
   private circleX = 0;
 }

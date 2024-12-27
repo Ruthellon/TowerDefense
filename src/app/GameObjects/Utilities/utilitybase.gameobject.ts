@@ -16,7 +16,6 @@ export abstract class UtilityBase extends IGameObject {
   protected pressed: boolean = false;
   public get Pressed(): boolean {
     if (this.pressed) {
-      this.pressed = false;
       return true;
     }
     else {
