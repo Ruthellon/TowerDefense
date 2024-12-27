@@ -194,11 +194,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   override Update(deltaTime: number) {
     deltaTime *= this.GameSpeed;
 
-    this.restartButton.Update(deltaTime);
-    this.homeButton.Update(deltaTime);
-
     if (this.isGameOver) {
-      this.nextLevelButton.Update(deltaTime);
+      this.restartButton.Update(deltaTime);
+      this.homeButton.Update(deltaTime);
+
+      if (this.playerHealth > 0)
+        this.nextLevelButton.Update(deltaTime);
       return;
     }
 

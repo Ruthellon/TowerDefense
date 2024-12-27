@@ -58,7 +58,6 @@ export abstract class UtilityBase extends IGameObject {
   }
 
   public Load() {
-    this.objectRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
   public Update(deltaTime: number) {
@@ -71,6 +70,7 @@ export abstract class UtilityBase extends IGameObject {
 
   public SetLocation(x: number, y: number, z: number): void {
     this.location = new Vector3(x, y, z);
+    this.objectRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
   public SetColor(hexColor: string): void {
@@ -91,6 +91,8 @@ export abstract class UtilityBase extends IGameObject {
       this.sprite.width = width;
       this.sprite.height = height;
     }
+
+    this.objectRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
   public SetSelected(isSelected: boolean): void {
