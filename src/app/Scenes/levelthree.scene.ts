@@ -70,12 +70,22 @@ export class LevelThreeScene extends DefenseBaseLevel {
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
     let newAttacker = new Block();
-    newAttacker.SetStartingSpeed(2);
-    newAttacker.SetStartingHealth(700);
-    newAttacker.SetSize(60, 60);
-    newAttacker.SetDamage(10);
-    newAttacker.SetColor('#00ff00');
-    newAttacker.SetValue(2);
+    if (this.CurrentRound === 0 || this.CurrentRound === 1) {
+      newAttacker.SetStartingSpeed(10);
+      newAttacker.SetStartingHealth(50);
+      newAttacker.SetSize(40, 40);
+      newAttacker.SetDamage(1);
+      newAttacker.SetColor('#00ff00');
+      newAttacker.SetValue(3);
+    }
+    else {
+      newAttacker.SetStartingSpeed(2);
+      newAttacker.SetStartingHealth(700);
+      newAttacker.SetSize(60, 60);
+      newAttacker.SetDamage(10);
+      newAttacker.SetColor('#00ff00');
+      newAttacker.SetValue(50);
+    }
     return newAttacker;
   }
 
