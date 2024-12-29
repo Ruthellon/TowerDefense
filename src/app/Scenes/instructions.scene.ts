@@ -82,7 +82,7 @@ export class InstructionsScene extends BaseLevel {
     this.addCreditsButton.SetLocation(Game.CANVAS_WIDTH / 2 - 100, (Game.CANVAS_HEIGHT / 2) + 125, eLayerTypes.UI);
     this.addCreditsButton.SetSize(200, 100);
     this.addCreditsButton.SetText('Add Credits');
-    this.addCreditsButton.SetClickFunction(() => Game.AddCredits(50));
+    this.addCreditsButton.SetClickFunction(() => Game.AddCredits(10));
     this.addCreditsButton.Load();
   }
 
