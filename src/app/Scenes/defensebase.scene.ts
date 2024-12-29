@@ -348,26 +348,26 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.floor.Draw(deltaTime);
 
     //Draw Grid Columns
-    Game.CONTEXT.lineWidth = 1;
-    let width = Math.ceil(Game.CANVAS_WIDTH / this.GridCellSize);
-    Game.CONTEXT.strokeStyle = `#ff000066`;
-    for (let i = 0; i < width + 1; i++) {
-      let x = (this.GridCellSize * i) + this.remainderX;
-      Game.CONTEXT.beginPath();
-      Game.CONTEXT.moveTo(x, 0);
-      Game.CONTEXT.lineTo(x, Game.CANVAS_HEIGHT);
-      Game.CONTEXT.stroke();
-    }
+    //Game.CONTEXT.lineWidth = 1;
+    //let width = Math.ceil(Game.CANVAS_WIDTH / this.GridCellSize);
+    //Game.CONTEXT.strokeStyle = `#ff000066`;
+    //for (let i = 0; i < width + 1; i++) {
+    //  let x = (this.GridCellSize * i) + this.remainderX;
+    //  Game.CONTEXT.beginPath();
+    //  Game.CONTEXT.moveTo(x, 0);
+    //  Game.CONTEXT.lineTo(x, Game.CANVAS_HEIGHT);
+    //  Game.CONTEXT.stroke();
+    //}
 
-    //Draw Grid Rows
-    let height = Math.ceil(Game.CANVAS_HEIGHT / this.GridCellSize);
-    for (let i = 0; i < height; i++) {
-      let y = (this.GridCellSize * i) + this.remainderY;
-      Game.CONTEXT.beginPath();
-      Game.CONTEXT.moveTo(0, y);
-      Game.CONTEXT.lineTo(Game.CANVAS_WIDTH, y);
-      Game.CONTEXT.stroke();
-    }
+    ////Draw Grid Rows
+    //let height = Math.ceil(Game.CANVAS_HEIGHT / this.GridCellSize);
+    //for (let i = 0; i < height; i++) {
+    //  let y = (this.GridCellSize * i) + this.remainderY;
+    //  Game.CONTEXT.beginPath();
+    //  Game.CONTEXT.moveTo(0, y);
+    //  Game.CONTEXT.lineTo(Game.CANVAS_WIDTH, y);
+    //  Game.CONTEXT.stroke();
+    //}
 
     if (this.showAttackerPath) {
       //Draw The Path
@@ -392,20 +392,9 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         this.GridCellSize, this.GridCellSize);
     }
 
-    if (this.selectedDefender) {
-      Game.CONTEXT.lineWidth = 5;
-      if (this.selectedDefender.CanUpgrade) {
-        this.upgradeButton.Draw(deltaTime);
-      }
-      this.deleteButton.Draw(deltaTime);
-
-      Game.CONTEXT.lineWidth = 5;
-      Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect(this.selectedDefender.Location.X, this.selectedDefender.Location.Y,
-        this.selectedDefender.Size.X, this.selectedDefender.Size.Y);
-    }
-
     super.Draw(deltaTime);
+
+    
 
     if (this.secondsToStart > 0) {
       Game.CONTEXT.fillStyle = '#ffffff';
@@ -512,9 +501,19 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     });
 
     if (this.selectedDefender) {
+
+      if (this.deleteButton.IsHidden)
+        this.deleteButton.SetHidden(false);
+
       if (this.selectedDefender.CanUpgrade) {
+        if (this.upgradeButton.IsHidden)
+          this.upgradeButton.SetHidden(false);
+
         this.upgradeButton.Update(deltaTime);
       }
+      else if (!this.upgradeButton.IsHidden)
+        this.upgradeButton.SetHidden(true);
+
       this.deleteButton.Update(deltaTime);
       if (this.deleteButton.Clicked) {
         if (this.selectedDefender.Cost) {
@@ -545,6 +544,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
           this.upgradeButton.SetText(`Upgrade (${this.selectedDefender.Cost}cr)`);
         }
       }
+    }
+    else {
+      if (!this.deleteButton.IsHidden)
+        this.deleteButton.SetHidden(true);
+
+      if (!this.upgradeButton.IsHidden)
+        this.upgradeButton.SetHidden(true);
     }
 
     if (this.attackers.length > 0 && this.defenders.length > 0) {
@@ -748,12 +754,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.upgradeButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 6) + 5, eLayerTypes.UI);
     this.upgradeButton.SetSize((this.UICellSize * 2) - 20, (this.UICellSize) - 10);
     this.upgradeButton.SetText(`Upgrade`);
-    this.upgradeButton.Load();
+    this.upgradeButton.SetHidden(true);
+    this.LoadGameObject(this.upgradeButton);
 
     this.deleteButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 5) + 5, eLayerTypes.UI);
     this.deleteButton.SetSize((this.UICellSize * 2) - 20, (this.UICellSize) - 10);
     this.deleteButton.SetText('Delete');
-    this.deleteButton.Load();
+    this.deleteButton.SetHidden(true);
+    this.LoadGameObject(this.deleteButton);
 
     this.nextLevelButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
     this.nextLevelButton.SetSize(200, 100);

@@ -11,6 +11,10 @@ export class Button extends UtilityBase {
 
   private buttonRect = new Rect(0, 0, 0, 0);
 
+  public get IsHidden(): boolean {
+    return this.hidden;
+  }
+
   public override Load() {
     super.Load();
 
@@ -22,30 +26,33 @@ export class Button extends UtilityBase {
     this.UpdateClick();
   }
 
+  private hidden: boolean = false;
   public override Draw(deltaTime: number): void {
-    if (this.color) {
-      Game.CONTEXT.fillStyle = this.color;
-      Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,
-        this.Size.X, this.Size.Y);
+    if (!this.hidden) {
+      if (this.color) {
+        Game.CONTEXT.fillStyle = this.color;
+        Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,
+          this.Size.X, this.Size.Y);
 
-      if (this.text) {
-        Game.CONTEXT.fillStyle = '#000000';
-        Game.CONTEXT.font = '24px serif';
-        Game.CONTEXT.textAlign = "center";
-        Game.CONTEXT.textBaseline = "middle";
-        Game.CONTEXT.fillText(this.text, this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2));
+        if (this.text) {
+          Game.CONTEXT.fillStyle = '#000000';
+          Game.CONTEXT.font = '24px serif';
+          Game.CONTEXT.textAlign = "center";
+          Game.CONTEXT.textBaseline = "middle";
+          Game.CONTEXT.fillText(this.text, this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2));
+        }
       }
-    }
-    else if (this.sprite) {
-      Game.CONTEXT.drawImage(this.sprite, this.location.X, this.location.Y, this.size.X, this.size.Y);
-    }
+      else if (this.sprite) {
+        Game.CONTEXT.drawImage(this.sprite, this.location.X, this.location.Y, this.size.X, this.size.Y);
+      }
 
-    if (this.pressed || this.selected) {
-      Game.CONTEXT.lineWidth = 5;
-      Game.CONTEXT.strokeStyle = this.altColor;
-      Game.CONTEXT.strokeRect(this.Location.X + 3, this.Location.Y + 3,
-        this.Size.X - 6, this.Size.Y - 6);
-      Game.CONTEXT.lineWidth = 1;
+      if (this.pressed || this.selected) {
+        Game.CONTEXT.lineWidth = 5;
+        Game.CONTEXT.strokeStyle = this.altColor;
+        Game.CONTEXT.strokeRect(this.Location.X + 3, this.Location.Y + 3,
+          this.Size.X - 6, this.Size.Y - 6);
+        Game.CONTEXT.lineWidth = 1;
+      }
     }
   }
 
@@ -55,5 +62,9 @@ export class Button extends UtilityBase {
 
   public SetAltColor(color: string) {
     this.altColor = color;
+  }
+
+  public SetHidden(hidden: boolean) {
+    this.hidden = hidden;
   }
 }

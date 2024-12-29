@@ -106,6 +106,8 @@ export class Turret extends Defender {
     Game.CONTEXT.strokeStyle = strokeColor;
     Game.CONTEXT.lineWidth = lineWidth;
     Game.CONTEXT.stroke();
+
+    super.Draw(deltaTime);
   }
 
   public FindTarget(enemies: Attacker[]) {

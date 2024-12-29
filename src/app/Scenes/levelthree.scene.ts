@@ -76,7 +76,7 @@ export class LevelThreeScene extends DefenseBaseLevel {
       newAttacker.SetStartingHealth(50);
       newAttacker.SetSize(40, 40);
       newAttacker.SetDamage(1);
-      newAttacker.SetColor('#00ff00');
+      newAttacker.SetColor('#22BB22');
       newAttacker.SetValue(3);
     }
     else {
@@ -84,7 +84,7 @@ export class LevelThreeScene extends DefenseBaseLevel {
       newAttacker.SetStartingHealth(700);
       newAttacker.SetSize(60, 60);
       newAttacker.SetDamage(10);
-      newAttacker.SetColor('#00ff00');
+      newAttacker.SetColor('#22BB22');
       newAttacker.SetValue(50);
     }
     newAttacker.SetLocation(this.StartingCells[0].X - this.GridCellSize, this.StartingCells[0].Y - this.GridCellSize, eLayerTypes.Object - 5);

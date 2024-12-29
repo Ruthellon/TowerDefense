@@ -84,7 +84,7 @@ export class LevelFourScene extends DefenseBaseLevel {
     newAttacker.SetStartingSpeed(10);
     newAttacker.SetStartingHealth(50);
     newAttacker.SetSize(60, 60);
-    newAttacker.SetColor('#00ff00');
+    newAttacker.SetColor('#22BB22');
     newAttacker.SetDamage(1);
     newAttacker.SetValue(2);
     newAttacker.SetLocation(this.StartingCells[0].X - this.GridCellSize, this.StartingCells[0].Y - this.GridCellSize, eLayerTypes.Object - 5);

@@ -1,4 +1,5 @@
 import { Vector3 } from "../Utility/classes.model";
+import { Game } from "../Utility/game.model";
 import { Attacker } from "./attacker.gameobject";
 import { Base } from "./base.gameobject";
 
@@ -68,6 +69,15 @@ export abstract class Defender extends Base {
     }
 
     this.UpdateClick();
+  }
+
+  public override Draw(deltaTime: number) {
+    if (this.Selected) {
+      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeRect(this.Location.X, this.Location.Y,
+        this.Size.X, this.Size.Y);
+    }
   }
 
   //public FindTarget(enemies: Attacker[]) {

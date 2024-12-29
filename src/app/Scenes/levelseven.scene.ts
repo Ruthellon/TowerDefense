@@ -77,7 +77,7 @@ export class LevelSevenScene extends DefenseBaseLevel {
   protected CreateNewAttacker(attackerCount: number): Attacker {
     let newAttacker = new Block();
     newAttacker.SetDamage(1);
-    newAttacker.SetColor('#00ff00');
+    newAttacker.SetColor('#22BB22');
 
     if (this.CurrentRound === 0) {
       this.startSeconds = 60;

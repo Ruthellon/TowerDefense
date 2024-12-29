@@ -35,7 +35,7 @@ export class Wall extends Defender {
 
   public override OnCollision(collision: IGameObject): void {
   }
-  override color = '#ff0000';
+  override color = '#222222';
 
   public override Update(deltaTime: number): void {
     this.UpdateClick();
@@ -45,6 +45,8 @@ export class Wall extends Defender {
     Game.CONTEXT.fillStyle = this.color;
     Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,
       this.Size.X, this.Size.Y);
+
+    super.Draw(deltaTime);
   }
 
   public FindTarget(enemies: Attacker[]) {
