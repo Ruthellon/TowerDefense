@@ -30,7 +30,7 @@ export class Wall extends Defender {
     return 0;
   }
   public override get Value(): number | null {
-    return null;
+    return 1;
   }
   public override Load(): void {
     super.Load();
