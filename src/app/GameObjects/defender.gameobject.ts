@@ -7,7 +7,12 @@ export abstract class Defender extends Base {
   public abstract get CanUpgrade(): boolean;
   public abstract get Level(): number;
   public abstract get ShootingCooldown(): number;
-  public abstract get Range(): number;
+
+
+  protected range: number | null = null;
+  public get Range(): number | null {
+    return this.range;
+  }
 
   public Upgrade(): void {
 
@@ -44,7 +49,7 @@ export abstract class Defender extends Base {
       this.cooldown -= deltaTime;
     }
 
-    if (this.EnemyInRange) {
+    if (this.EnemyInRange && this.Range) {
       if (this.cooldown <= 0) {
         this.EnemyInRange.ReduceHealth(this.Damage);
 
@@ -65,7 +70,7 @@ export abstract class Defender extends Base {
   }
 
   public FindTarget(enemies: Attacker[]) {
-    if (!this.enemyInRange) {
+    if (!this.enemyInRange && this.Range) {
       for (let i = 0; i < enemies.length; i++) {
         let enemy = enemies[i];
         let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
@@ -83,5 +88,9 @@ export abstract class Defender extends Base {
 
   public SetDamage(damage: number): void {
     this.damage = damage;
+  }
+
+  public SetRange(range: number): void {
+    this.range = range;
   }
 }

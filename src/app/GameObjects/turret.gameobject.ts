@@ -21,10 +21,6 @@ export class Turret extends Defender {
   public override get ShootingCooldown(): number {
     return this.shootingCooldown;
   }
-  private range = 150;
-  public override get Range(): number {
-    return this.range;
-  }
   private value: number | null = 10;
   public override get Value(): number | null {
     return this.value;
@@ -32,6 +28,9 @@ export class Turret extends Defender {
   public override Load(): void {
     super.Load();
     this.SetDamage(3);
+
+    if (this.range === null)
+      this.SetRange(150);
   }
 
   public override OnCollision(collision: IGameObject): void {
@@ -41,7 +40,7 @@ export class Turret extends Defender {
     if (this.level === 1) {
       this.level = 2;
       this.color = '#22dd22';
-      this.range = 175;
+      this.range! *= 1.15;
       this.damage = 4;
       this.shootingCooldown = .9;
       this.cost = 10;
@@ -50,7 +49,7 @@ export class Turret extends Defender {
     else if (this.level === 2) {
       this.level = 3;
       this.color = '#2222dd';
-      this.range = 200;
+      this.range! *= 1.15;
       this.damage = 5;
       this.shootingCooldown = .8;
       this.cost = 10;
@@ -59,7 +58,7 @@ export class Turret extends Defender {
     else if (this.level === 3) {
       this.level = 4;
       this.color = '#dd22dd';
-      this.range = 225;
+      this.range! *= 1.15;
       this.damage = 6;
       this.shootingCooldown = .7;
       this.cost = 20;
@@ -69,7 +68,7 @@ export class Turret extends Defender {
       this.level = 5;
       this.canUpgrade = false;
       this.color = '#dddd22';
-      this.range = 250;
+      this.range! *= 1.15;
       this.damage = 8;
       this.shootingCooldown = .5;
       this.cost = null;
@@ -91,7 +90,7 @@ export class Turret extends Defender {
 
     const centerX = this.CenterMassLocation.X;
     const centerY = this.CenterMassLocation.Y;
-    const radius = this.range;
+    const radius = this.range!;
     const strokeColor = '#00ff00';
     const lineWidth = 2;
 

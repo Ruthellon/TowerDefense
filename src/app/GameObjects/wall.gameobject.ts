@@ -26,9 +26,6 @@ export class Wall extends Defender {
   public override get Damage(): number {
     return 0;
   }
-  public override get Range(): number {
-    return 0;
-  }
   public override get Value(): number | null {
     return 1;
   }
@@ -41,7 +38,7 @@ export class Wall extends Defender {
   override color = '#ff0000';
 
   public override Update(deltaTime: number): void {
-    super.Update(deltaTime);
+    this.UpdateClick();
   }
 
   public override Draw(deltaTime: number): void {
@@ -50,7 +47,7 @@ export class Wall extends Defender {
       this.Size.X, this.Size.Y);
   }
 
-  override FindTarget(enemies: Attacker[]) {
+  public override FindTarget(enemies: Attacker[]) {
     return;
   }
 }

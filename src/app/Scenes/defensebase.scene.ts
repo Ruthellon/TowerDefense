@@ -85,6 +85,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     let defender: Defender;
     if (this.newDefender === eDefenderTypes.BasicTurret) {
       defender = new Turret();
+      defender.SetRange(this.GridCellSize * 1.5);
     }
     else {
       defender = new Wall();
