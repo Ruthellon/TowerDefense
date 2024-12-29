@@ -15,6 +15,7 @@ export class AppComponent implements AfterViewInit {
 
   @ViewChild('canvasElement', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
   private canvas!: HTMLCanvasElement;
+
   private context!: CanvasRenderingContext2D | null;
   private previousWidth: number = 0;
   private previousHeight: number = 0;
@@ -57,11 +58,6 @@ export class AppComponent implements AfterViewInit {
       Game.SetMousePressLocation(x, y);
       Game.SetMousePressed(false);
     }
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent): void {
-    Game.SetKeyPress(event.key);
   }
 
   constructor(private api: IAngryElfAPIService) {
@@ -126,20 +122,18 @@ export class AppComponent implements AfterViewInit {
 
     this.onResize();
     
-    if (Math.floor(deltaTime) >= Math.floor(this.maxPeriod)) {
-      this.lastTime = currentTime;
+    this.lastTime = currentTime;
 
-      this.fpsAverage += (1000 / deltaTime);
-      this.fpsAverage /= 2;
+    this.fpsAverage += (1000 / deltaTime);
+    this.fpsAverage /= 2;
 
-      if ((currentTime - this.lastFPSTime) > 500) {
-        this.fps = this.fpsAverage;
-        this.lastFPSTime = currentTime;
-      }
-
-      this.update((deltaTime / 1000));
-      this.draw((deltaTime / 1000));
+    if ((currentTime - this.lastFPSTime) > 500) {
+      this.fps = this.fpsAverage;
+      this.lastFPSTime = currentTime;
     }
+
+    this.update((deltaTime / 1000));
+    this.draw((deltaTime / 1000));
 
     requestAnimationFrame(this.animate.bind(this));
   }

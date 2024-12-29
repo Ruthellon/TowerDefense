@@ -12,6 +12,7 @@ export class InstructionsScene extends BaseLevel {
   }
 
   private editStageButton: Button = new Button();
+  private addCreditsButton: Button = new Button();
 
   private settingsButton: Button = new Button();
   startLevel1Button = new Button();
@@ -70,6 +71,12 @@ export class InstructionsScene extends BaseLevel {
     this.editStageButton.SetText('Edit Level');
     this.editStageButton.SetClickFunction(() => Game.SetTheScene('editstage'));
     this.editStageButton.Load();
+
+    this.addCreditsButton.SetLocation(Game.CANVAS_WIDTH / 2 - 100, (Game.CANVAS_HEIGHT / 2) + 125, eLayerTypes.UI);
+    this.addCreditsButton.SetSize(200, 100);
+    this.addCreditsButton.SetText('Add Credits');
+    this.addCreditsButton.SetClickFunction(() => Game.AddCredits(50));
+    this.addCreditsButton.Load();
   }
 
   private hasPermission = false;
@@ -78,25 +85,7 @@ export class InstructionsScene extends BaseLevel {
 
     if (this.hasPermission) {
       this.editStageButton.Update(deltaTime);
-    }
-
-    if (this.settingsOpen) {
-      let key = Game.KEY_PRESS;
-      if (key) {
-        if (!this.startedTyping) {
-          this.startedTyping = true;
-          this.passPhrase = '';
-        }
-
-        if (key.length === 1)
-          this.passPhrase += key;
-        else if (key === 'Backspace')
-          this.passPhrase = this.passPhrase.slice(0, -1);
-      }
-
-      if (this.passPhrase === this.passPhrase) { //'I like to move it move it.') {
-        this.hasPermission = true;
-      }
+      this.addCreditsButton.Update(deltaTime);
     }
   }
 
@@ -132,32 +121,29 @@ export class InstructionsScene extends BaseLevel {
       Game.CONTEXT.strokeStyle = '#ffffff';
       Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 250, 50, 500, Game.CANVAS_HEIGHT - 250);
 
-      // Draw the rectangle (input box)
-      Game.CONTEXT.strokeStyle = '#000'; // Border color
-      Game.CONTEXT.lineWidth = 2;
-      Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 150, 150, 300, 40);
-
-      // Draw the text inside the input box
-      Game.CONTEXT.font = '20px Arial';
-      Game.CONTEXT.fillStyle = '#000'; // Text color
-      Game.CONTEXT.textBaseline = 'middle';
-      Game.CONTEXT.textAlign = 'left';
-      Game.CONTEXT.fillText(this.passPhrase, (Game.CANVAS_WIDTH / 2) - 145, 150 + 20);
-
       if (this.hasPermission) {
         this.editStageButton.Draw(deltaTime);
+        this.addCreditsButton.Draw(deltaTime);
       }
     }
   }
 
   private openSettings(): void {
-    if (this.settingsOpen)
+    if (this.settingsOpen) {
+      this.hasPermission = false;
       this.settingsOpen = false;
-    else
+    }
+    else {
       this.settingsOpen = true;
+      let sign = prompt("What's the password?");
+
+      if (sign) {
+        if (sign.toLowerCase() === "please") {
+          this.hasPermission = true;
+        }
+      }
+    }
   }
 
   private settingsOpen: boolean = false;
-  private startedTyping: boolean = false;
-  private passPhrase: string = 'Enter Passphrase'
 }

@@ -71,7 +71,7 @@ export class LevelOneScene extends DefenseBaseLevel {
 
   override Load(): void {
     super.Load();
-    Game.SetStartingCredits(30);
+    Game.AddCredits(30);
   }
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
