@@ -27,7 +27,7 @@ export class cell {
 
 export class PathFinder {
   
-  public static AStarSearch(grid: number[][], src: Vector2, dest: Vector2): any[] {
+  public static AStarSearch(grid: number[][], src: Vector2, dest: Vector2): Vector2[] {
 
     // If the source is out of range
     if (!this.isValid(src.X, src.Y, grid.length, grid[0].length)) {

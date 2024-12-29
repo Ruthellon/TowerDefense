@@ -4,6 +4,7 @@ import { Block } from "../GameObjects/block.gameobject";
 import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { DefenseBaseLevel, eDefenderTypes } from "./defensebase.scene";
+import { eLayerTypes } from "./scene.interface";
 
 export class LevelThreeScene extends DefenseBaseLevel {
   protected get LevelUnid(): number {
@@ -59,13 +60,13 @@ export class LevelThreeScene extends DefenseBaseLevel {
     Game.CONTEXT.fillStyle = '#ffffff';
     Game.CONTEXT.font = '22px serif';
     Game.CONTEXT.textAlign = "center";
-    Game.CONTEXT.fillText('Level Three', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
+    Game.CONTEXT.fillText(`Level Three - Round ${this.CurrentRound + 1} / ${this.EnemyRounds.length}`, Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
   }
 
   override Load(): void {
     super.Load();
 
-    Game.SetStartingCredits(Game.Credits + 50);
+    Game.SetStartingCredits(Game.Credits + 30);
   }
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
@@ -86,6 +87,8 @@ export class LevelThreeScene extends DefenseBaseLevel {
       newAttacker.SetColor('#00ff00');
       newAttacker.SetValue(50);
     }
+    newAttacker.SetLocation(this.StartingCells[0].X - this.GridCellSize, this.StartingCells[0].Y - this.GridCellSize, eLayerTypes.Object - 5);
+    newAttacker.SetPath(this.GetPath(0), this.GridCellSize);
     return newAttacker;
   }
 

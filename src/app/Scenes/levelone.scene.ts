@@ -5,6 +5,7 @@ import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { DefenseBaseLevel, eDefenderTypes } from "./defensebase.scene";
+import { eLayerTypes } from "./scene.interface";
 
 export class LevelOneScene extends DefenseBaseLevel {
   protected get LevelUnid(): number {
@@ -19,17 +20,19 @@ export class LevelOneScene extends DefenseBaseLevel {
   protected get PlayerStartingHealth(): number {
     return 10;
   }
+  private secondsBetweenMonsters: number = 1;
   protected override get SecondsBetweenMonsters(): number {
-    return 1.5;
+    return 1;
   }
+  private startSeconds: number = 120;
   protected override get SecondsToStart(): number {
-    return 120;
+    return this.startSeconds;
   }
   private availableDefenders = [eDefenderTypes.BasicTurret];
   protected get AvailableDefenders(): eDefenderTypes[] {
     return this.availableDefenders;
   }
-  private enemyRounds = [5, 5, 10, 15, 25];
+  private enemyRounds = [5, 5, 5, 10, 10, 15];
   protected get EnemyRounds(): number[] {
     return this.enemyRounds;
   }
@@ -62,23 +65,80 @@ export class LevelOneScene extends DefenseBaseLevel {
       Game.CONTEXT.fillStyle = '#ffffff';
       Game.CONTEXT.font = '22px serif';
       Game.CONTEXT.textAlign = "center";
-      Game.CONTEXT.fillText('Level One', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
+      Game.CONTEXT.fillText(`Level One - Round ${this.CurrentRound + 1} / ${this.EnemyRounds.length}`, Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
     }
   }
 
   override Load(): void {
     super.Load();
-    Game.SetStartingCredits(50);
+    Game.SetStartingCredits(30);
   }
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
     let newAttacker = new Block();
-    newAttacker.SetStartingSpeed(10);
-    newAttacker.SetStartingHealth(42);
     newAttacker.SetDamage(1);
-    newAttacker.SetSize(40, 40);
     newAttacker.SetColor('#00ff00');
-    newAttacker.SetValue(3);
+
+    if (this.CurrentRound === 0) {
+      this.startSeconds = 60;
+      newAttacker.SetSize(20, 20);
+      newAttacker.SetStartingSpeed(7);
+      newAttacker.SetStartingHealth(15);
+      newAttacker.SetValue(3);
+    }
+    else if (this.CurrentRound === 1) {
+      newAttacker.SetSize(20, 20);
+      newAttacker.SetStartingSpeed(7);
+      newAttacker.SetStartingHealth(15);
+      newAttacker.SetValue(3);
+    }
+    else if (this.CurrentRound === 2) {
+      newAttacker.SetSize(30, 30);
+      newAttacker.SetStartingSpeed(8);
+      newAttacker.SetStartingHealth(18);
+      newAttacker.SetValue(3);
+    }
+    else if (this.CurrentRound === 3) {
+      newAttacker.SetSize(30, 30);
+      newAttacker.SetStartingSpeed(8);
+      newAttacker.SetStartingHealth(24);
+      newAttacker.SetValue(3);
+    }
+    else if (this.CurrentRound === 4) {
+      this.secondsBetweenMonsters = .75;
+
+      if (attackerCount % 2 === 0) {
+        newAttacker.SetSize(20, 20);
+        newAttacker.SetStartingSpeed(10);
+        newAttacker.SetStartingHealth(18);
+        newAttacker.SetValue(3);
+      }
+      else {
+        newAttacker.SetSize(40, 40);
+        newAttacker.SetStartingSpeed(7);
+        newAttacker.SetStartingHealth(24);
+        newAttacker.SetValue(3);
+      }
+    }
+    else if (this.CurrentRound === 5) {
+      this.secondsBetweenMonsters = .75;
+
+      if (attackerCount % 2 === 0) {
+        newAttacker.SetSize(20, 20);
+        newAttacker.SetStartingSpeed(10);
+        newAttacker.SetStartingHealth(21);
+        newAttacker.SetValue(3);
+      }
+      else {
+        newAttacker.SetSize(40, 40);
+        newAttacker.SetStartingSpeed(7);
+        newAttacker.SetStartingHealth(27);
+        newAttacker.SetValue(3);
+      }
+    }
+    newAttacker.SetLocation(this.StartingCells[0].X - this.GridCellSize, this.StartingCells[0].Y - this.GridCellSize, eLayerTypes.Object - 5);
+    newAttacker.SetPath(this.GetPath(0), this.GridCellSize);
+
     return newAttacker;
   }
 

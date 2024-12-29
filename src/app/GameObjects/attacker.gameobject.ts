@@ -27,6 +27,11 @@ export abstract class Attacker extends Base {
     return this.speed;
   }
 
+  private reachedEnd = false;
+  public get ReachedEnd(): boolean {
+    return this.reachedEnd;
+  }
+
   private distanceLeftX = 0;
   private distanceLeftY = 0;
   public override Update(deltaTime: number) {
@@ -44,6 +49,9 @@ export abstract class Attacker extends Base {
       if (this.pointOnPath < this.path.length) {
         this.target = new Vector2(this.path[this.pointOnPath].X + (this.gridSize / 2),
           this.path[this.pointOnPath].Y + (this.gridSize / 2));
+      }
+      else {
+        this.reachedEnd = true;
       }
     }
 

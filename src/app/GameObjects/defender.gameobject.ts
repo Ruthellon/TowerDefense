@@ -6,7 +6,6 @@ export abstract class Defender extends Base {
   public abstract get Cost(): number | null;
   public abstract get CanUpgrade(): boolean;
   public abstract get Level(): number;
-  public abstract get UpgradeCost(): number;
   public abstract get ShootingCooldown(): number;
   public abstract get Range(): number;
 

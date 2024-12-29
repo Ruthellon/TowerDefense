@@ -5,10 +5,6 @@ import { IGameObject } from "./gameobject.interface";
 
 export class Turret extends Defender {
   protected override location = new Vector3(0, 0, 2);
-  private upgradeCost = 10;
-  public get UpgradeCost(): number {
-    return this.upgradeCost;
-  }
   private canUpgrade = true;
   public get CanUpgrade(): boolean {
     return this.canUpgrade;
@@ -17,7 +13,7 @@ export class Turret extends Defender {
   public get Level(): number {
     return this.level;
   }
-  private cost = 10;
+  private cost: number | null = 10;
   public override get Cost(): number | null {
     return this.cost;
   }
@@ -29,8 +25,9 @@ export class Turret extends Defender {
   public override get Range(): number {
     return this.range;
   }
+  private value: number | null = 10;
   public override get Value(): number | null {
-    return null;
+    return this.value;
   }
   public override Load(): void {
     super.Load();
@@ -47,7 +44,8 @@ export class Turret extends Defender {
       this.range = 175;
       this.damage = 4;
       this.shootingCooldown = .9;
-      this.upgradeCost = 10;
+      this.cost = 10;
+      this.value = 20;
     }
     else if (this.level === 2) {
       this.level = 3;
@@ -55,7 +53,8 @@ export class Turret extends Defender {
       this.range = 200;
       this.damage = 5;
       this.shootingCooldown = .8;
-      this.upgradeCost = 10;
+      this.cost = 10;
+      this.value = 30;
     }
     else if (this.level === 3) {
       this.level = 4;
@@ -63,7 +62,8 @@ export class Turret extends Defender {
       this.range = 225;
       this.damage = 6;
       this.shootingCooldown = .7;
-      this.upgradeCost = 20;
+      this.cost = 20;
+      this.value = 40;
     }
     else if (this.level === 4) {
       this.level = 5;
@@ -72,6 +72,8 @@ export class Turret extends Defender {
       this.range = 250;
       this.damage = 8;
       this.shootingCooldown = .5;
+      this.cost = null;
+      this.value = 60;
     }
   }
 
