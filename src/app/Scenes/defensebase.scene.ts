@@ -82,16 +82,25 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   }
   private newDefender: eDefenderTypes = eDefenderTypes.Wall;
   protected get CreateNewDefender(): Defender {
-    let defender: Defender;
     if (this.newDefender === eDefenderTypes.BasicTurret) {
-      defender = new Turret();
+      let defender = new Turret();
       defender.SetRange(this.GridCellSize * 1.5);
+      defender.SetSize(this.GridCellSize, this.GridCellSize);
+      return defender;
+    }
+    else if (this.newDefender === eDefenderTypes.SAMTurret) {
+      let defender = new Turret();
+      defender.SetIsSurfaceToAir(true);
+      defender.SetRange(this.GridCellSize * 2.5);
+      defender.SetCost(20);
+      defender.SetSize(this.GridCellSize, this.GridCellSize);
+      return defender;
     }
     else {
-      defender = new Wall();
+      let defender = new Wall();
+      defender.SetSize(this.GridCellSize, this.GridCellSize);
+      return defender;
     }
-    defender.SetSize(this.GridCellSize, this.GridCellSize);
-    return defender;
   }
   private paused: boolean = false;
   protected get IsPaused(): boolean {
@@ -376,6 +385,26 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
     }
 
+    if (this.mouseHighlightCell) {
+      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeRect((this.mouseHighlightCell.X * this.GridCellSize) + this.remainderX, (this.mouseHighlightCell.Y * this.GridCellSize) + this.remainderY,
+        this.GridCellSize, this.GridCellSize);
+    }
+
+    if (this.selectedDefender) {
+      Game.CONTEXT.lineWidth = 5;
+      if (this.selectedDefender.CanUpgrade) {
+        this.upgradeButton.Draw(deltaTime);
+      }
+      this.deleteButton.Draw(deltaTime);
+
+      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeRect(this.selectedDefender.Location.X, this.selectedDefender.Location.Y,
+        this.selectedDefender.Size.X, this.selectedDefender.Size.Y);
+    }
+
     super.Draw(deltaTime);
 
     if (this.secondsToStart > 0) {
@@ -397,25 +426,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     Game.CONTEXT.textAlign = "center";
     Game.CONTEXT.fillText(`Credits: ${Game.Credits.toFixed(0)}`, Game.CANVAS_WIDTH - this.UICellSize * 2.5, this.UICellSize / 2);
 
-    if (this.mouseHighlightCell) {
-      Game.CONTEXT.lineWidth = 5;
-      Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect((this.mouseHighlightCell.X * this.GridCellSize) + this.remainderX, (this.mouseHighlightCell.Y * this.GridCellSize) + this.remainderY,
-        this.GridCellSize, this.GridCellSize);
-    }
-
-    if (this.selectedDefender) {
-      Game.CONTEXT.lineWidth = 5;
-      if (this.selectedDefender.CanUpgrade) {
-        this.upgradeButton.Draw(deltaTime);
-      }
-      this.deleteButton.Draw(deltaTime);
-
-      Game.CONTEXT.lineWidth = 5;
-      Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect(this.selectedDefender.Location.X, this.selectedDefender.Location.Y,
-        this.selectedDefender.Size.X, this.selectedDefender.Size.Y);
-    }
+    
 
     if (this.IsPaused) {
       Game.CONTEXT!.fillStyle = '#555555';

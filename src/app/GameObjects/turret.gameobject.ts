@@ -1,5 +1,6 @@
 import { Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
+import { Attacker } from "./attacker.gameobject";
 import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
@@ -25,6 +26,11 @@ export class Turret extends Defender {
   public override get Value(): number | null {
     return this.value;
   }
+  private surfaceToAir: boolean = false;
+  public get IsSurfaceToAir(): boolean {
+    return this.surfaceToAir;
+  }
+
   public override Load(): void {
     super.Load();
     this.SetDamage(3);
@@ -100,5 +106,34 @@ export class Turret extends Defender {
     Game.CONTEXT.strokeStyle = strokeColor;
     Game.CONTEXT.lineWidth = lineWidth;
     Game.CONTEXT.stroke();
+  }
+
+  public FindTarget(enemies: Attacker[]) {
+    if (!this.enemyInRange && this.Range) {
+      for (let i = 0; i < enemies.length; i++) {
+        let enemy = enemies[i];
+
+        if ((this.IsSurfaceToAir && !enemy.CanFly) || (!this.IsSurfaceToAir && enemy.CanFly))
+          continue;
+
+        let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
+          Math.max(enemy.Location.X, Math.min(this.CenterMassLocation.X, enemy.Location.X + enemy.Size.X)),
+          Math.max(enemy.Location.Y, Math.min(this.CenterMassLocation.Y, enemy.Location.Y + enemy.Size.Y)),
+          enemy.Location.Z)));
+
+        if (distance <= this.Range) {
+          this.enemyInRange = enemies[i];
+          break;
+        }
+      }
+    }
+  }
+
+  public SetCost(cost: number) {
+    this.cost = cost;
+  }
+
+  public SetIsSurfaceToAir(sam: boolean) {
+    this.surfaceToAir = sam;
   }
 }

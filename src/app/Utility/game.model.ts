@@ -3,6 +3,7 @@ import { InstructionsScene } from "../Scenes/instructions.scene";
 import { LevelFiveScene } from "../Scenes/levelfive.scene";
 import { LevelFourScene } from "../Scenes/levelfour.scene";
 import { LevelOneScene } from "../Scenes/levelone.scene";
+import { LevelSevenScene } from "../Scenes/levelseven.scene";
 import { LevelSixScene } from "../Scenes/levelsix.scene";
 import { LevelThreeScene } from "../Scenes/levelthree.scene";
 import { LevelTwoScene } from "../Scenes/leveltwo.scene";
@@ -88,6 +89,9 @@ export class Game {
     }
     else if (scene === 'levelsix') {
       this.theScene = new LevelSixScene();
+    }
+    else if (scene === 'levelseven') {
+      this.theScene = new LevelSevenScene();
     }
     else if (scene === 'editstage') {
       this.theScene = new EditStage();

@@ -47,7 +47,7 @@ export class Wall extends Defender {
       this.Size.X, this.Size.Y);
   }
 
-  public override FindTarget(enemies: Attacker[]) {
+  public FindTarget(enemies: Attacker[]) {
     return;
   }
 }

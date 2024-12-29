@@ -21,44 +21,51 @@ export class InstructionsScene extends BaseLevel {
   startLevel4Button = new Button();
   startLevel5Button = new Button();
   startLevel6Button = new Button();
+  startLevel7Button = new Button();
   Load(): void {
     Game.SetStartingCredits(0);
 
-    this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 750, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
+    this.startLevel1Button.SetLocation((Game.CANVAS_WIDTH / 2) - 750, Game.CANVAS_HEIGHT - 250, eLayerTypes.UI);
     this.startLevel1Button.SetSize(200, 100);
     this.startLevel1Button.SetText('Start Level 1');
     this.startLevel1Button.SetClickFunction(() => Game.SetTheScene('levelone'));
     this.LoadGameObject(this.startLevel1Button);
 
-    this.startLevel2Button.SetLocation((Game.CANVAS_WIDTH / 2) - 500, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
+    this.startLevel2Button.SetLocation((Game.CANVAS_WIDTH / 2) - 500, Game.CANVAS_HEIGHT - 250, eLayerTypes.UI);
     this.startLevel2Button.SetSize(200, 100);
     this.startLevel2Button.SetText('Start Level 2');
     this.startLevel2Button.SetClickFunction(() => Game.SetTheScene('leveltwo'));
     this.LoadGameObject(this.startLevel2Button);
 
-    this.startLevel3Button.SetLocation((Game.CANVAS_WIDTH / 2) - 250, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
+    this.startLevel3Button.SetLocation((Game.CANVAS_WIDTH / 2) - 250, Game.CANVAS_HEIGHT - 250, eLayerTypes.UI);
     this.startLevel3Button.SetSize(200, 100);
     this.startLevel3Button.SetText('Start Level 3');
     this.startLevel3Button.SetClickFunction(() => Game.SetTheScene('levelthree'));
     this.LoadGameObject(this.startLevel3Button);
 
-    this.startLevel4Button.SetLocation((Game.CANVAS_WIDTH / 2) + 0, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
+    this.startLevel4Button.SetLocation((Game.CANVAS_WIDTH / 2) + 0, Game.CANVAS_HEIGHT - 250, eLayerTypes.UI);
     this.startLevel4Button.SetSize(200, 100);
     this.startLevel4Button.SetText('Start Level 4');
     this.startLevel4Button.SetClickFunction(() => Game.SetTheScene('levelfour'));
     this.LoadGameObject(this.startLevel4Button);
 
-    this.startLevel5Button.SetLocation((Game.CANVAS_WIDTH / 2) + 250, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
+    this.startLevel5Button.SetLocation((Game.CANVAS_WIDTH / 2) + 250, Game.CANVAS_HEIGHT - 250, eLayerTypes.UI);
     this.startLevel5Button.SetSize(200, 100);
     this.startLevel5Button.SetText('Start Level 5');
     this.startLevel5Button.SetClickFunction(() => Game.SetTheScene('levelfive'));
     this.LoadGameObject(this.startLevel5Button);
 
-    this.startLevel6Button.SetLocation((Game.CANVAS_WIDTH / 2) + 500, Game.CANVAS_HEIGHT - 150, eLayerTypes.UI);
+    this.startLevel6Button.SetLocation((Game.CANVAS_WIDTH / 2) + 500, Game.CANVAS_HEIGHT - 250, eLayerTypes.UI);
     this.startLevel6Button.SetSize(200, 100);
     this.startLevel6Button.SetText('Start Level 6');
     this.startLevel6Button.SetClickFunction(() => Game.SetTheScene('levelsix'));
     this.LoadGameObject(this.startLevel6Button);
+
+    this.startLevel7Button.SetLocation((Game.CANVAS_WIDTH / 2) - 750, Game.CANVAS_HEIGHT - 125, eLayerTypes.UI);
+    this.startLevel7Button.SetSize(200, 100);
+    this.startLevel7Button.SetText('Start Level 7');
+    this.startLevel7Button.SetClickFunction(() => Game.SetTheScene('levelseven'));
+    this.LoadGameObject(this.startLevel7Button);
 
     this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
     this.settingsButton.SetSize(50, 50);
@@ -110,8 +117,7 @@ export class InstructionsScene extends BaseLevel {
     Game.CONTEXT.fillText("If you start at Level 1, credits earned and spent carry over to Level 2. So spend wisely.", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 0);
     Game.CONTEXT.fillText("The game ends when you defeat all the monsters, or lose 10 life.", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 50);
     Game.CONTEXT.fillText("Good Luck!", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 100);
-    Game.CONTEXT.fillText("Look out for new 'Upgrade' and 'Delete' buttons when selecting defenders on the field!", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
-    Game.CONTEXT.fillText("Press 'Start Level' to begin!", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 250);
+    Game.CONTEXT.fillText("Look out for the 'Upgrade' and 'Delete' buttons when selecting defenders on the field!", Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
 
     if (this.settingsOpen) {
       Game.CONTEXT!.fillStyle = '#555555';

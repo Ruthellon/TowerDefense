@@ -7,6 +7,7 @@ export abstract class Defender extends Base {
   public abstract get CanUpgrade(): boolean;
   public abstract get Level(): number;
   public abstract get ShootingCooldown(): number;
+  public abstract FindTarget(enemies: Attacker[]): void;
 
 
   protected range: number | null = null;
@@ -69,22 +70,22 @@ export abstract class Defender extends Base {
     this.UpdateClick();
   }
 
-  public FindTarget(enemies: Attacker[]) {
-    if (!this.enemyInRange && this.Range) {
-      for (let i = 0; i < enemies.length; i++) {
-        let enemy = enemies[i];
-        let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
-          Math.max(enemy.Location.X, Math.min(this.CenterMassLocation.X, enemy.Location.X + enemy.Size.X)),
-          Math.max(enemy.Location.Y, Math.min(this.CenterMassLocation.Y, enemy.Location.Y + enemy.Size.Y)),
-          enemy.Location.Z)));
+  //public FindTarget(enemies: Attacker[]) {
+  //  if (!this.enemyInRange && this.Range) {
+  //    for (let i = 0; i < enemies.length; i++) {
+  //      let enemy = enemies[i];
+  //      let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
+  //        Math.max(enemy.Location.X, Math.min(this.CenterMassLocation.X, enemy.Location.X + enemy.Size.X)),
+  //        Math.max(enemy.Location.Y, Math.min(this.CenterMassLocation.Y, enemy.Location.Y + enemy.Size.Y)),
+  //        enemy.Location.Z)));
 
-        if (distance <= this.Range) {
-          this.enemyInRange = enemies[i];
-          break;
-        }
-      }
-    }
-  }
+  //      if (distance <= this.Range) {
+  //        this.enemyInRange = enemies[i];
+  //        break;
+  //      }
+  //    }
+  //  }
+  //}
 
   public SetDamage(damage: number): void {
     this.damage = damage;

@@ -32,6 +32,11 @@ export abstract class Attacker extends Base {
     return this.reachedEnd;
   }
 
+  private canFly = false;
+  public get CanFly(): boolean {
+    return this.canFly;
+  }
+
   private distanceLeftX = 0;
   private distanceLeftY = 0;
   public override Update(deltaTime: number) {
@@ -43,7 +48,7 @@ export abstract class Attacker extends Base {
 
     let distanceTo = this.target.distanceTo(new Vector2(this.CenterMassLocation.X, this.CenterMassLocation.Y));
 
-    if (distanceTo <= 5 || distanceTo > 200) {
+    if (distanceTo <= 5) {
       this.pointOnPath++;
 
       if (this.pointOnPath < this.path.length) {
@@ -98,6 +103,10 @@ export abstract class Attacker extends Base {
     this.value = val;
   }
 
+  public SetCanFly(canFly: boolean): void {
+    this.canFly = canFly;
+  }
+
   protected gridSize: number = 0;
   protected pointOnPath: number = 0;
   protected path: Vector2[] = [];
@@ -111,6 +120,10 @@ export abstract class Attacker extends Base {
 
     this.location.X = this.target.X - (this.Size.X / 2);
     this.location.Y = this.target.Y - (this.Size.Y / 2);
+
+    if (this.CanFly) {
+      this.pointOnPath = this.path.length - 2;
+    }
   }
 
   protected MoveTo(deltaTime: number): Vector2 {
