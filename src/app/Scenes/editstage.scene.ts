@@ -77,7 +77,7 @@ export class EditStage extends BaseLevel {
     
     this.slider.SetLocation(Game.CANVAS_WIDTH / 2 - 100, 25, 5);
     this.slider.SetSize(200, 25);
-    this.slider.SetValueRange(50, 175);
+    this.slider.SetValueRange(20, 175);
     this.slider.SetValue(this.cellSize);
     this.LoadGameObject(this.slider);
 
@@ -135,7 +135,10 @@ export class EditStage extends BaseLevel {
     this.saveButton.SetSize(100, 50);
     this.saveButton.SetText('Save');
     this.saveButton.SetClickFunction(() => {
-      // Do Save
+      if (this.startingCells.length !== this.endingCells.length) {
+        alert('Start count must match End count');
+        return;
+      }
     });
     this.saveButton.Load();
   }

@@ -42,6 +42,12 @@ export class Slider extends UtilityBase {
       Game.CONTEXT.arc(this.circleX, this.location.Y + (this.size.Y / 2), this.size.Y / 2, 0, 2 * Math.PI);
       Game.CONTEXT.fillStyle = '#999999'; // Set fill color
       Game.CONTEXT.fill(); // Fill the circle
+
+      Game.CONTEXT.fillStyle = '#ffffff';
+      Game.CONTEXT.font = '14px serif';
+      Game.CONTEXT.textAlign = "center";
+      Game.CONTEXT.textBaseline = "middle";
+      Game.CONTEXT.fillText(this.Value.toFixed(0), this.circleX, this.location.Y + (this.size.Y / 2));
     }
     else if (this.sprite) {
       Game.CONTEXT.drawImage(this.sprite, this.location.X, this.location.Y, this.size.X, this.size.Y);

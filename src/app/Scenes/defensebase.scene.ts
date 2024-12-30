@@ -135,6 +135,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.playerHealth = this.PlayerStartingHealth;
     this.secondsToStart = this.SecondsToStart;
 
+    this.startingCredits = Game.Credits;
+
     this.EnemyRounds.forEach((round) => {
       this.totalEnemies += round;
     });
@@ -697,7 +699,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.restartButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.restartButton.SetText('Restart');
     this.restartButton.SetClickFunction(() => {
-      Game.SetStartingCredits(0);
+      Game.SetStartingCredits(this.startingCredits >= 10 ? (this.startingCredits - 10) : this.startingCredits);
       Game.SetTheScene(this.CurrentSceneName);
     });
 
@@ -883,4 +885,5 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private selectedDefender: Defender | null = null;
   private sentAPIMessage: boolean = false;
   private floor: Sprite = new Sprite();
+  private startingCredits: number = 0;
 }
