@@ -38,15 +38,23 @@ export abstract class UtilityBase extends IGameObject {
   public get Selected(): boolean {
     return this.selected;
   }
-
   protected color: string | null = null;
-  protected get Color(): string | null {
+  public get Color(): string | null {
     return this.color;
   }
   protected sprite: HTMLImageElement | null = null;
-  protected get Sprite(): HTMLImageElement | null {
+  public get Sprite(): HTMLImageElement | null {
     return this.sprite;
   }
+  protected isHidden: boolean = false;
+  public get IsHidden(): boolean {
+    return this.isHidden;
+  }
+  protected isEnabled: boolean = true;
+  public get IsEnabled(): boolean {
+    return this.isEnabled;
+  }
+
   protected imageLocation: string | null = null;
   protected get ImageLocation(): string | null {
     return this.imageLocation;
@@ -107,6 +115,14 @@ export abstract class UtilityBase extends IGameObject {
 
   public SetClickFunction(clicked: () => void): void {
     this.clickFunction = clicked;
+  }
+
+  public SetHidden(hidden: boolean) {
+    this.isHidden = hidden;
+  }
+
+  public SetEnabled(enabled: boolean) {
+    this.isEnabled = enabled;
   }
 
   protected UpdateClick(): void {

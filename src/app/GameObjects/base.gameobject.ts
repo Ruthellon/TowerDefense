@@ -6,6 +6,11 @@ import { IGameObject } from "./gameobject.interface";
 export abstract class Base extends IGameObject {
   public abstract get Value(): number | null;
 
+  protected gameObjects: IGameObject[] = [];
+  protected get GameObjects(): IGameObject[] {
+    return this.gameObjects;
+  }
+
   protected location: Vector3 = new Vector3(0, 0, 0);
   public get Location(): Vector3 {
     return this.location;
@@ -39,6 +44,14 @@ export abstract class Base extends IGameObject {
   protected selected: boolean = false;
   public get Selected(): boolean {
     return this.selected;
+  }
+  protected isHidden: boolean = false;
+  public get IsHidden(): boolean {
+    return this.isHidden;
+  }
+  protected isEnabled: boolean = true;
+  public get IsEnabled(): boolean {
+    return this.isEnabled;
   }
 
   public get CenterMassLocation(): Vector3 {
@@ -123,6 +136,14 @@ export abstract class Base extends IGameObject {
 
   public SetClickFunction(clicked: () => void): void {
     this.clickFunction = clicked;
+  }
+
+  public SetHidden(hidden: boolean): void {
+    this.isHidden = hidden;
+  }
+
+  public SetEnabled(enabled: boolean): void {
+    this.isEnabled = enabled;
   }
 
   protected UpdateClick(): void {

@@ -67,6 +67,10 @@ export class Rect {
   public get BottomRight(): Vector2 {
     return this.bottomRight;
   }
+  private center: Vector2;
+  public get Center(): Vector2 {
+    return this.center;
+  }
 
   constructor(x: number, y: number, width: number, height: number) {
     this.x = x;
@@ -78,6 +82,8 @@ export class Rect {
     this.topRight = new Vector2(x + width, y);
     this.bottomRight = new Vector2(x + width, y + height);
     this.bottomLeft = new Vector2(x, y + height);
+
+    this.center = new Vector2(x + (width / 2), y + (height / 2));
   }
 
   public IsOverlapping(other: Rect): boolean {

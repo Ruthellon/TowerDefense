@@ -31,8 +31,8 @@ export abstract class BaseLevel extends IScene {
         });
         this.colliderLocations.push(obj);
       }
-
-      obj.Update(deltaTime);
+      if (!obj.IsHidden && obj.IsEnabled)
+        obj.Update(deltaTime);
     });
   }
 
@@ -40,14 +40,15 @@ export abstract class BaseLevel extends IScene {
     this.gameObjects.sort((a, b) =>
       a.Location.Z - b.Location.Z
     );
-    for (let i = 0; i < this.GameObjects.length; i++) {
-      this.GameObjects[i].Draw(deltaTime);
-    }
+    this.GameObjects.forEach((obj) => {
+      if (!obj.IsHidden)
+        obj.Draw(deltaTime);
+    });
   }
 
   LoadGameObject(gameObject: IGameObject) {
     gameObject.Load();
-    this.GameObjects.push(gameObject);
+    this.gameObjects.push(gameObject);
   }
 
   DestroyGameObject(gameObject: IGameObject) {
