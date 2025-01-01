@@ -111,18 +111,23 @@ export abstract class Attacker extends Base {
   protected pointOnPath: number = 0;
   protected path: Vector2[] = [];
   protected target: Vector2 = new Vector2(0, 0);
-  public SetPath(path: Vector2[], gridSize: number) {
-    this.path = path;
-    this.gridSize = gridSize;
+  public SetPath(path: Vector2[] | null, gridSize: number) {
+    if (path) {
+      this.path = path;
+      this.gridSize = gridSize;
 
-    this.target = new Vector2(this.path[this.pointOnPath].X + (gridSize / 2),
-      this.path[this.pointOnPath].Y + (gridSize / 2));
+      this.target = new Vector2(this.path[this.pointOnPath].X + (gridSize / 2),
+        this.path[this.pointOnPath].Y + (gridSize / 2));
 
-    this.location.X = this.target.X - (this.Size.X / 2);
-    this.location.Y = this.target.Y - (this.Size.Y / 2);
+      this.location.X = this.target.X - (this.Size.X / 2);
+      this.location.Y = this.target.Y - (this.Size.Y / 2);
 
-    if (this.CanFly) {
-      this.pointOnPath = this.path.length - 2;
+      if (this.CanFly) {
+        this.pointOnPath = this.path.length - 2;
+      }
+    }
+    else {
+      throw new Error("Error");
     }
   }
 

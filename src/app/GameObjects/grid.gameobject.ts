@@ -1,9 +1,11 @@
 import { AppComponent } from "../app.component";
+import { eLayerTypes } from "../Scenes/scene.interface";
 import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
-import { ePathCellStatus } from "../Utility/pathfinding.service";
+import { ePathCellStatus, PathFinder } from "../Utility/pathfinding.service";
 import { Attacker } from "./attacker.gameobject";
 import { Base } from "./base.gameobject";
+import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 export class Grid extends Base {
@@ -28,6 +30,9 @@ export class Grid extends Base {
   private endingCells: Vector2[] = [];
   public get EndingCells(): Vector2[] {
     return this.endingCells;
+  }
+  public get PathsCount(): number {
+    return this.thePaths.length;
   }
 
   public override Load() {
@@ -122,11 +127,31 @@ export class Grid extends Base {
       Game.CONTEXT.textBaseline = "middle";
       Game.CONTEXT.fillText(`${i + 1}`, x + (this.GridCellSize / 2), y + (this.GridCellSize / 2));
     }
+
+    if (this.showAttackerPath) {
+      //Draw The Path
+      Game.CONTEXT.lineWidth = 5;
+
+      for (let path = 0; path < this.thePaths.length; path++) {
+        let thePath = this.GetPath(path);
+        if (thePath && thePath.length > 0) {
+          Game.CONTEXT.strokeStyle = '#2222ff33';
+          thePath.forEach((p) => {
+            Game.CONTEXT.strokeRect(p.X + 5, p.Y + 5,
+              this.GridCellSize - 10, this.GridCellSize - 10);
+          });
+        }
+      }
+    }
   }
 
-  public AddStartPoint(): boolean {
-    if (this.mousePreviousClickCell) {
-      let cell = this.mousePreviousClickCell;
+  public AddStartPoint(cell?: Vector2): boolean {
+    if (cell) {
+      this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
+      this.startingCells.push(cell);
+    }
+    else if (this.mousePreviousClickCell) {
+      cell = this.mousePreviousClickCell;
       if (this.grid[cell.X][cell.Y] === ePathCellStatus.OutOfBounds) {
         if (this.checkNeighboringCells(cell)) {
           this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
@@ -136,11 +161,11 @@ export class Grid extends Base {
       else if (this.grid[cell.X][cell.Y] === ePathCellStatus.EndingPoint) {
         this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
         this.startingCells.push(cell);
-        this.endingCells.splice(this.endingCells.findIndex((end) => cell.isEqual(end)), 1);
+        this.endingCells.splice(this.endingCells.findIndex((end) => cell!.isEqual(end)), 1);
       }
       else if (this.grid[cell.X][cell.Y] === ePathCellStatus.StartingPoint) {
         this.grid[cell.X][cell.Y] = ePathCellStatus.OutOfBounds;
-        this.startingCells.splice(this.startingCells.findIndex((start) => cell.isEqual(start)), 1);
+        this.startingCells.splice(this.startingCells.findIndex((start) => cell!.isEqual(start)), 1);
       }
       return true;
     }
@@ -148,8 +173,12 @@ export class Grid extends Base {
   }
 
   public AddEndPoint(cell?: Vector2): boolean {
-    if (this.mousePreviousClickCell) {
-      let cell = this.mousePreviousClickCell;
+    if (cell) {
+      this.grid[cell.X][cell.Y] = ePathCellStatus.EndingPoint;
+      this.endingCells.push(cell);
+    }
+    else if (this.mousePreviousClickCell) {
+      cell = this.mousePreviousClickCell;
       if (this.grid[cell.X][cell.Y] === ePathCellStatus.OutOfBounds) {
         if (this.checkNeighboringCells(cell)) {
           this.grid[cell.X][cell.Y] = ePathCellStatus.EndingPoint;
@@ -159,19 +188,47 @@ export class Grid extends Base {
       else if (this.grid[cell.X][cell.Y] === ePathCellStatus.StartingPoint) {
         this.grid[cell.X][cell.Y] = ePathCellStatus.EndingPoint;
         this.endingCells.push(cell);
-        this.startingCells.splice(this.startingCells.findIndex((start) => cell.isEqual(start)), 1);
+        this.startingCells.splice(this.startingCells.findIndex((start) => cell!.isEqual(start)), 1);
       }
       else if (this.grid[cell.X][cell.Y] === ePathCellStatus.EndingPoint) {
         this.grid[cell.X][cell.Y] = ePathCellStatus.OutOfBounds;
-        this.endingCells.splice(this.endingCells.findIndex((end) => cell.isEqual(end)), 1);
+        this.endingCells.splice(this.endingCells.findIndex((end) => cell!.isEqual(end)), 1);
       }
       return true;
     }
     return false;
   }
 
-  public AddObstacle(): boolean {
-    return false;
+  public AddObstacle(roundStarted: boolean): Vector2 | null {
+    if (!this.grid || !this.mousePreviousClickCell)
+      return null;
+
+    if (this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] >= ePathCellStatus.Blocked)
+      return null;
+
+    let worldCells = new Vector2((this.mousePreviousClickCell.X * this.GridCellSize) + this.remainderX, (this.mousePreviousClickCell.Y * this.GridCellSize) + this.remainderY);
+    if (roundStarted) {
+      if (this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] === ePathCellStatus.Path)
+        return null;
+
+      this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] = ePathCellStatus.Blocked;
+
+      return worldCells;
+    }
+
+    this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] = ePathCellStatus.Blocked;
+
+    if (this.CalculatePaths()) {
+      return worldCells;
+    }
+    else {
+      this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] = ePathCellStatus.Open;
+      return null;
+    }
+  }
+
+  public RemoveObstacle(cell: Vector2): void {
+    this.grid[cell.X][cell.Y] = ePathCellStatus.Open;
   }
 
   public SetGridCellSize(cellSize: number) {
@@ -190,6 +247,10 @@ export class Grid extends Base {
 
   public SetUICellSize(cellSize: number) {
     this.uiCellSize = cellSize;
+  }
+
+  public SetShowPaths(show: boolean): void {
+    this.showAttackerPath = show;
   }
 
   public SetUpGrid(): void {
@@ -256,6 +317,52 @@ export class Grid extends Base {
     //this.lastCoordinate = new Vector3((this.EndingCells[0].X * this.GridCellSize) + (this.GridCellSize / 2), (this.EndingCells[0].Y * this.GridCellSize) + (this.GridCellSize / 2), 0);
   }
 
+  public CalculatePaths(): boolean {
+    let tempPaths: Vector2[][] = [];
+    for (let i = 0; i < this.StartingCells.length; i++) {
+      let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[i], this.EndingCells[i]);
+
+      if (tempPath.length === 0)
+        return false;
+
+      tempPaths.push(tempPath);
+    }
+
+    this.thePaths = [];
+    for (let p = 0; p < tempPaths.length; p++) {
+      //let allGood = true;
+      //this.GameObjects.forEach((obj) => {
+      //  allGood = allGood && obj.UpdatePath(this.grid, this.GridCellSize, this.EndingCells[0])
+      //});
+      for (let x = 0; x < this.grid.length; x++) {
+        for (let y = 0; y < this.grid[x].length; y++) {
+          if (this.grid[x][y] === ePathCellStatus.Path)
+            this.grid[x][y] = ePathCellStatus.Open;
+        }
+      }
+
+      let thePath: Vector2[] = [];
+      for (let i = tempPaths[p].length - 1; i >= 0; i--) {
+        this.grid[tempPaths[p][i].X][tempPaths[p][i].Y] = ePathCellStatus.Path;
+        let worldPoint = new Vector2((tempPaths[p][i].X * this.GridCellSize) + this.remainderX,
+          (tempPaths[p][i].Y * this.GridCellSize) + this.remainderY);
+
+        thePath.push(worldPoint);
+      }
+
+      this.thePaths.push(thePath);
+    }
+
+    return true;
+  }
+
+  public GetPath(path: number): Vector2[] | null {
+    if (path < this.thePaths.length)
+      return this.thePaths[path];
+    else
+      return null;
+  }
+
   private checkNeighboringCells(cell: Vector2): boolean {
     //Check north
     if (this.grid[cell.X][Math.max(0, cell.Y - 1)] === ePathCellStatus.Open)
@@ -279,6 +386,8 @@ export class Grid extends Base {
   private remainderX: number = 0;
   private remainderY: number = 0;
 
+  private thePaths: Vector2[][] = [];
+
   private grid: number[][] = [];
   private gridColumns: number = 0;
   private gridRows: number = 0;
@@ -286,4 +395,6 @@ export class Grid extends Base {
 
   private mousePreviousClickCell: Vector2 | null = null;
   private mouseHighlightCell: Vector2 | null = null;
+
+  private showAttackerPath: boolean = true;
 }
