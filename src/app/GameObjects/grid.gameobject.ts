@@ -149,6 +149,7 @@ export class Grid extends Base {
     if (cell) {
       this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
       this.startingCells.push(cell);
+      this.CalculatePaths();
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
@@ -176,6 +177,7 @@ export class Grid extends Base {
     if (cell) {
       this.grid[cell.X][cell.Y] = ePathCellStatus.EndingPoint;
       this.endingCells.push(cell);
+      this.CalculatePaths();
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
@@ -203,7 +205,7 @@ export class Grid extends Base {
     if (!this.grid || !this.mousePreviousClickCell)
       return null;
 
-    if (this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] >= ePathCellStatus.Blocked)
+    if (this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] >= ePathCellStatus.OutOfBounds)
       return null;
 
     let worldCells = new Vector2((this.mousePreviousClickCell.X * this.GridCellSize) + this.remainderX, (this.mousePreviousClickCell.Y * this.GridCellSize) + this.remainderY);
@@ -306,19 +308,19 @@ export class Grid extends Base {
       this.grid.push(row);
     }
 
-
-
-
     //this.grid[this.StartingCells[0].X][this.StartingCells[0].Y] = 0;
     //this.grid[this.EndingCells[0].X][this.EndingCells[0].Y] = 0;
 
-    //this.calculatePath();
+    //this.CalculatePaths();
 
     //this.lastCoordinate = new Vector3((this.EndingCells[0].X * this.GridCellSize) + (this.GridCellSize / 2), (this.EndingCells[0].Y * this.GridCellSize) + (this.GridCellSize / 2), 0);
   }
 
   public CalculatePaths(): boolean {
     let tempPaths: Vector2[][] = [];
+    if (this.StartingCells.length === 0 || this.EndingCells.length === 0 || this.StartingCells.length !== this.EndingCells.length)
+      return false;
+
     for (let i = 0; i < this.StartingCells.length; i++) {
       let tempPath = PathFinder.AStarSearch(this.grid, this.StartingCells[i], this.EndingCells[i]);
 
