@@ -127,8 +127,8 @@ export class EditStageSettings extends Base {
 
         if (isNaN(textAsNumber)) {
           alert('Enter a valid number');
-          this.setRoundButtons(0);
-          return null;
+          this.setRoundButtons(1);
+          return '1';
         }
 
         if (textAsNumber < 1) {
@@ -144,8 +144,8 @@ export class EditStageSettings extends Base {
         return textAsNumber.toFixed(0);
       }
 
-      this.setRoundButtons(0);
-      return null;
+      this.setRoundButtons(1);
+      return '1';
     });
     this.roundsPrompt.Load();
     this.gameObjects.push(this.roundsPrompt);

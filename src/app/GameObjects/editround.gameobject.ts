@@ -6,6 +6,8 @@ import { Attacker } from "./attacker.gameobject";
 import { Base } from "./base.gameobject";
 import { IGameObject } from "./gameobject.interface";
 import { Button } from "./Utilities/button.gameobject";
+import { Label } from "./Utilities/label.gameobject";
+import { TextBox } from "./Utilities/textbox.gameobject";
 
 export class EditRound extends Base {
   public override get Value(): number | null {
@@ -23,6 +25,39 @@ export class EditRound extends Base {
     });
     this.closeButton.Load();
     this.gameObjects.push(this.closeButton);
+
+    this.enemyCountPrompt.SetLocation(this.ObjectRect.Center.X - 75, this.Location.Y + 50, eLayerTypes.UI + 1);
+    this.enemyCountPrompt.SetSize(150, 50);
+    this.enemyCountPrompt.SetText('10');
+    this.enemyCountPrompt.SetPrompt('Set Enemy Count (1 - 1000)');
+    this.enemyCountPrompt.SetVerifyFunction((text: string | null) => {
+      if (text) {
+        let textAsNumber = Number(text);
+
+        if (isNaN(textAsNumber)) {
+          alert('Enter a valid number');
+          return '10';
+        }
+
+        if (textAsNumber < 1)
+          return '1';
+
+        if (textAsNumber > 1000)
+          return '1000';
+
+        return textAsNumber.toFixed(0);
+      }
+
+      return '10';
+    });
+    this.enemyCountPrompt.Load();
+    this.gameObjects.push(this.enemyCountPrompt);
+
+    this.enemyCountLabel.SetLocation(this.ObjectRect.Center.X - 175, this.Location.Y + 50, eLayerTypes.UI + 1);
+    this.enemyCountLabel.SetSize(150, 50);
+    this.enemyCountLabel.SetText('Enemies this Round:', undefined, 'right');
+    this.enemyCountLabel.Load();
+    this.gameObjects.push(this.enemyCountLabel);
   }
 
   public override Update(deltaTime: number) {
@@ -50,6 +85,9 @@ export class EditRound extends Base {
     }
   }
 
+  private enemyCountPrompt: TextBox = new TextBox();
+
+  private enemyCountLabel: Label = new Label();
 
   private closeButton: Button = new Button();
 }
