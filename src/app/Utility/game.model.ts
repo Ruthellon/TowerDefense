@@ -8,6 +8,7 @@ import { LevelSixScene } from "../Scenes/levelsix.scene";
 import { LevelThreeScene } from "../Scenes/levelthree.scene";
 import { LevelTwoScene } from "../Scenes/leveltwo.scene";
 import { IScene } from "../Scenes/scene.interface";
+import { CustomLevel } from "../Services/angryelfapi.service";
 import { IAngryElfAPIService } from "../Services/angryelfapi.service.interface";
 import { ICookieService } from "../Services/cookie.service.interface";
 import { Vector2 } from "./classes.model";
@@ -76,12 +77,15 @@ export class Game {
   public static SetCookieService(cookie: ICookieService) {
     this.cookie = cookie;
   }
-  public static GetCustomScenes(): string[] {
-    let scenes = this.cookie.GetCookie('customScenes');
-    if (scenes) {
-      return JSON.parse(scenes);
-    }
-    return [];
+  private static customScenes: CustomLevel[] = [];
+  public static async GetCustomScenes(): Promise<CustomLevel[]> {
+    this.customScenes = await this.api.GetCustomLevels();
+    return this.customScenes;
+    //let scenes = this.cookie.GetCookie('customScenes');
+    //if (scenes) {
+    //  return JSON.parse(scenes);
+    //}
+    //return [];
   }
   public static AddNewCustomScene(sceneName: string, sceneJSON: string) {
     let scenesString = this.cookie.GetCookie('customScenes');
@@ -96,9 +100,19 @@ export class Game {
 
     this.cookie.SetCookie('customScenes', JSON.stringify(scenes), 1000);
     this.cookie.SetCookie(sceneName, sceneJSON, 1000);
+
+    this.api.AddCustomLevel(this.username, sceneName, sceneJSON);
   }
-  public static GetCustomScene(name: string): string | null{
-    return this.cookie.GetCookie(name);
+  public static async GetCustomScene(unid: number): Promise<string | null>{
+    return await this.api.GetCustomLevel(unid);
+  }
+
+  private static username: string = '';
+  public static get Username(): string {
+    return this.username;
+  }
+  public static SetUsername(username: string) {
+    this.username = username;
   }
 
   public static SetTheScene(scene: string, customScene?: IScene): boolean {

@@ -1,6 +1,7 @@
 import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { TextBox } from "../GameObjects/Utilities/textbox.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
+import { CustomLevel } from "../Services/angryelfapi.service";
 import { Game } from "../Utility/game.model";
 import { BaseLevel } from "./base.scene";
 import { BlankLevelScene } from "./blanklevel.scene";
@@ -16,7 +17,7 @@ export class InstructionsScene extends BaseLevel {
   private editStageButton: Button = new Button();
   private addCreditsButton: Button = new Button();
 
-  private scenes: string[] = [];
+  private scenes: CustomLevel[] = [];
 
   private settingsButton: Button = new Button();
   startLevel1Button = new Button();
@@ -80,13 +81,38 @@ export class InstructionsScene extends BaseLevel {
     this.fetchCustomsButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, Game.CANVAS_HEIGHT - 125, eLayerTypes.UI);
     this.fetchCustomsButton.SetSize(200, 100);
     this.fetchCustomsButton.SetText('Open Custom List');
-    this.fetchCustomsButton.SetClickFunction(() => this.customSceneOpen = true);
+    this.fetchCustomsButton.SetClickFunction(async () => {
+      this.customSceneOpen = true;
+
+      this.scenes = await Game.GetCustomScenes();
+      for (let i = 0; i < this.scenes.length; i++) {
+        let sceneButton = new Button();
+        let x = Game.CANVAS_WIDTH / 2 - 300;
+        if (i % 2 !== 0)
+          x += 350;
+        let y = 50 + (Math.floor(i / 2) * 125);
+
+        sceneButton.SetLocation(x, y, eLayerTypes.UI);
+        sceneButton.SetSize(200, 100);
+        sceneButton.SetText(`${this.scenes[i].levelName} by ${this.scenes[i].creatorName}`);
+        sceneButton.SetClickFunction(async () => {
+          let sceneInfo = await Game.GetCustomScene(this.scenes[i].unid);
+          if (sceneInfo) {
+            let blankScene = new BlankLevelScene(sceneInfo);
+            Game.SetTheScene('blank', blankScene);
+          }
+        });
+        sceneButton.Load();
+        this.sceneButtons.push(sceneButton);
+      }
+    });
     this.LoadGameObject(this.fetchCustomsButton);
 
     this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
     this.settingsButton.SetSize(50, 50);
     this.settingsButton.SetImage('/assets/images/cog.png');
-    this.settingsButton.SetClickFunction(() => this.settingsOpen ? this.settingsOpen = false : this.settingsOpen = true );
+    this.settingsButton.SetClickFunction(async () => this.settingsOpen ? this.settingsOpen = false : this.settingsOpen = true );
+
     this.settingsButton.Load();
     this.LoadGameObject(this.settingsButton);
 
@@ -105,7 +131,13 @@ export class InstructionsScene extends BaseLevel {
     this.submitButton.SetLocation((Game.CANVAS_WIDTH / 2) - 75, 225, eLayerTypes.UI);
     this.submitButton.SetSize(150, 50);
     this.submitButton.SetText('Submit');
-    this.submitButton.SetClickFunction(async () => this.hasPermission = await Game.TheAPI.Login(this.username.Text!, this.password.Text!) )
+    this.submitButton.SetClickFunction(async () => {
+      this.hasPermission = await Game.TheAPI.Login(this.username.Text!, this.password.Text!);
+
+      if (this.hasPermission) {
+        Game.SetUsername(this.username.Text!);
+      }
+    });
     this.submitButton.Load();
 
     this.customClose.SetLocation((Game.CANVAS_WIDTH / 2 + 300), 50, eLayerTypes.UI);
@@ -126,27 +158,7 @@ export class InstructionsScene extends BaseLevel {
     this.addCreditsButton.SetClickFunction(() => Game.AddCredits(10));
     this.addCreditsButton.Load();
 
-    this.scenes = Game.GetCustomScenes();
-    for (let i = 0; i < this.scenes.length; i++) {
-      let sceneButton = new Button();
-      let x = Game.CANVAS_WIDTH / 2 - 300;
-      if (i % 2 !== 0)
-        x += 350;
-      let y = 50 + (Math.floor(i / 2) * 125);
-      
-      sceneButton.SetLocation(x, y, eLayerTypes.UI);
-      sceneButton.SetSize(200, 100);
-      sceneButton.SetText(this.scenes[i]);
-      sceneButton.SetClickFunction(() => {
-        let sceneInfo = Game.GetCustomScene(this.scenes[i]);
-        if (sceneInfo) {
-          let blankScene = new BlankLevelScene(sceneInfo);
-          Game.SetTheScene('blank', blankScene);
-        }
-      });
-      sceneButton.Load();
-      this.sceneButtons.push(sceneButton);
-    }
+    
 
   }
 

@@ -19,21 +19,57 @@ export class AngryElfAPI implements IAngryElfAPIService {
     };
     let body = { username: username, password: password };
 
-    console.log(body);
-    this.http.post(`https://api.angryelfgames.com/api/Authorization/Login`, body, httpOptions).subscribe({
-      next: (result: any) => {
-        console.log(result);
-      },
-      error: (err: any) => {
-        console.log(err);
-      }
-    });
-
     const response = await firstValueFrom(
       this.http.post<{ isLoggedIn: boolean }>(`https://api.angryelfgames.com/api/Authorization/Login`, body, httpOptions)
     );
 
     return response.isLoggedIn;
+  }
+
+  AddCustomLevel(username: string, levelname: string, leveljson: string): void {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    let body = { Username: username, LevelName: levelname, LevelJSON: leveljson };
+
+    this.http.post(`https://api.angryelfgames.com/TowerDefense/SubmitCustomLevel`, body, httpOptions).subscribe({
+      next: (result: any) => {
+        //console.log(result);
+      },
+      error: (err: any) => {
+        //console.log(err);
+      }
+    });
+  }
+
+  async GetCustomLevels(): Promise<CustomLevel[]> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    const response = await firstValueFrom(
+      this.http.get<CustomLevel[]>(`https://api.angryelfgames.com/TowerDefense/CustomLevels`, httpOptions)
+    );
+
+    return response;
+  }
+
+  async GetCustomLevel(levelUnid: number): Promise<string> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    const response = await firstValueFrom(
+      this.http.get<string>(`https://api.angryelfgames.com/TowerDefense/CustomLevel/${levelUnid}`, httpOptions)
+    );
+
+    return response;
   }
 
   SendWinInfo(level: number, health: number, version: string, grid: any): void {
@@ -54,4 +90,11 @@ export class AngryElfAPI implements IAngryElfAPIService {
       }
     });
   }
+}
+
+
+export class CustomLevel {
+  public unid: number = 0;
+  public creatorName: string = '';
+  public levelName: string = ''; 
 }
