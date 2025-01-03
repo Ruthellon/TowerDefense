@@ -1,4 +1,5 @@
 import { Button } from "../GameObjects/Utilities/button.gameobject";
+import { TextBox } from "../GameObjects/Utilities/textbox.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Game } from "../Utility/game.model";
 import { BaseLevel } from "./base.scene";
@@ -27,6 +28,10 @@ export class InstructionsScene extends BaseLevel {
   startLevel7Button = new Button();
   fetchCustomsButton = new Button();
   private customClose: Button = new Button();
+
+  private username: TextBox = new TextBox();
+  private password: TextBox = new TextBox();
+  private submitButton: Button = new Button();
   Load(): void {
     Game.SetStartingCredits(0);
 
@@ -81,9 +86,27 @@ export class InstructionsScene extends BaseLevel {
     this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
     this.settingsButton.SetSize(50, 50);
     this.settingsButton.SetImage('/assets/images/cog.png');
-    this.settingsButton.SetClickFunction(() => this.openSettings());
+    this.settingsButton.SetClickFunction(() => this.settingsOpen ? this.settingsOpen = false : this.settingsOpen = true );
     this.settingsButton.Load();
     this.LoadGameObject(this.settingsButton);
+
+    this.username.SetLocation((Game.CANVAS_WIDTH / 2) - 100, 75, eLayerTypes.UI);
+    this.username.SetSize(200, 50);
+    this.username.SetText('Username');
+    this.username.SetPrompt('Enter username:');
+    this.username.Load();
+
+    this.password.SetLocation((Game.CANVAS_WIDTH / 2) - 100, 150, eLayerTypes.UI);
+    this.password.SetSize(200, 50);
+    this.password.SetText('Password');
+    this.password.SetPrompt('Enter password:');
+    this.password.Load();
+
+    this.submitButton.SetLocation((Game.CANVAS_WIDTH / 2) - 75, 225, eLayerTypes.UI);
+    this.submitButton.SetSize(150, 50);
+    this.submitButton.SetText('Submit');
+    this.submitButton.SetClickFunction(async () => this.hasPermission = await Game.TheAPI.Login(this.username.Text!, this.password.Text!) )
+    this.submitButton.Load();
 
     this.customClose.SetLocation((Game.CANVAS_WIDTH / 2 + 300), 50, eLayerTypes.UI);
     this.customClose.SetSize(50, 50);
@@ -133,6 +156,12 @@ export class InstructionsScene extends BaseLevel {
   override Update(deltaTime: number) {
     super.Update(deltaTime);
 
+    if (this.settingsOpen) {
+      this.username.Update(deltaTime);
+      this.password.Update(deltaTime);
+      this.submitButton.Update(deltaTime);
+    }
+
     if (this.hasPermission) {
       this.editStageButton.Update(deltaTime);
       this.addCreditsButton.Update(deltaTime);
@@ -176,6 +205,10 @@ export class InstructionsScene extends BaseLevel {
       Game.CONTEXT.strokeStyle = '#ffffff';
       Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 250, 50, 500, Game.CANVAS_HEIGHT - 250);
 
+      this.username.Draw(deltaTime);
+      this.password.Draw(deltaTime);
+      this.submitButton.Draw(deltaTime);
+
       if (this.hasPermission) {
         this.editStageButton.Draw(deltaTime);
         this.addCreditsButton.Draw(deltaTime);
@@ -196,22 +229,6 @@ export class InstructionsScene extends BaseLevel {
     }
   }
 
-  private openSettings(): void {
-    if (this.settingsOpen) {
-      this.hasPermission = false;
-      this.settingsOpen = false;
-    }
-    else {
-      this.settingsOpen = true;
-      let sign = prompt("What's the password?");
-
-      if (sign) {
-        if (sign.toLowerCase() === "please") {
-          this.hasPermission = true;
-        }
-      }
-    }
-  }
 
   private settingsOpen: boolean = false;
   private customSceneOpen: boolean = false;
