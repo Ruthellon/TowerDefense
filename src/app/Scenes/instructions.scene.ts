@@ -2,6 +2,7 @@ import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Game } from "../Utility/game.model";
 import { BaseLevel } from "./base.scene";
+import { BlankLevelScene } from "./blanklevel.scene";
 import { eLayerTypes, IScene } from "./scene.interface";
 
 
@@ -14,6 +15,8 @@ export class InstructionsScene extends BaseLevel {
   private editStageButton: Button = new Button();
   private addCreditsButton: Button = new Button();
 
+  private scenes: string[] = [];
+
   private settingsButton: Button = new Button();
   startLevel1Button = new Button();
   startLevel2Button = new Button();
@@ -22,6 +25,8 @@ export class InstructionsScene extends BaseLevel {
   startLevel5Button = new Button();
   startLevel6Button = new Button();
   startLevel7Button = new Button();
+  fetchCustomsButton = new Button();
+  private customClose: Button = new Button();
   Load(): void {
     Game.SetStartingCredits(0);
 
@@ -67,11 +72,24 @@ export class InstructionsScene extends BaseLevel {
     this.startLevel7Button.SetClickFunction(() => Game.SetTheScene('levelseven'));
     this.LoadGameObject(this.startLevel7Button);
 
+    this.fetchCustomsButton.SetLocation((Game.CANVAS_WIDTH / 2) - 100, Game.CANVAS_HEIGHT - 125, eLayerTypes.UI);
+    this.fetchCustomsButton.SetSize(200, 100);
+    this.fetchCustomsButton.SetText('Open Custom List');
+    this.fetchCustomsButton.SetClickFunction(() => this.customSceneOpen = true);
+    this.LoadGameObject(this.fetchCustomsButton);
+
     this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
     this.settingsButton.SetSize(50, 50);
     this.settingsButton.SetImage('/assets/images/cog.png');
     this.settingsButton.SetClickFunction(() => this.openSettings());
+    this.settingsButton.Load();
     this.LoadGameObject(this.settingsButton);
+
+    this.customClose.SetLocation((Game.CANVAS_WIDTH / 2 + 300), 50, eLayerTypes.UI);
+    this.customClose.SetSize(50, 50);
+    this.customClose.SetText('X');
+    this.customClose.SetClickFunction(() => this.customSceneOpen = false);
+    this.customClose.Load();
 
     this.editStageButton.SetLocation(Game.CANVAS_WIDTH / 2 - 100, Game.CANVAS_HEIGHT / 2, eLayerTypes.UI);
     this.editStageButton.SetSize(200, 100);
@@ -84,7 +102,32 @@ export class InstructionsScene extends BaseLevel {
     this.addCreditsButton.SetText('Add Credits');
     this.addCreditsButton.SetClickFunction(() => Game.AddCredits(10));
     this.addCreditsButton.Load();
+
+    this.scenes = Game.GetCustomScenes();
+    for (let i = 0; i < this.scenes.length; i++) {
+      let sceneButton = new Button();
+      let x = Game.CANVAS_WIDTH / 2 - 300;
+      if (i % 2 !== 0)
+        x += 350;
+      let y = 50 + (Math.floor(i / 2) * 125);
+      
+      sceneButton.SetLocation(x, y, eLayerTypes.UI);
+      sceneButton.SetSize(200, 100);
+      sceneButton.SetText(this.scenes[i]);
+      sceneButton.SetClickFunction(() => {
+        let sceneInfo = Game.GetCustomScene(this.scenes[i]);
+        if (sceneInfo) {
+          let blankScene = new BlankLevelScene(sceneInfo);
+          Game.SetTheScene('blank', blankScene);
+        }
+      });
+      sceneButton.Load();
+      this.sceneButtons.push(sceneButton);
+    }
+
   }
+
+  private sceneButtons: Button[] = [];
 
   private hasPermission = false;
   override Update(deltaTime: number) {
@@ -93,6 +136,12 @@ export class InstructionsScene extends BaseLevel {
     if (this.hasPermission) {
       this.editStageButton.Update(deltaTime);
       this.addCreditsButton.Update(deltaTime);
+    }
+
+    if (this.customSceneOpen) {
+      this.customClose.Update(deltaTime);
+
+      this.sceneButtons.forEach((btn) => btn.Update(deltaTime));
     }
   }
 
@@ -132,6 +181,19 @@ export class InstructionsScene extends BaseLevel {
         this.addCreditsButton.Draw(deltaTime);
       }
     }
+
+    if (this.customSceneOpen) {
+      Game.CONTEXT!.fillStyle = '#555555';
+      Game.CONTEXT!.fillRect((Game.CANVAS_WIDTH / 2) - 400, 25, 800, Game.CANVAS_HEIGHT - 50);
+
+      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 400, 25, 800, Game.CANVAS_HEIGHT - 50);
+
+      this.customClose.Draw(deltaTime);
+
+      this.sceneButtons.forEach((btn) => btn.Draw(deltaTime));
+    }
   }
 
   private openSettings(): void {
@@ -152,4 +214,5 @@ export class InstructionsScene extends BaseLevel {
   }
 
   private settingsOpen: boolean = false;
+  private customSceneOpen: boolean = false;
 }

@@ -111,10 +111,21 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   }
 
   protected showAttackerPath: boolean = true;
+  protected attackers: Attacker[] = [];
 
   protected playerHealth: number = 0;
   protected ReduceHealth(reduceBy: number): void {
     this.playerHealth -= reduceBy;
+  }
+
+  protected HandleAttackers(deltaTime: number) {
+    if (this.secondsSinceLastMonster <= 0 && this.enemiesSpawned < this.EnemyRounds[this.currentRound]) {
+      this.spawnAttacker();
+      this.secondsSinceLastMonster = this.SecondsBetweenMonsters;
+    }
+    else {
+      this.secondsSinceLastMonster -= deltaTime;
+    }
   }
 
   /*
@@ -247,13 +258,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
     }
     else {
-      if (this.secondsSinceLastMonster <= 0 && this.enemiesSpawned < this.EnemyRounds[this.currentRound]) {
-        this.spawnAttacker();
-        this.secondsSinceLastMonster = this.SecondsBetweenMonsters;
-      }
-      else {
-        this.secondsSinceLastMonster -= deltaTime;
-      }
+      this.HandleAttackers(deltaTime);
 
       if (this.enemiesRemoved >= this.EnemyRounds[this.currentRound]) {
         this.enemiesRemoved = 0;
@@ -660,14 +665,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private deleteButton: Button = new Button();
   private nextLevelButton = new Button();
   private startButton: Button = new Button();
-  private restartButton: Button = new Button();
+  protected restartButton: Button = new Button();
   private homeButton: Button = new Button();
   private settingsButton: Button = new Button();
   private resumeButton: Button = new Button();
   private speedButton: Button = new Button();
   private remainderX: number = 0;
   private remainderY: number = 0;
-  private attackers: Attacker[] = [];
   private defenders: Defender[] = [];
   private secondsToStart = 0;
   private enemiesSpawned = 0;

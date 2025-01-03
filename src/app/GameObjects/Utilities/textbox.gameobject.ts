@@ -2,12 +2,29 @@ import { Rect, Vector2, Vector3 } from "../../Utility/classes.model";
 import { IGameObject } from "../gameobject.interface";
 import { Game } from 'Utility/game.model'
 import { UtilityBase } from "./utilitybase.gameobject";
+import { Label } from "./label.gameobject";
+
+export enum eLabelPosition {
+  Left,
+  Right,
+  Above,
+  Below
+}
 
 export class TextBox extends UtilityBase {
   private altColor = '#ffffff';
   private text: string | null = null;
 
   private prompt: string | undefined = undefined;
+  private label: Label | null = null;
+
+  public get ButtonLabel(): Label | null {
+    return this.label;
+  }
+
+  public get Text(): string | null {
+    return this.text;
+  }
 
   private verifyFunction: ((text: string | null) => string | null) | undefined;
 
@@ -34,6 +51,10 @@ export class TextBox extends UtilityBase {
   public override Update(deltaTime: number): void {
     if (!this.isHidden) {
       this.UpdateClick();
+
+      if (this.label) {
+        this.label.Update(deltaTime);
+      }
     }
   }
 
@@ -61,6 +82,10 @@ export class TextBox extends UtilityBase {
       else if (this.sprite) {
         Game.CONTEXT.drawImage(this.sprite, this.location.X, this.location.Y, this.size.X, this.size.Y);
       }
+
+      if (this.label) {
+        this.label.Draw(deltaTime);
+      }
     }
   }
 
@@ -78,5 +103,35 @@ export class TextBox extends UtilityBase {
 
   public SetVerifyFunction(verify: (text: string | null) => string | null): void {
     this.verifyFunction = verify;
+  }
+
+  public SetLabel(text: string, position?: eLabelPosition, font?: string) {
+    this.label = new Label();
+
+    if (font)
+      this.label.SetFont(font);
+
+    Game.CONTEXT.font = this.label.Font;
+    let textMetrics = Game.CONTEXT.measureText(text);
+    let width = textMetrics.width;
+
+    this.label.SetSize(width, this.Size.Y);
+
+    let location = new Vector2(0, 0);
+
+    if (position === undefined || position === eLabelPosition.Left) {
+      location.X = this.Location.X - (this.label.Size.X + 5);
+      location.Y = this.Location.Y;
+    }
+    else if (position === eLabelPosition.Right) {
+      location.X = this.Location.X + this.label.Size.X + 5;
+      location.Y = this.Location.Y;
+    }
+
+    this.label.SetLocation(location.X, location.Y, this.Location.Z);
+
+    this.label.SetText(text);
+
+    this.label.Load();
   }
 }

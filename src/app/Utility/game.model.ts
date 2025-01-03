@@ -9,6 +9,7 @@ import { LevelThreeScene } from "../Scenes/levelthree.scene";
 import { LevelTwoScene } from "../Scenes/leveltwo.scene";
 import { IScene } from "../Scenes/scene.interface";
 import { IAngryElfAPIService } from "../Services/angryelfapi.service.interface";
+import { ICookieService } from "../Services/cookie.service.interface";
 import { Vector2 } from "./classes.model";
 
 export class Game {
@@ -68,7 +69,39 @@ export class Game {
     this.api = api;
   }
 
-  public static SetTheScene(scene: string): boolean {
+  private static cookie: ICookieService;
+  public static get CookieService(): ICookieService {
+    return this.cookie;
+  }
+  public static SetCookieService(cookie: ICookieService) {
+    this.cookie = cookie;
+  }
+  public static GetCustomScenes(): string[] {
+    let scenes = this.cookie.GetCookie('customScenes');
+    if (scenes) {
+      return JSON.parse(scenes);
+    }
+    return [];
+  }
+  public static AddNewCustomScene(sceneName: string, sceneJSON: string) {
+    let scenesString = this.cookie.GetCookie('customScenes');
+    let scenes: string[] = [];
+    if (scenesString) {
+      (JSON.parse(scenesString) as string[]).forEach((scene) => {
+        scenes.push(scene);
+      });
+    }
+    if (!scenes.find((name) => name === sceneName))
+      scenes.push(sceneName);
+
+    this.cookie.SetCookie('customScenes', JSON.stringify(scenes), 1000);
+    this.cookie.SetCookie(sceneName, sceneJSON, 1000);
+  }
+  public static GetCustomScene(name: string): string | null{
+    return this.cookie.GetCookie(name);
+  }
+
+  public static SetTheScene(scene: string, customScene?: IScene): boolean {
     if (scene === 'instructions') {
       this.theScene = new InstructionsScene();
     }
@@ -95,6 +128,9 @@ export class Game {
     }
     else if (scene === 'editstage') {
       this.theScene = new EditStage();
+    }
+    else if (scene === 'blank' && customScene) {
+      this.theScene = customScene;
     }
     else {
       return false;

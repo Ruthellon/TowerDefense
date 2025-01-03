@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import { Game } from './Utility/game.model';
 import { IAngryElfAPIService } from './Services/angryelfapi.service.interface';
 import { version } from '../../package.json'
+import { ICookieService } from './Services/cookie.service.interface';
 
 @Component({
     selector: 'app-root',
@@ -60,7 +61,7 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  constructor(private api: IAngryElfAPIService) {
+  constructor(private api: IAngryElfAPIService, private cookies: ICookieService) {
 
   }
 
@@ -80,7 +81,8 @@ export class AppComponent implements AfterViewInit {
     this.adjustCanvasSize();
 
     Game.SetTheAPI(this.api);
-    Game.SetTheScene('editstage');
+    Game.SetCookieService(this.cookies)
+    Game.SetTheScene('instructions');
     Game.SetVersion(this.version);
 
     this.animate(0);

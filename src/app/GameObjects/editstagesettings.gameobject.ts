@@ -1,5 +1,7 @@
+import { BlankLevelScene } from "../Scenes/blanklevel.scene";
+import { DefenseBaseLevel } from "../Scenes/defensebase.scene";
 import { eLayerTypes } from "../Scenes/scene.interface";
-import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
+import { BlankSceneInfo, EnemyBatch, EnemyRound, Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { Base } from "./base.gameobject";
 import { EditRound } from "./editround.gameobject";
@@ -43,10 +45,16 @@ export class EditStageSettings extends Base {
     this.saveButton.SetSize(100, 50);
     this.saveButton.SetText('Save');
     this.saveButton.SetClickFunction(() => {
-      //if (this.startingCells.length !== this.endingCells.length) {
-      //  alert('Start count must match End count');
-      //  return;
-      //}
+      if (this.startingCells.length === 0 && this.endingCells.length === 0) {
+        alert('Set a starting and ending cell');
+        return;
+      }
+      if (this.startingCells.length !== this.endingCells.length) {
+        alert('Start count must match End count');
+        return;
+      }
+      
+      this.saveScene();
     });
     this.saveButton.Load();
     this.gameObjects.push(this.saveButton);
@@ -236,6 +244,15 @@ export class EditStageSettings extends Base {
     }
   }
 
+  public SetStartEndCells(startCells: Vector2[], endCells: Vector2[]) {
+    this.startingCells = startCells;
+    this.endingCells = endCells;
+  }
+
+  public SetGridSize(gridSize: number) {
+    this.gridSize = gridSize;
+  }
+
   private setRoundButtons(rounds: number): void {
     for (let i = 0; i < 10; i++) {
       if (i < rounds) {
@@ -245,7 +262,49 @@ export class EditStageSettings extends Base {
         this.roundButtons[i].SetHidden(true);
       }
     }
-  } 
+  }
+
+  private saveScene(): void {
+
+    let sceneInfo = new BlankSceneInfo();
+    sceneInfo.GridSize = this.gridSize;
+    sceneInfo.StartingCells = this.startingCells;
+    sceneInfo.EndingCells = this.endingCells;
+    sceneInfo.Credits = this.creditPrompt.Text ? Number(this.creditPrompt.Text) : 30;
+    sceneInfo.Health = this.healthPrompt.Text ? Number(this.healthPrompt.Text) : 10;
+
+    let enemyRounds: EnemyRound[] = [];
+
+    this.roundEditors.forEach((editor) => {
+      let round = new EnemyRound();
+
+      editor.BatchEditors.forEach((batch) => {
+        let enemyBatch = new EnemyBatch();
+        enemyBatch.EnemyCountStart = batch.NumberEnemies;
+        enemyBatch.EnemyDamage = batch.EnemyDamage;
+        enemyBatch.EnemyHealth = batch.EnemyHealth;
+        enemyBatch.EnemySize = batch.EnemySize;
+        enemyBatch.EnemySpeed = batch.EnemySpeed;
+        enemyBatch.EnemyStartCell = batch.StartCell;
+        enemyBatch.EnemyValue = batch.EnemyValue;
+        enemyBatch.TimeBetweenStart = (batch.EnemyCooldownTime / 1000);
+        round.EnemyBatches.push(enemyBatch);
+      });
+
+      enemyRounds.push(round);
+    });
+
+    sceneInfo.Rounds = enemyRounds;
+
+    let name = prompt('Name of your level?');
+    if (name) {
+      let str = JSON.stringify(sceneInfo);
+      Game.AddNewCustomScene(name, str);
+      
+      let blankScene = new BlankLevelScene(str);
+      Game.SetTheScene('blank', blankScene);
+    }
+  }
 
   private resumeButton: Button = new Button();
   private homeButton: Button = new Button();
@@ -264,4 +323,9 @@ export class EditStageSettings extends Base {
   private roundsPrompt: TextBox = new TextBox();
 
   private editRoundOpen = false;
+
+  private startingCells: Vector2[] = [];
+  private endingCells: Vector2[] = [];
+
+  private gridSize: number = 0;
 }

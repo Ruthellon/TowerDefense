@@ -15,6 +15,10 @@ export class EditRound extends Base {
     return null;
   }
 
+  public get BatchEditors(): EditBatch[] {
+    return this.batchEditors;
+  }
+
   public override Load() {
     super.Load();
 
@@ -35,8 +39,8 @@ export class EditRound extends Base {
         return;
 
       let batchEdit = new EditBatch();
-      batchEdit.SetSize(500, 500);
-      batchEdit.SetLocation(this.ObjectRect.Center.X - 250, this.ObjectRect.Center.Y - 250, eLayerTypes.UI + 5);
+      batchEdit.SetSize(700, 500);
+      batchEdit.SetLocation(this.ObjectRect.Center.X - 350, this.ObjectRect.Center.Y - 250, eLayerTypes.UI + 5);
       batchEdit.SetHidden(true);
       batchEdit.Load();
       this.gameObjects.push(batchEdit);

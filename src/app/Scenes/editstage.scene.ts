@@ -129,7 +129,8 @@ export class EditStage extends BaseLevel {
         this.gameObjects.forEach((obj) => {
           obj.SetEnabled(false);
         });
-
+        this.settings.SetStartEndCells(this.theGrid.StartingCells, this.theGrid.EndingCells);
+        this.settings.SetGridSize(this.theGrid.GridCellSize);
         this.settings.SetHidden(false);
         this.settings.SetEnabled(true);
         this.settingsButton.SetEnabled(true);

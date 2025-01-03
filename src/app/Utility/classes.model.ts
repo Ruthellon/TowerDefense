@@ -100,3 +100,32 @@ export class Rect {
       point.Y <= (this.Y + this.height));
   }
 }
+
+
+export class BlankSceneInfo {
+  public GridSize: number = 0;
+  public StartingCells: Vector2[] = [];
+  public EndingCells: Vector2[] = [];
+  public Credits: number = 0;
+  public Health: number = 0;
+
+  public Rounds: EnemyRound[] = [];
+}
+
+export class EnemyBatch {
+  public EnemyCountStart: number = 0;
+  public TimeBetweenStart: number = 0;
+  public EnemySpeed: number = 0;
+  public EnemyHealth: number = 0;
+  public EnemyValue: number = 0;
+  public EnemySize: number = 0;
+  public EnemyDamage: number = 0;
+  public EnemyStartCell: number = 0;
+
+  public TimeBetweenCurrent: number = 0;
+  public EnemyCountCurrent: number = 0;
+}
+
+export class EnemyRound {
+  public EnemyBatches: EnemyBatch[] = [];
+}

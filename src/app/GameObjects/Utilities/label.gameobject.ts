@@ -9,6 +9,10 @@ export class Label extends UtilityBase {
   private textBaseLine = 'middle';
   private font = '24px serif';
 
+  public get Font(): string {
+    return this.font;
+  }
+
   public override Load() {
     super.Load();
 
@@ -45,5 +49,9 @@ export class Label extends UtilityBase {
 
     if (baseline)
       this.textBaseLine = baseline;
+  }
+
+  public SetFont(font: string) {
+    this.font = font;
   }
 }
