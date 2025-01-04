@@ -114,7 +114,22 @@ export class InstructionsScene extends BaseLevel {
     this.settingsButton.SetLocation(Game.CANVAS_WIDTH - 75, 25, eLayerTypes.UI);
     this.settingsButton.SetSize(50, 50);
     this.settingsButton.SetImage('/assets/images/cog.png');
-    this.settingsButton.SetClickFunction(async () => this.settingsOpen ? this.settingsOpen = false : this.settingsOpen = true );
+    this.settingsButton.SetClickFunction(async () => {
+      if (this.settingsOpen) {
+        this.settingsOpen = false;
+        this.gameObjects.forEach((go) => {
+          go.SetEnabled(true);
+        });
+      }
+      else {
+        this.settingsOpen = true;
+        this.gameObjects.forEach((go) => {
+          go.SetEnabled(false);
+        });
+        this.settingsButton.SetEnabled(true);
+      }
+      
+    });
 
     this.settingsButton.Load();
     this.LoadGameObject(this.settingsButton);
@@ -139,6 +154,7 @@ export class InstructionsScene extends BaseLevel {
 
       if (this.hasPermission) {
         Game.SetUsername(this.username.Text!);
+
       }
     });
     this.submitButton.Load();
@@ -196,8 +212,10 @@ export class InstructionsScene extends BaseLevel {
     this.addCreditsButton.SetClickFunction(() => Game.AddCredits(10));
     this.addCreditsButton.Load();
 
-    
-
+    if (Game.Username !== '') {
+      this.hasPermission = true;
+      this.username.SetText(Game.Username);
+    }
   }
 
   private sceneButtons: Button[] = [];
