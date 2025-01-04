@@ -170,6 +170,8 @@ export class EditStage extends BaseLevel {
         this.theGrid.AddEndPoint(new Vector2(end.X, end.Y), false);
       });
 
+      this.settings.SetCredits(sceneInfo.Credits);
+      this.settings.SetHealth(sceneInfo.Health);
       this.settings.SetRounds(sceneInfo.Rounds);
     }
   }

@@ -102,7 +102,7 @@ export class InstructionsScene extends BaseLevel {
         sceneButton.SetSize(200, 100);
         sceneButton.SetText(`${this.scenes[i].levelName}\nby ${this.scenes[i].creatorName}`);
         sceneButton.SetClickFunction(async () => {
-          this.selectedSceneIndex = this.scenes[i].unid;
+          this.selectedSceneIndex = i;
           this.selectedScene = await Game.GetCustomScene(this.scenes[i].unid);
         });
         sceneButton.Load();
@@ -153,8 +153,8 @@ export class InstructionsScene extends BaseLevel {
       this.hasPermission = await Game.TheAPI.Login(this.username.Text!, this.password.Text!);
 
       if (this.hasPermission) {
+        sessionStorage.setItem('username', this.username.Text!)
         Game.SetUsername(this.username.Text!);
-
       }
     });
     this.submitButton.Load();
@@ -186,8 +186,8 @@ export class InstructionsScene extends BaseLevel {
     this.deleteCustomButton.SetSize(200, 50);
     this.deleteCustomButton.SetText('Delete');
     this.deleteCustomButton.SetClickFunction(() => {
-      if (this.selectedSceneIndex !== null)
-        Game.DeleteCustomScene(this.selectedSceneIndex);
+      if (this.selectedSceneIndex !== null && this.scenes[this.selectedSceneIndex].creatorName.toLowerCase() === Game.Username.toLowerCase())
+        Game.DeleteCustomScene(this.scenes[this.selectedSceneIndex].unid);
 
       this.selectedScene = null;
       this.selectedSceneIndex = null;
@@ -245,7 +245,7 @@ export class InstructionsScene extends BaseLevel {
       this.playCustomButton.Update(deltaTime);
       this.closeCustomWindowButton.Update(deltaTime);
 
-      if (this.hasPermission) {
+      if (this.hasPermission && this.scenes[this.selectedSceneIndex!].creatorName.toLowerCase() === Game.Username.toLowerCase()) {
         this.editCustomButton.Update(deltaTime);
         this.deleteCustomButton.Update(deltaTime);
       }
@@ -317,7 +317,7 @@ export class InstructionsScene extends BaseLevel {
       this.playCustomButton.Draw(deltaTime);
       this.closeCustomWindowButton.Draw(deltaTime);
 
-      if (this.hasPermission) {
+      if (this.hasPermission && this.scenes[this.selectedSceneIndex!].creatorName.toLowerCase() === Game.Username.toLowerCase()) {
         this.editCustomButton.Draw(deltaTime);
         this.deleteCustomButton.Draw(deltaTime);
       }

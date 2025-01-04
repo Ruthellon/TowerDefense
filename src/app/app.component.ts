@@ -75,6 +75,12 @@ export class AppComponent implements AfterViewInit {
     this.canvas = this.canvasElement.nativeElement;
     this.context = this.canvas.getContext('2d');
 
+    let username = sessionStorage.getItem('username');
+
+    if (username) {
+      Game.SetUsername(username);
+    }
+
     Game.SetCanvasContext(this.context!);
 
     this.canvas.onpointerdown = this.onMouseDown.bind(this);
