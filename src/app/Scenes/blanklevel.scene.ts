@@ -112,7 +112,6 @@ export class BlankLevelScene extends DefenseBaseLevel {
       if (batch.TimeBetweenCurrent <= 0 && batch.EnemyCountCurrent < batch.EnemyCountStart) {
         let newAttacker = new Block();
         newAttacker.SetDamage(batch.EnemyDamage);
-        newAttacker.SetColor('#22BB22');
         newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCell - 1].X - this.GridCellSize, this.StartingCells[batch.EnemyStartCell - 1].Y - this.GridCellSize, eLayerTypes.Object - 5);
         newAttacker.SetPath(this.GetPath(batch.EnemyStartCell - 1), this.GridCellSize);
         newAttacker.SetSize(batch.EnemySize, batch.EnemySize);
@@ -120,6 +119,11 @@ export class BlankLevelScene extends DefenseBaseLevel {
         newAttacker.SetStartingHealth(batch.EnemyHealth);
         newAttacker.SetValue(batch.EnemyValue);
         newAttacker.SetCanFly(batch.EnemyCanFly);
+
+        if (batch.EnemyCanFly)
+          newAttacker.SetColor('#BB22BB');
+        else
+          newAttacker.SetColor('#22BB22');
 
         this.LoadGameObject(newAttacker);
         this.attackers.push(newAttacker);

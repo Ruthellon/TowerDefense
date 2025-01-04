@@ -65,7 +65,7 @@ export class LevelSevenScene extends DefenseBaseLevel {
       Game.CONTEXT.fillStyle = '#ffffff';
       Game.CONTEXT.font = '22px serif';
       Game.CONTEXT.textAlign = "center";
-      Game.CONTEXT.fillText(`Level One - Round ${this.CurrentRound + 1} / ${this.EnemyRounds.length}`, Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
+      Game.CONTEXT.fillText(`Level Seven - Round ${this.CurrentRound + 1} / ${this.EnemyRounds.length}`, Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
     }
   }
 
@@ -97,6 +97,7 @@ export class LevelSevenScene extends DefenseBaseLevel {
         newAttacker.SetStartingHealth(15);
         newAttacker.SetValue(3);
         newAttacker.SetCanFly(true);
+        newAttacker.SetColor('#BB22BB');
       }
       else {
         newAttacker.SetSize(20, 20);
@@ -112,6 +113,7 @@ export class LevelSevenScene extends DefenseBaseLevel {
         newAttacker.SetStartingHealth(15);
         newAttacker.SetValue(3);
         newAttacker.SetCanFly(true);
+        newAttacker.SetColor('#BB22BB');
       }
       else {
         newAttacker.SetSize(30, 30);
@@ -127,6 +129,7 @@ export class LevelSevenScene extends DefenseBaseLevel {
         newAttacker.SetStartingHealth(18);
         newAttacker.SetValue(3);
         newAttacker.SetCanFly(true);
+        newAttacker.SetColor('#BB22BB');
       }
       else {
         newAttacker.SetSize(30, 30);
@@ -149,6 +152,7 @@ export class LevelSevenScene extends DefenseBaseLevel {
         newAttacker.SetStartingSpeed(12);
         newAttacker.SetStartingHealth(24);
         newAttacker.SetCanFly(true);
+        newAttacker.SetColor('#BB22BB');
         newAttacker.SetValue(3);
       }
     }
