@@ -225,9 +225,12 @@ export class InstructionsScene extends BaseLevel {
 
     if (this.selectedScene) {
       this.playCustomButton.Update(deltaTime);
-      this.editCustomButton.Update(deltaTime);
-      this.deleteCustomButton.Update(deltaTime);
       this.closeCustomWindowButton.Update(deltaTime);
+
+      if (this.hasPermission) {
+        this.editCustomButton.Update(deltaTime);
+        this.deleteCustomButton.Update(deltaTime);
+      }
     }
   }
 
@@ -294,9 +297,12 @@ export class InstructionsScene extends BaseLevel {
       Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 200, 125, 400, Game.CANVAS_HEIGHT - 550);
 
       this.playCustomButton.Draw(deltaTime);
-      this.editCustomButton.Draw(deltaTime);
-      this.deleteCustomButton.Draw(deltaTime);
       this.closeCustomWindowButton.Draw(deltaTime);
+
+      if (this.hasPermission) {
+        this.editCustomButton.Draw(deltaTime);
+        this.deleteCustomButton.Draw(deltaTime);
+      }
     }
   }
 
