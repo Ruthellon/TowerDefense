@@ -159,13 +159,15 @@ export class EditStage extends BaseLevel {
     if (this.sceneInfoString) {
       let sceneInfo: BlankSceneInfo = JSON.parse(this.sceneInfoString);
 
+      this.slider.SetValue(sceneInfo.GridSize);
       this.theGrid.SetGridCellSize(sceneInfo.GridSize);
+      this.theGrid.SetUpGrid();
 
       sceneInfo.StartingCells.forEach((start) => {
-        this.theGrid.AddStartPoint(new Vector2(start.X, start.Y));
+        this.theGrid.AddStartPoint(new Vector2(start.X, start.Y), false);
       });
       sceneInfo.EndingCells.forEach((end) => {
-        this.theGrid.AddEndPoint(new Vector2(end.X, end.Y));
+        this.theGrid.AddEndPoint(new Vector2(end.X, end.Y), false);
       });
 
       this.settings.SetRounds(sceneInfo.Rounds);

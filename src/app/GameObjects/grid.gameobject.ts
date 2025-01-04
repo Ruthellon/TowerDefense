@@ -145,11 +145,13 @@ export class Grid extends Base {
     }
   }
 
-  public AddStartPoint(cell?: Vector2): boolean {
+  public AddStartPoint(cell?: Vector2, calculatePath: boolean = true): boolean {
     if (cell) {
       this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
       this.startingCells.push(cell);
-      this.CalculatePaths();
+
+      if (calculatePath)
+        this.CalculatePaths();
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
@@ -173,11 +175,13 @@ export class Grid extends Base {
     return false;
   }
 
-  public AddEndPoint(cell?: Vector2): boolean {
+  public AddEndPoint(cell?: Vector2, calculatePath: boolean = true): boolean {
     if (cell) {
       this.grid[cell.X][cell.Y] = ePathCellStatus.EndingPoint;
       this.endingCells.push(cell);
-      this.CalculatePaths();
+
+      if (calculatePath)
+        this.CalculatePaths();
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;

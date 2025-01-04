@@ -263,6 +263,7 @@ export class EditStageSettings extends Base {
   }
 
   public SetRounds(rounds: EnemyRound[]) {
+    this.roundsPrompt.SetText(rounds.length.toFixed(0));
     this.setRoundButtons(rounds.length);
 
     for (let i = 0; i < rounds.length; i++) {
