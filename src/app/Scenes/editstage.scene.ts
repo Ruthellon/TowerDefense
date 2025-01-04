@@ -8,7 +8,7 @@ import { Grid } from "../GameObjects/grid.gameobject";
 import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { Slider } from "../GameObjects/Utilities/slider.gameobject";
 import { TextBox } from "../GameObjects/Utilities/textbox.gameobject";
-import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
+import { BlankSceneInfo, Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { ePathCellStatus } from "../Utility/pathfinding.service";
 import { BaseLevel } from "./base.scene";
@@ -62,6 +62,15 @@ export class EditStage extends BaseLevel {
   }
   protected get UICellSize(): number {
     return 100;
+  }
+
+  private sceneInfoString: string | undefined;
+  constructor(sceneJSON?: string) {
+    super();
+
+    if (sceneJSON) {
+      this.sceneInfoString = sceneJSON;
+    }
   }
 
   public Load(): void {
@@ -146,6 +155,21 @@ export class EditStage extends BaseLevel {
       }
     });
     this.LoadGameObject(this.settingsButton);
+
+    if (this.sceneInfoString) {
+      let sceneInfo: BlankSceneInfo = JSON.parse(this.sceneInfoString);
+
+      this.theGrid.SetGridCellSize(sceneInfo.GridSize);
+
+      sceneInfo.StartingCells.forEach((start) => {
+        this.theGrid.AddStartPoint(new Vector2(start.X, start.Y));
+      });
+      sceneInfo.EndingCells.forEach((end) => {
+        this.theGrid.AddEndPoint(new Vector2(end.X, end.Y));
+      });
+
+      this.settings.SetRounds(sceneInfo.Rounds);
+    }
   }
 
   override Update(deltaTime: number): void {

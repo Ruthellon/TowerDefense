@@ -32,7 +32,18 @@ export class Button extends UtilityBase {
           Game.CONTEXT.font = '24px serif';
           Game.CONTEXT.textAlign = "center";
           Game.CONTEXT.textBaseline = "middle";
-          Game.CONTEXT.fillText(this.text, this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2));
+
+          let newline = this.text.search("\n");
+          if (newline >= 0) {
+            let top = this.text.substring(0, newline);
+            let bottom = this.text.substring(newline + 1, this.text.length);
+
+            Game.CONTEXT.fillText(top, this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 3));
+            Game.CONTEXT.fillText(bottom, this.location.X + (this.size.X / 2), this.location.Y + ((this.size.Y * 2) / 3));
+          }
+          else {
+            Game.CONTEXT.fillText(this.text, this.location.X + (this.size.X / 2), this.location.Y + (this.size.Y / 2));
+          }
         }
       }
       else if (this.sprite) {

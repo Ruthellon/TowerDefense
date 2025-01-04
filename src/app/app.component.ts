@@ -21,6 +21,11 @@ export class AppComponent implements AfterViewInit {
   private previousWidth: number = 0;
   private previousHeight: number = 0;
 
+  @HostListener('window:touchmove')
+  touchMove(e: any): void {
+    e.preventDefault();
+  }
+
   onResize(): void {
     if (this.canvas &&
       (this.canvas.offsetWidth !== this.previousWidth || this.canvas.offsetHeight !== this.previousHeight)) {

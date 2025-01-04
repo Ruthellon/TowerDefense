@@ -44,6 +44,23 @@ export class AngryElfAPI implements IAngryElfAPIService {
     });
   }
 
+  DeleteCustomLevel(levelUnid: number): void {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    this.http.delete(`https://api.angryelfgames.com/TowerDefense/DeleteCustomLevel/${levelUnid}`, httpOptions).subscribe({
+      next: (result: any) => {
+        console.log(result);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    });
+  }
+
   async GetCustomLevels(): Promise<CustomLevel[]> {
     const httpOptions = {
       headers: new HttpHeaders({

@@ -5,6 +5,7 @@ import { CustomLevel } from "../Services/angryelfapi.service";
 import { Game } from "../Utility/game.model";
 import { BaseLevel } from "./base.scene";
 import { BlankLevelScene } from "./blanklevel.scene";
+import { EditStage } from "./editstage.scene";
 import { eLayerTypes, IScene } from "./scene.interface";
 
 
@@ -29,6 +30,11 @@ export class InstructionsScene extends BaseLevel {
   startLevel7Button = new Button();
   fetchCustomsButton = new Button();
   private customClose: Button = new Button();
+
+  private deleteCustomButton: Button = new Button();
+  private playCustomButton: Button = new Button();
+  private editCustomButton: Button = new Button();
+  private closeCustomWindowButton: Button = new Button();
 
   private username: TextBox = new TextBox();
   private password: TextBox = new TextBox();
@@ -84,23 +90,20 @@ export class InstructionsScene extends BaseLevel {
     this.fetchCustomsButton.SetClickFunction(async () => {
       this.customSceneOpen = true;
 
+      this.sceneButtons = [];
       this.scenes = await Game.GetCustomScenes();
       for (let i = 0; i < this.scenes.length; i++) {
         let sceneButton = new Button();
-        let x = Game.CANVAS_WIDTH / 2 - 300;
-        if (i % 2 !== 0)
-          x += 350;
-        let y = 50 + (Math.floor(i / 2) * 125);
+        let x = (Game.CANVAS_WIDTH / 2 - 350) + ((i % 3) * 250);
+        
+        let y = 50 + (Math.floor(i / 3) * 125);
 
         sceneButton.SetLocation(x, y, eLayerTypes.UI);
         sceneButton.SetSize(200, 100);
-        sceneButton.SetText(`${this.scenes[i].levelName} by ${this.scenes[i].creatorName}`);
+        sceneButton.SetText(`${this.scenes[i].levelName}\nby ${this.scenes[i].creatorName}`);
         sceneButton.SetClickFunction(async () => {
-          let sceneInfo = await Game.GetCustomScene(this.scenes[i].unid);
-          if (sceneInfo) {
-            let blankScene = new BlankLevelScene(sceneInfo);
-            Game.SetTheScene('blank', blankScene);
-          }
+          this.selectedSceneIndex = this.scenes[i].unid;
+          this.selectedScene = await Game.GetCustomScene(this.scenes[i].unid);
         });
         sceneButton.Load();
         this.sceneButtons.push(sceneButton);
@@ -140,11 +143,46 @@ export class InstructionsScene extends BaseLevel {
     });
     this.submitButton.Load();
 
-    this.customClose.SetLocation((Game.CANVAS_WIDTH / 2 + 300), 50, eLayerTypes.UI);
+    this.customClose.SetLocation((Game.CANVAS_WIDTH / 2 + 390), 35, eLayerTypes.UI);
     this.customClose.SetSize(50, 50);
     this.customClose.SetText('X');
     this.customClose.SetClickFunction(() => this.customSceneOpen = false);
     this.customClose.Load();
+
+
+    this.playCustomButton.SetLocation((Game.CANVAS_WIDTH / 2 - 100), 150, eLayerTypes.UI);
+    this.playCustomButton.SetSize(200, 50);
+    this.playCustomButton.SetText('Play');
+    this.playCustomButton.SetClickFunction(() => {
+      if (this.selectedScene)
+        Game.SetTheScene('blank', new BlankLevelScene(this.selectedScene));
+    });
+    this.playCustomButton.Load();
+    this.editCustomButton.SetLocation((Game.CANVAS_WIDTH / 2 - 100), 225, eLayerTypes.UI);
+    this.editCustomButton.SetSize(200, 50);
+    this.editCustomButton.SetText('Edit');
+    this.editCustomButton.SetClickFunction(() => {
+      if (this.selectedScene)
+        Game.SetTheScene('editstage', new EditStage(this.selectedScene));
+    });
+    this.editCustomButton.Load();
+    this.deleteCustomButton.SetLocation((Game.CANVAS_WIDTH / 2 - 100), 300, eLayerTypes.UI);
+    this.deleteCustomButton.SetSize(200, 50);
+    this.deleteCustomButton.SetText('Delete');
+    this.deleteCustomButton.SetClickFunction(() => {
+      if (this.selectedSceneIndex !== null)
+        Game.DeleteCustomScene(this.selectedSceneIndex);
+
+      this.selectedScene = null;
+      this.selectedSceneIndex = null;
+      this.customSceneOpen = false;
+    });
+    this.deleteCustomButton.Load();
+    this.closeCustomWindowButton.SetLocation((Game.CANVAS_WIDTH / 2 - 100), 375, eLayerTypes.UI);
+    this.closeCustomWindowButton.SetSize(200, 50);
+    this.closeCustomWindowButton.SetText('Close');
+    this.closeCustomWindowButton.SetClickFunction(() => this.selectedScene = null);
+    this.closeCustomWindowButton.Load();
 
     this.editStageButton.SetLocation(Game.CANVAS_WIDTH / 2 - 100, Game.CANVAS_HEIGHT / 2, eLayerTypes.UI);
     this.editStageButton.SetSize(200, 100);
@@ -183,6 +221,13 @@ export class InstructionsScene extends BaseLevel {
       this.customClose.Update(deltaTime);
 
       this.sceneButtons.forEach((btn) => btn.Update(deltaTime));
+    }
+
+    if (this.selectedScene) {
+      this.playCustomButton.Update(deltaTime);
+      this.editCustomButton.Update(deltaTime);
+      this.deleteCustomButton.Update(deltaTime);
+      this.closeCustomWindowButton.Update(deltaTime);
     }
   }
 
@@ -229,19 +274,35 @@ export class InstructionsScene extends BaseLevel {
 
     if (this.customSceneOpen) {
       Game.CONTEXT!.fillStyle = '#555555';
-      Game.CONTEXT!.fillRect((Game.CANVAS_WIDTH / 2) - 400, 25, 800, Game.CANVAS_HEIGHT - 50);
+      Game.CONTEXT!.fillRect((Game.CANVAS_WIDTH / 2) - 400, 25, 850, Game.CANVAS_HEIGHT - 50);
 
       Game.CONTEXT.lineWidth = 5;
       Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 400, 25, 800, Game.CANVAS_HEIGHT - 50);
+      Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 400, 25, 850, Game.CANVAS_HEIGHT - 50);
 
       this.customClose.Draw(deltaTime);
 
       this.sceneButtons.forEach((btn) => btn.Draw(deltaTime));
+    }
+
+    if (this.selectedScene) {
+      Game.CONTEXT!.fillStyle = '#555555';
+      Game.CONTEXT!.fillRect((Game.CANVAS_WIDTH / 2) - 200, 125, 400, Game.CANVAS_HEIGHT - 550);
+
+      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeRect((Game.CANVAS_WIDTH / 2) - 200, 125, 400, Game.CANVAS_HEIGHT - 550);
+
+      this.playCustomButton.Draw(deltaTime);
+      this.editCustomButton.Draw(deltaTime);
+      this.deleteCustomButton.Draw(deltaTime);
+      this.closeCustomWindowButton.Draw(deltaTime);
     }
   }
 
 
   private settingsOpen: boolean = false;
   private customSceneOpen: boolean = false;
+  private selectedScene: string | null = null;
+  private selectedSceneIndex: number | null = null;
 }

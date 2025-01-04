@@ -119,6 +119,7 @@ export class BlankLevelScene extends DefenseBaseLevel {
         newAttacker.SetStartingSpeed(batch.EnemySpeed);
         newAttacker.SetStartingHealth(batch.EnemyHealth);
         newAttacker.SetValue(batch.EnemyValue);
+        newAttacker.SetCanFly(batch.EnemyCanFly);
 
         this.LoadGameObject(newAttacker);
         this.attackers.push(newAttacker);
@@ -242,6 +243,10 @@ export class BlankLevelScene extends DefenseBaseLevel {
 
       round.EnemyBatches.forEach((batch) => {
         count += batch.EnemyCountStart;
+
+        if (batch.EnemyCanFly && this.availableDefenders.length === 1) {
+          this.availableDefenders.push(eDefenderTypes.SAMTurret);
+        }
       });
 
       this.enemyRounds.push(count);

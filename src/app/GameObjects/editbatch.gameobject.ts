@@ -26,6 +26,7 @@ export class EditBatch extends Base {
     this.timeBetweenPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 100, eLayerTypes.UI);
     this.speedPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 175, eLayerTypes.UI);
     this.healthPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 250, eLayerTypes.UI);
+    this.canFlyPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 325, eLayerTypes.UI);
 
     this.valuePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 25, eLayerTypes.UI);
     this.sizePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 100, eLayerTypes.UI);
@@ -40,6 +41,7 @@ export class EditBatch extends Base {
     this.sizePrompt.SetSize(75, 50);
     this.damagePrompt.SetSize(75, 50);
     this.startLocalPrompt.SetSize(75, 50);
+    this.canFlyPrompt.SetSize(75, 50);
 
     this.numEnemiesPrompt.SetText('5');
     this.timeBetweenPrompt.SetText('500');
@@ -49,6 +51,7 @@ export class EditBatch extends Base {
     this.sizePrompt.SetText('25');
     this.damagePrompt.SetText('1');
     this.startLocalPrompt.SetText('1');
+    this.canFlyPrompt.SetText('0');
 
     this.numEnemiesPrompt.SetPrompt('Set number of enemies for batch (1 - 50):');
     this.timeBetweenPrompt.SetPrompt('Set time between spawns (in milliseconds) (100 - 5000):');
@@ -58,6 +61,7 @@ export class EditBatch extends Base {
     this.sizePrompt.SetPrompt('Set size of enemy (5 - 200):');
     this.damagePrompt.SetPrompt('Set damage enemy deals (1 - 100):');
     this.startLocalPrompt.SetPrompt('Set staring location (1 - ???):');
+    this.canFlyPrompt.SetPrompt('Set if enemies should fly (0 false, 1 true):');
 
     this.numEnemiesPrompt.SetVerifyFunction((text: string | null) => {
       if (text) {
@@ -219,6 +223,26 @@ export class EditBatch extends Base {
 
       return '1';
     });
+    this.canFlyPrompt.SetVerifyFunction((text: string | null) => {
+      if (text) {
+        let textAsNumber = Number(text);
+
+        if (isNaN(textAsNumber)) {
+          alert('Enter a valid number');
+          return '0';
+        }
+
+        if (textAsNumber < 0)
+          return '0';
+
+        if (textAsNumber > 1)
+          return '1';
+
+        return textAsNumber.toFixed(0);
+      }
+
+      return '1';
+    });
 
     this.numEnemiesPrompt.SetLabel('Number of Enemies:');
     this.timeBetweenPrompt.SetLabel('Time Between:');
@@ -228,6 +252,7 @@ export class EditBatch extends Base {
     this.sizePrompt.SetLabel('Size:');
     this.damagePrompt.SetLabel('Damage:');
     this.startLocalPrompt.SetLabel('Starting Spot:');
+    this.canFlyPrompt.SetLabel('Can Fly:');
 
     this.numEnemiesPrompt.Load();
     this.timeBetweenPrompt.Load();
@@ -237,6 +262,7 @@ export class EditBatch extends Base {
     this.sizePrompt.Load();
     this.damagePrompt.Load();
     this.startLocalPrompt.Load();
+    this.canFlyPrompt.Load();
 
     this.gameObjects.push(this.numEnemiesPrompt);
     this.gameObjects.push(this.timeBetweenPrompt);
@@ -246,6 +272,7 @@ export class EditBatch extends Base {
     this.gameObjects.push(this.sizePrompt);
     this.gameObjects.push(this.damagePrompt);
     this.gameObjects.push(this.startLocalPrompt);
+    this.gameObjects.push(this.canFlyPrompt);
   }
 
   public override Update(deltaTime: number) {
@@ -276,33 +303,64 @@ export class EditBatch extends Base {
   public get NumberEnemies(): number {
     return Number(this.numEnemiesPrompt.Text!);
   }
+  public SetNumberEnemies(num: number): void {
+    this.numEnemiesPrompt.SetText(num.toFixed(0));
+  }
 
   public get EnemyDamage(): number {
     return Number(this.damagePrompt.Text!);
+  }
+  public SetEnemyDamage(num: number): void {
+    this.damagePrompt.SetText(num.toFixed(0));
   }
 
   public get EnemyHealth(): number {
     return Number(this.healthPrompt.Text!);
   }
+  public SetEnemyHealth(num: number): void {
+    this.healthPrompt.SetText(num.toFixed(0));
+  }
 
   public get EnemySize(): number {
     return Number(this.sizePrompt.Text!);
+  }
+  public SetEnemySize(num: number): void {
+    this.sizePrompt.SetText(num.toFixed(0));
   }
 
   public get EnemySpeed(): number {
     return Number(this.speedPrompt.Text!);
   }
+  public SetEnemySpeed(num: number): void {
+    this.speedPrompt.SetText(num.toFixed(0));
+  }
 
   public get StartCell(): number {
     return Number(this.startLocalPrompt.Text!);
+  }
+  public SetStartCell(num: number): void {
+    this.startLocalPrompt.SetText(num.toFixed(0));
   }
 
   public get EnemyValue(): number {
     return Number(this.valuePrompt.Text!);
   }
+  public SetEnemyValue(num: number): void {
+    this.valuePrompt.SetText(num.toFixed(0));
+  }
 
   public get EnemyCooldownTime(): number {
     return Number(this.timeBetweenPrompt.Text!);
+  }
+  public SetEnemyCooldown(num: number): void {
+    this.timeBetweenPrompt.SetText(num.toFixed(0));
+  }
+
+  public get EnemiesCanFly(): boolean {
+    return (this.canFlyPrompt.Text! === '1');
+  }
+  public SetEnemyCanFly(can: boolean): void {
+    this.canFlyPrompt.SetText(can ? '1' : '0');
   }
 
   private closeButton: Button = new Button();
@@ -315,4 +373,5 @@ export class EditBatch extends Base {
   private sizePrompt: TextBox = new TextBox();
   private damagePrompt: TextBox = new TextBox();
   private startLocalPrompt: TextBox = new TextBox();
+  private canFlyPrompt: TextBox = new TextBox();
 }

@@ -4,6 +4,7 @@ import { eLayerTypes } from "../Scenes/scene.interface";
 import { BlankSceneInfo, EnemyBatch, EnemyRound, Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { Base } from "./base.gameobject";
+import { EditBatch } from "./editbatch.gameobject";
 import { EditRound } from "./editround.gameobject";
 import { IGameObject } from "./gameobject.interface";
 import { Button } from "./Utilities/button.gameobject";
@@ -253,6 +254,25 @@ export class EditStageSettings extends Base {
     this.gridSize = gridSize;
   }
 
+  public SetCredits(credits: number) {
+    this.creditPrompt.SetText(credits.toFixed(0));
+  }
+
+  public SetHealth(health: number) {
+    this.healthPrompt.SetText(health.toFixed(0));
+  }
+
+  public SetRounds(rounds: EnemyRound[]) {
+    this.setRoundButtons(rounds.length);
+
+    for (let i = 0; i < rounds.length; i++) {
+      for (let j = 0; j < rounds[i].EnemyBatches.length; j++) {
+        let batch = rounds[i].EnemyBatches[j];
+        this.roundEditors[i].AddBatch(batch);
+      }
+    }
+  }
+
   private setRoundButtons(rounds: number): void {
     for (let i = 0; i < 10; i++) {
       if (i < rounds) {
@@ -288,10 +308,12 @@ export class EditStageSettings extends Base {
         enemyBatch.EnemyStartCell = batch.StartCell;
         enemyBatch.EnemyValue = batch.EnemyValue;
         enemyBatch.TimeBetweenStart = (batch.EnemyCooldownTime / 1000);
+        enemyBatch.EnemyCanFly = batch.EnemiesCanFly;
         round.EnemyBatches.push(enemyBatch);
       });
 
-      enemyRounds.push(round);
+      if (round.EnemyBatches.length > 0)
+        enemyRounds.push(round);
     });
 
     sceneInfo.Rounds = enemyRounds;

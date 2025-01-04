@@ -103,6 +103,9 @@ export class Game {
 
     this.api.AddCustomLevel(this.username, sceneName, sceneJSON);
   }
+  public static DeleteCustomScene(unid: number): void {
+    this.api.DeleteCustomLevel(unid);
+  }
   public static async GetCustomScene(unid: number): Promise<string | null>{
     return await this.api.GetCustomLevel(unid);
   }
@@ -141,7 +144,10 @@ export class Game {
       this.theScene = new LevelSevenScene();
     }
     else if (scene === 'editstage') {
-      this.theScene = new EditStage();
+      if (customScene)
+        this.theScene = customScene;
+      else
+        this.theScene = new EditStage();
     }
     else if (scene === 'blank' && customScene) {
       this.theScene = customScene;

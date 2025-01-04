@@ -121,6 +121,7 @@ export class EnemyBatch {
   public EnemySize: number = 0;
   public EnemyDamage: number = 0;
   public EnemyStartCell: number = 0;
+  public EnemyCanFly: boolean = false;
 
   public TimeBetweenCurrent: number = 0;
   public EnemyCountCurrent: number = 0;

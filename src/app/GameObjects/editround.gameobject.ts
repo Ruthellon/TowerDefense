@@ -1,6 +1,6 @@
 import { AppComponent } from "../app.component";
 import { eLayerTypes } from "../Scenes/scene.interface";
-import { Vector2, Vector3 } from "../Utility/classes.model";
+import { EnemyBatch, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { Attacker } from "./attacker.gameobject";
 import { Base } from "./base.gameobject";
@@ -38,31 +38,7 @@ export class EditRound extends Base {
       if (this.batchButtons.length >= 32)
         return;
 
-      let batchEdit = new EditBatch();
-      batchEdit.SetSize(700, 500);
-      batchEdit.SetLocation(this.ObjectRect.Center.X - 350, this.ObjectRect.Center.Y - 250, eLayerTypes.UI + 5);
-      batchEdit.SetHidden(true);
-      batchEdit.Load();
-      this.gameObjects.push(batchEdit);
-      this.batchEditors.push(batchEdit);
-
-      let batchButt = new Button();
-
-      let x = this.Location.X + 25;
-      x += (this.batchButtons.length % 8) * 100;
-      let y = this.Location.Y + 125;
-      y += Math.floor(this.batchButtons.length / 8) * 100;
-
-      let count = this.batchButtons.length;
-      batchButt.SetLocation(x, y, eLayerTypes.UI + 1);
-      batchButt.SetSize(50, 50);
-      batchButt.SetText((this.batchButtons.length + 1).toFixed(0));
-      batchButt.SetClickFunction(() => {
-        this.batchEditors[count].SetHidden(false);
-      });
-      batchButt.Load();
-      this.gameObjects.push(batchButt);
-      this.batchButtons.push(batchButt);
+      this.AddBatch();
     });
     this.addBatchButton.Load();
     this.gameObjects.push(this.addBatchButton);
@@ -128,6 +104,47 @@ export class EditRound extends Base {
           obj.Draw(deltaTime);
       });
     }
+  }
+
+  public AddBatch(batch?: EnemyBatch) {
+    let batchEdit = new EditBatch();
+    batchEdit.SetSize(700, 500);
+    batchEdit.SetLocation(this.ObjectRect.Center.X - 350, this.ObjectRect.Center.Y - 250, eLayerTypes.UI + 5);
+    batchEdit.SetHidden(true);
+
+    if (batch) {
+      batchEdit.SetEnemyDamage(batch.EnemyDamage);
+      batchEdit.SetEnemyHealth(batch.EnemyHealth);
+      batchEdit.SetEnemySize(batch.EnemySize);
+      batchEdit.SetEnemySpeed(batch.EnemySpeed);
+      batchEdit.SetStartCell(batch.EnemyStartCell);
+      batchEdit.SetEnemyValue(batch.EnemyValue);
+      batchEdit.SetEnemyCooldown(batch.TimeBetweenStart);
+      batchEdit.SetEnemyCanFly(batch.EnemyCanFly);
+      batchEdit.SetNumberEnemies(batch.EnemyCountStart);
+    }
+
+    batchEdit.Load();
+    this.gameObjects.push(batchEdit);
+    this.batchEditors.push(batchEdit);
+
+    let batchButt = new Button();
+
+    let x = this.Location.X + 25;
+    x += (this.batchButtons.length % 8) * 100;
+    let y = this.Location.Y + 125;
+    y += Math.floor(this.batchButtons.length / 8) * 100;
+
+    let count = this.batchButtons.length;
+    batchButt.SetLocation(x, y, eLayerTypes.UI + 1);
+    batchButt.SetSize(50, 50);
+    batchButt.SetText((this.batchButtons.length + 1).toFixed(0));
+    batchButt.SetClickFunction(() => {
+      this.batchEditors[count].SetHidden(false);
+    });
+    batchButt.Load();
+    this.gameObjects.push(batchButt);
+    this.batchButtons.push(batchButt);
   }
 
   private batchButtons: Button[] = [];
