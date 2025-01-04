@@ -202,7 +202,7 @@ export class InstructionsScene extends BaseLevel {
 
     this.editStageButton.SetLocation(Game.CANVAS_WIDTH / 2 - 100, Game.CANVAS_HEIGHT / 2, eLayerTypes.UI);
     this.editStageButton.SetSize(200, 100);
-    this.editStageButton.SetText('Edit Level');
+    this.editStageButton.SetText('Create Level');
     this.editStageButton.SetClickFunction(() => Game.SetTheScene('editstage'));
     this.editStageButton.Load();
 

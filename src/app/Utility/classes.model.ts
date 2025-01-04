@@ -103,6 +103,7 @@ export class Rect {
 
 
 export class BlankSceneInfo {
+  public SceneName: string = '';
   public GridSize: number = 0;
   public StartingCells: Vector2[] = [];
   public EndingCells: Vector2[] = [];

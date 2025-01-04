@@ -71,6 +71,7 @@ export class BlankLevelScene extends DefenseBaseLevel {
       let sceneInfo: BlankSceneInfo = JSON.parse(sceneJSON);
       
       if (sceneInfo) {
+        this.SetSceneName(sceneInfo.SceneName);
         this.SetGridSize(sceneInfo.GridSize);
         this.SetStartEndCells(sceneInfo.StartingCells, sceneInfo.EndingCells);
         this.SetStartingCredits(sceneInfo.Credits);

@@ -321,6 +321,7 @@ export class EditStageSettings extends Base {
 
     let name = prompt('Name of your level?');
     if (name) {
+      sceneInfo.SceneName = name;
       let str = JSON.stringify(sceneInfo);
       Game.AddNewCustomScene(name, str);
       

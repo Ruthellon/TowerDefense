@@ -234,8 +234,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
       if (this.playerHealth <= 0) {
         this.restartButton.SetLocation((Game.CANVAS_WIDTH / 2) - 140, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
-        this.homeButton.SetLocation((Game.CANVAS_WIDTH / 2) + 50, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
       }
+      this.homeButton.SetLocation((Game.CANVAS_WIDTH / 2) + 50, (Game.CANVAS_HEIGHT / 2) + 275, eLayerTypes.UI);
 
       return;
     }
@@ -327,12 +327,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         Game.CONTEXT.fillText('Play Again?', Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT / 2 + 150);
 
         this.restartButton.Draw(deltaTime);
-        this.homeButton.Draw(deltaTime);
       }
       else {
         this.PlayerWonScreen();
         this.nextLevelButton.Draw(deltaTime);
       }
+
+      this.homeButton.Draw(deltaTime);
 
       return;
     }
