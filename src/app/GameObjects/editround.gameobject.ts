@@ -111,6 +111,7 @@ export class EditRound extends Base {
     batchEdit.SetSize(700, 500);
     batchEdit.SetLocation(this.ObjectRect.Center.X - 350, this.ObjectRect.Center.Y - 250, eLayerTypes.UI + 5);
     batchEdit.SetHidden(true);
+    batchEdit.Load();
 
     if (batch) {
       batchEdit.SetEnemyDamage(batch.EnemyDamage);
@@ -119,12 +120,11 @@ export class EditRound extends Base {
       batchEdit.SetEnemySpeed(batch.EnemySpeed);
       batchEdit.SetStartCell(batch.EnemyStartCell);
       batchEdit.SetEnemyValue(batch.EnemyValue);
-      batchEdit.SetEnemyCooldown(batch.TimeBetweenStart);
+      batchEdit.SetEnemyCooldown(batch.TimeBetweenStart * 1000);
       batchEdit.SetEnemyCanFly(batch.EnemyCanFly);
       batchEdit.SetNumberEnemies(batch.EnemyCountStart);
     }
 
-    batchEdit.Load();
     this.gameObjects.push(batchEdit);
     this.batchEditors.push(batchEdit);
 
