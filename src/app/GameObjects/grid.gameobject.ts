@@ -43,11 +43,7 @@ export class Grid extends Base {
 
   public override Update(deltaTime: number) {
     if (Game.MOUSE_LOCATION.X > 0 && Game.MOUSE_LOCATION.Y > 0) {
-      if ((this.mouseHighlightCell && !this.mouseHighlightCell.isEqual(Game.MOUSE_LOCATION)) ||
-        !this.mouseHighlightCell) {
-        this.mouseHighlightCell = new Vector2(Math.floor((Game.MOUSE_LOCATION.X - this.remainderX) / this.GridCellSize),
-          Math.floor((Game.MOUSE_LOCATION.Y - this.remainderY) / this.GridCellSize));
-      }
+      this.mouseHighlightCell = Game.MOUSE_LOCATION;
     }
 
     if (Game.MOUSE_PRESSED) {
@@ -69,33 +65,45 @@ export class Grid extends Base {
   }
 
   public override Draw(deltaTime: number) {
-    //Draw Grid Columns
-    Game.CONTEXT.lineWidth = 1;
-    let width = Math.ceil(Game.CANVAS_WIDTH / this.GridCellSize);
-    Game.CONTEXT.strokeStyle = `#ff000080`;
-    for (let i = 0; i <= width + 1; i++) {
-      let x = (this.GridCellSize * i) + this.remainderX;
-      Game.CONTEXT.beginPath();
-      Game.CONTEXT.moveTo(x, 0);
-      Game.CONTEXT.lineTo(x, Game.CANVAS_HEIGHT);
-      Game.CONTEXT.stroke();
-    }
+    if (this.showGrid) {
+      //Draw Grid Columns
+      Game.CONTEXT.lineWidth = 1;
+      let width = Math.ceil(Game.CANVAS_WIDTH / this.GridCellSize);
+      Game.CONTEXT.strokeStyle = `#ff000080`;
+      for (let i = 0; i <= width + 1; i++) {
+        let x = (this.GridCellSize * i) + this.remainderX;
+        Game.CONTEXT.beginPath();
+        Game.CONTEXT.moveTo(x, 0);
+        Game.CONTEXT.lineTo(x, Game.CANVAS_HEIGHT);
+        Game.CONTEXT.stroke();
+      }
 
-    //Draw Grid Rows
-    let height = Math.ceil(Game.CANVAS_HEIGHT / this.GridCellSize);
-    for (let i = 0; i <= height; i++) {
-      let y = (this.GridCellSize * i) + this.remainderY;
-      Game.CONTEXT.beginPath();
-      Game.CONTEXT.moveTo(0, y);
-      Game.CONTEXT.lineTo(Game.CANVAS_WIDTH, y);
-      Game.CONTEXT.stroke();
+      //Draw Grid Rows
+      let height = Math.ceil(Game.CANVAS_HEIGHT / this.GridCellSize);
+      for (let i = 0; i <= height; i++) {
+        let y = (this.GridCellSize * i) + this.remainderY;
+        Game.CONTEXT.beginPath();
+        Game.CONTEXT.moveTo(0, y);
+        Game.CONTEXT.lineTo(Game.CANVAS_WIDTH, y);
+        Game.CONTEXT.stroke();
+      }
     }
 
     if (this.mouseHighlightCell) {
       Game.CONTEXT.lineWidth = 5;
       Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect((this.mouseHighlightCell.X * this.GridCellSize) + this.remainderX, (this.mouseHighlightCell.Y * this.GridCellSize) + this.remainderY,
-        this.GridCellSize, this.GridCellSize);
+      let highlightVector = new Vector2(Math.floor((this.mouseHighlightCell.X - this.remainderX) / this.gridCellSize),
+        Math.floor((this.mouseHighlightCell.Y - this.remainderY) / this.gridCellSize));
+      if (this.PlayableArea.ContainsPoint(this.mouseHighlightCell)) {
+        Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
+          (highlightVector.Y * this.gridCellSize) + this.remainderY,
+          this.obstacleCellSize, this.obstacleCellSize);
+      }
+      else {
+        Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
+          (highlightVector.Y * this.gridCellSize) + this.remainderY,
+          this.gridCellSize, this.gridCellSize);
+      }
     }
 
     for (let i = 0; i < this.startingCells.length; i++) {
@@ -146,6 +154,9 @@ export class Grid extends Base {
   }
 
   public AddStartPoint(cell?: Vector2, calculatePath: boolean = true): boolean {
+    if (!this.grid)
+      return false;
+
     if (cell) {
       this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
       this.startingCells.push(cell);
@@ -156,7 +167,7 @@ export class Grid extends Base {
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
 
-      if (cell.X > this.grid.length || cell.Y > this.grid[cell.X].length)
+      if (cell.X >= this.grid.length || cell.Y >= this.grid[cell.X].length)
         return false;
 
       if (this.grid[cell.X][cell.Y] === ePathCellStatus.OutOfBounds) {
@@ -258,8 +269,17 @@ export class Grid extends Base {
     return new Vector2((cell.X * this.GridCellSize) + this.remainderX, (cell.Y * this.GridCellSize) + this.remainderY);
   }
 
-  public RemoveObstacle(cell: Vector2): void {
-    this.grid[cell.X][cell.Y] = ePathCellStatus.Open;
+  public RemoveObstacle(location: Vector2, defenderSize: number): void {
+    let x = Math.floor((location.X + this.remainderX) / this.gridCellSize);
+    let y = Math.floor((location.Y + this.remainderY) / this.gridCellSize);
+
+    let defenderLoop = Math.floor(defenderSize / this.gridCellSize);
+
+    for (let i = 0; i < defenderLoop; i++) {
+      for (let j = 0; j < defenderLoop; j++) {
+        this.grid[x + i][y + j] = ePathCellStatus.Open;
+      }
+    }
   }
 
   public SetGridCellSize(cellSize: number) {
@@ -276,12 +296,20 @@ export class Grid extends Base {
     this.gridCellSize = cellSize;
   }
 
+  public SetObstacleCellSize(cellSize: number) {
+    this.obstacleCellSize = cellSize;
+  }
+
   public SetUICellSize(cellSize: number) {
     this.uiCellSize = cellSize;
   }
 
   public SetShowPaths(show: boolean): void {
     this.showAttackerPath = show;
+  }
+
+  public SetShowGrid(show: boolean): void {
+    this.showGrid = show;
   }
 
   public SetUpGrid(): void {
@@ -423,9 +451,11 @@ export class Grid extends Base {
   private gridColumns: number = 0;
   private gridRows: number = 0;
   private uiCellSize: number = 100;
+  private obstacleCellSize: number = 100;
 
   private mousePreviousClickCell: Vector2 | null = null;
   private mouseHighlightCell: Vector2 | null = null;
 
   private showAttackerPath: boolean = true;
+  private showGrid: boolean = false;
 }

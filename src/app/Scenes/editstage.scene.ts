@@ -56,8 +56,9 @@ export class EditStage extends BaseLevel {
   protected get EndingCells(): Vector2[] {
     return this.endingCells;
   }
+  private defenderSize: number = 100;
   protected get DefenderSize(): number {
-    return 100;
+    return this.defenderSize;
   }
   protected get GridCellSize(): number {
     return 100;
@@ -83,6 +84,7 @@ export class EditStage extends BaseLevel {
     this.theGrid.SetClickFunction(() => {
       this.theGrid.AddStartPoint();
     });
+    this.theGrid.SetShowGrid(true);
     this.LoadGameObject(this.theGrid);
 
     this.setUpBoundaries();
@@ -94,17 +96,23 @@ export class EditStage extends BaseLevel {
     
     this.gridSlider.SetLocation(Game.CANVAS_WIDTH / 2 - 225, 25, 5);
     this.gridSlider.SetSize(200, 25);
-    this.gridSlider.SetValueRange(10, 175);
+    this.gridSlider.SetValueRange(10, 150);
     this.gridSlider.SetValue(this.GridCellSize);
     this.LoadGameObject(this.gridSlider);
 
     this.defenderSlider.SetLocation(Game.CANVAS_WIDTH / 2 + 25, 25, 5);
     this.defenderSlider.SetSize(200, 25);
-    this.defenderSlider.SetValueRange(1, 10);
-    this.defenderSlider.SetValue(Math.ceil(this.DefenderSize / this.GridCellSize));
+    this.defenderSlider.SetValueRange(1, Math.ceil(150 / this.GridCellSize));
+    this.defenderSlider.SetValue(this.defenderMultiplier);
     this.LoadGameObject(this.defenderSlider);
 
-    this.turret.SetLocation
+    let turretlocal = this.theGrid.AddObstacle(true, this.DefenderSize, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y));
+
+    if (turretlocal) {
+      this.turret.SetLocation(turretlocal.X, turretlocal.Y, eLayerTypes.Object);
+      this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+      this.LoadGameObject(this.turret);
+    }
 
     this.selectStartButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 1, eLayerTypes.UI);
     this.selectStartButton.SetSize(this.UICellSize, this.UICellSize);
@@ -150,6 +158,7 @@ export class EditStage extends BaseLevel {
         });
         this.settings.SetStartEndCells(this.theGrid.StartingCells, this.theGrid.EndingCells);
         this.settings.SetGridSize(this.theGrid.GridCellSize);
+        this.settings.SetDefenderMultiplier(this.defenderMultiplier)
         this.settings.SetHidden(false);
         this.settings.SetEnabled(true);
         this.settingsButton.SetEnabled(true);
@@ -166,14 +175,27 @@ export class EditStage extends BaseLevel {
     });
     this.LoadGameObject(this.settingsButton);
 
-    
-
     if (this.sceneInfoString) {
       let sceneInfo: BlankSceneInfo = JSON.parse(this.sceneInfoString);
 
       this.gridSlider.SetValue(sceneInfo.GridSize);
+      this.gridSlider.Load();
       this.theGrid.SetGridCellSize(sceneInfo.GridSize);
+      this.defenderSlider.SetValueRange(1, Math.ceil(150 / sceneInfo.GridSize));
+      this.defenderSlider.SetValue(sceneInfo.DefSizeMulti ? sceneInfo.DefSizeMulti : 1);
+      this.defenderSlider.Load();
+      this.defenderSize = sceneInfo.GridSize * this.defenderSlider.Value;
+      this.theGrid.SetObstacleCellSize(this.DefenderSize);
       this.theGrid.SetUpGrid();
+
+      let turretlocal = this.theGrid.AddObstacle(true, this.DefenderSize, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y));
+
+      if (turretlocal) {
+        this.turret.SetLocation(turretlocal.X, turretlocal.Y, eLayerTypes.Object);
+        this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+        this.turret.SetRange(this.DefenderSize * 1.5);
+        this.turret.Load();
+      }
 
       sceneInfo.StartingCells.forEach((start) => {
         this.theGrid.AddStartPoint(new Vector2(start.X, start.Y), false);
@@ -199,6 +221,29 @@ export class EditStage extends BaseLevel {
       this.updateGrid = false;
       this.theGrid.SetUpGrid();
       this.setUpBoundaries();
+      this.defenderSize = this.gridSlider.Value * this.defenderMultiplier;
+      this.theGrid.SetObstacleCellSize(this.DefenderSize);
+
+      this.defenderSlider.SetValueRange(1, Math.ceil(150 / this.gridSlider.Value));
+      this.defenderSlider.SetValue(this.defenderMultiplier);
+
+      let turretlocal = this.theGrid.AddObstacle(true, this.DefenderSize, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y));
+
+      if (turretlocal) {
+        this.turret.SetLocation(turretlocal.X, turretlocal.Y, eLayerTypes.Object);
+        this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+        this.turret.SetRange(this.DefenderSize * 1.5);
+        this.turret.Load();
+      }
+    }
+
+    if (this.defenderMultiplier !== this.defenderSlider.Value) {
+      this.defenderMultiplier = this.defenderSlider.Value;
+      this.defenderSize = this.gridSlider.Value * this.defenderMultiplier;
+      this.theGrid.SetObstacleCellSize(this.DefenderSize);
+      this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+      this.turret.SetRange(this.DefenderSize * 1.5);
+      this.turret.Load();
     }
 
     if (this.settings.IsHidden && this.settingsOpen) {
@@ -253,6 +298,8 @@ export class EditStage extends BaseLevel {
   private settingsButton: Button = new Button();
 
   private theGrid: Grid = new Grid();
+
+  private defenderMultiplier: number = 1;
 
   private turret: Turret = new Turret();
 

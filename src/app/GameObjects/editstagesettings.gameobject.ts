@@ -254,6 +254,10 @@ export class EditStageSettings extends Base {
     this.gridSize = gridSize;
   }
 
+  public SetDefenderMultiplier(mulitplier: number) {
+    this.defenderMultiplier = mulitplier;
+  }
+
   public SetCredits(credits: number) {
     this.creditPrompt.SetText(credits.toFixed(0));
   }
@@ -289,6 +293,7 @@ export class EditStageSettings extends Base {
 
     let sceneInfo = new BlankSceneInfo();
     sceneInfo.GridSize = this.gridSize;
+    sceneInfo.DefSizeMulti = this.defenderMultiplier;
     sceneInfo.StartingCells = this.startingCells;
     sceneInfo.EndingCells = this.endingCells;
     sceneInfo.Credits = this.creditPrompt.Text ? Number(this.creditPrompt.Text) : 30;
@@ -352,4 +357,5 @@ export class EditStageSettings extends Base {
   private endingCells: Vector2[] = [];
 
   private gridSize: number = 0;
+  private defenderMultiplier: number = 0;
 }

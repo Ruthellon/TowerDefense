@@ -74,6 +74,7 @@ export class BlankLevelScene extends DefenseBaseLevel {
       if (sceneInfo) {
         this.SetSceneName(sceneInfo.SceneName);
         this.SetGridSize(sceneInfo.GridSize);
+        this.SetDefenderSize(sceneInfo.GridSize * sceneInfo.DefSizeMulti);
         this.SetStartEndCells(sceneInfo.StartingCells, sceneInfo.EndingCells);
         this.SetStartingCredits(sceneInfo.Credits);
         this.SetStartingHealth(sceneInfo.Health);

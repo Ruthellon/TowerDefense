@@ -45,7 +45,7 @@ export class LevelSixScene extends DefenseBaseLevel {
     return this.endingCells;
   }
   protected get DefenderSize(): number {
-    return 100;
+    return 60;
   }
   protected get GridCellSize(): number {
     return 60;

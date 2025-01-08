@@ -141,6 +141,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.theGrid.SetLocation(0, 0, eLayerTypes.Background);
     this.theGrid.SetSize(Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
     this.theGrid.SetGridCellSize(this.GridCellSize);
+    this.theGrid.SetObstacleCellSize(this.DefenderSize);
     this.theGrid.SetUICellSize(this.UICellSize);
     this.theGrid.SetClickFunction(() => {
       let newDefender = this.CreateNewDefender;
@@ -235,7 +236,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (this.playerHealth <= 0) {
         this.restartButton.SetLocation((Game.CANVAS_WIDTH / 2) - 140, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
       }
-      this.homeButton.SetLocation((Game.CANVAS_WIDTH / 2) + 50, (Game.CANVAS_HEIGHT / 2) + 275, eLayerTypes.UI);
+      this.homeButton.SetLocation((Game.CANVAS_WIDTH / 2) - (this.homeButton.Size.X / 2), (Game.CANVAS_HEIGHT / 2) + 325, eLayerTypes.UI);
 
       return;
     }
@@ -424,10 +425,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
             Game.AddCredits(Math.floor(this.selectedDefender.Value / 3));
         }
 
-        let gridX = Math.floor(this.selectedDefender.CenterMassLocation.X / this.GridCellSize);
-        let gridY = Math.floor(this.selectedDefender.CenterMassLocation.Y / this.GridCellSize);
-
-        this.theGrid.RemoveObstacle(new Vector2(gridX, gridY));
+        this.theGrid.RemoveObstacle(new Vector2(this.selectedDefender.Location.X + 1, this.selectedDefender.Location.Y + 1), this.DefenderSize);
 
         if (!this.RoundStarted)
           this.theGrid.CalculatePaths();
