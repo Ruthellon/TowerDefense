@@ -266,6 +266,11 @@ export class EditStageSettings extends Base {
     this.healthPrompt.SetText(health.toFixed(0));
   }
 
+  public SetSceneName(unid: number, name: string) {
+    this.sceneUnid = unid;
+    this.sceneName = name;
+  }
+
   public SetRounds(rounds: EnemyRound[]) {
     this.roundsPrompt.SetText(rounds.length.toFixed(0));
     this.setRoundButtons(rounds.length);
@@ -324,11 +329,15 @@ export class EditStageSettings extends Base {
 
     sceneInfo.Rounds = enemyRounds;
 
-    let name = prompt('Name of your level?');
+    let name = prompt('Name of your level?', this.sceneName);
     if (name) {
       sceneInfo.SceneName = name;
       let str = JSON.stringify(sceneInfo);
-      Game.AddNewCustomScene(name, str);
+
+      if (name === this.sceneName && this.sceneUnid)
+        Game.UpdateCustomScene(this.sceneUnid, this.sceneName, str);
+      else
+        Game.AddNewCustomScene(name, str);
       
       let blankScene = new BlankLevelScene(str);
       Game.SetTheScene('blank', blankScene);
@@ -358,4 +367,7 @@ export class EditStageSettings extends Base {
 
   private gridSize: number = 0;
   private defenderMultiplier: number = 0;
+
+  private sceneName: string | undefined;
+  private sceneUnid: number | undefined;
 }

@@ -178,8 +178,8 @@ export class InstructionsScene extends BaseLevel {
     this.editCustomButton.SetSize(200, 50);
     this.editCustomButton.SetText('Edit');
     this.editCustomButton.SetClickFunction(() => {
-      if (this.selectedScene)
-        Game.SetTheScene('editstage', new EditStage(this.selectedScene));
+      if (this.selectedScene && this.selectedSceneIndex)
+        Game.SetTheScene('editstage', new EditStage(this.selectedScene, this.scenes[this.selectedSceneIndex].unid));
     });
     this.editCustomButton.Load();
     this.deleteCustomButton.SetLocation((Game.CANVAS_WIDTH / 2 - 100), 300, eLayerTypes.UI);

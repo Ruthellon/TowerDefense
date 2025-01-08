@@ -103,6 +103,22 @@ export class Game {
 
     this.api.AddCustomLevel(this.username, sceneName, sceneJSON);
   }
+  public static UpdateCustomScene(sceneUnid: number, sceneName: string, sceneJSON: string) {
+    let scenesString = this.cookie.GetCookie('customScenes');
+    let scenes: string[] = [];
+    if (scenesString) {
+      (JSON.parse(scenesString) as string[]).forEach((scene) => {
+        scenes.push(scene);
+      });
+    }
+    if (!scenes.find((name) => name === sceneName))
+      scenes.push(sceneName);
+
+    this.cookie.SetCookie('customScenes', JSON.stringify(scenes), 1000);
+    this.cookie.SetCookie(sceneName, sceneJSON, 1000);
+
+    this.api.UpdateCustomLevel(this.username, sceneUnid, sceneName, sceneJSON);
+  }
   public static DeleteCustomScene(unid: number): void {
     this.api.DeleteCustomLevel(unid);
   }

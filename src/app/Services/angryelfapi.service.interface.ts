@@ -5,6 +5,7 @@ export abstract class IAngryElfAPIService {
   abstract SendWinInfo(level: number, health: number, version: string, grid: any): void;
 
   abstract AddCustomLevel(username: string, levelname: string, leveljson: string): void;
+  abstract UpdateCustomLevel(username: string, levelunid: number, levelname: string, leveljson: string): void;
   abstract DeleteCustomLevel(levelUnid: number): void;
   abstract GetCustomLevels(): Promise<CustomLevel[]>;
   abstract GetCustomLevel(levelUnid: number): Promise<string>;

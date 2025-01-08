@@ -68,11 +68,13 @@ export class EditStage extends BaseLevel {
   }
 
   private sceneInfoString: string | undefined;
-  constructor(sceneJSON?: string) {
+  private sceneUnid: number | undefined;
+  constructor(sceneJSON?: string, sceneUnid?: number) {
     super();
 
-    if (sceneJSON) {
+    if (sceneJSON && sceneUnid) {
       this.sceneInfoString = sceneJSON;
+      this.sceneUnid = sceneUnid;
     }
   }
 
@@ -187,6 +189,7 @@ export class EditStage extends BaseLevel {
       this.defenderSize = sceneInfo.GridSize * this.defenderSlider.Value;
       this.theGrid.SetObstacleCellSize(this.DefenderSize);
       this.theGrid.SetUpGrid();
+      this.setUpBoundaries();
 
       let turretlocal = this.theGrid.AddObstacle(true, this.DefenderSize, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y));
 
@@ -207,6 +210,9 @@ export class EditStage extends BaseLevel {
       this.settings.SetCredits(sceneInfo.Credits);
       this.settings.SetHealth(sceneInfo.Health);
       this.settings.SetRounds(sceneInfo.Rounds);
+
+      if (this.sceneUnid)
+        this.settings.SetSceneName(this.sceneUnid, sceneInfo.SceneName);
     }
   }
 

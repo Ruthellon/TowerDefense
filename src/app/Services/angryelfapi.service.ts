@@ -44,6 +44,24 @@ export class AngryElfAPI implements IAngryElfAPIService {
     });
   }
 
+  UpdateCustomLevel(username: string, levelunid: number, levelname: string, leveljson: string): void {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    let body = { Username: username, LevelName: levelname, LevelJSON: leveljson };
+
+    this.http.put(`https://api.angryelfgames.com/TowerDefense/CustomLevel/${levelunid}`, body, httpOptions).subscribe({
+      next: (result: any) => {
+        //console.log(result);
+      },
+      error: (err: any) => {
+        //console.log(err);
+      }
+    });
+  }
+
   DeleteCustomLevel(levelUnid: number): void {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -51,7 +69,7 @@ export class AngryElfAPI implements IAngryElfAPIService {
       })
     };
 
-    this.http.delete(`https://api.angryelfgames.com/TowerDefense/DeleteCustomLevel/${levelUnid}`, httpOptions).subscribe({
+    this.http.delete(`https://api.angryelfgames.com/TowerDefense/CustomLevel/${levelUnid}`, httpOptions).subscribe({
       next: (result: any) => {
         console.log(result);
       },

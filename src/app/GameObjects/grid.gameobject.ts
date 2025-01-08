@@ -200,6 +200,10 @@ export class Grid extends Base {
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
+
+      if (cell.X >= this.grid.length || cell.Y >= this.grid[cell.X].length)
+        return false;
+
       if (this.grid[cell.X][cell.Y] === ePathCellStatus.OutOfBounds) {
         if (this.checkNeighboringCells(cell)) {
           this.grid[cell.X][cell.Y] = ePathCellStatus.EndingPoint;
