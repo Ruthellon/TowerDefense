@@ -22,7 +22,7 @@ export enum eDefenderTypes {
 
 export abstract class DefenseBaseLevel extends BaseLevel {
   protected abstract get GridCellSize(): number;
-  protected abstract get TurretCellSize(): number;
+  protected abstract get DefenderSize(): number;
   protected abstract get StartingCells(): Vector2[];
   protected abstract get EndingCells(): Vector2[];
   protected abstract get PlayerStartingHealth(): number;
@@ -83,21 +83,21 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected get CreateNewDefender(): Defender {
     if (this.newDefender === eDefenderTypes.BasicTurret) {
       let defender = new Turret();
-      defender.SetRange(this.GridCellSize * 1.5);
-      defender.SetSize(this.GridCellSize, this.GridCellSize);
+      defender.SetRange(this.DefenderSize * 1.5);
+      defender.SetSize(this.DefenderSize, this.DefenderSize);
       return defender;
     }
     else if (this.newDefender === eDefenderTypes.SAMTurret) {
       let defender = new Turret();
       defender.SetIsSurfaceToAir(true);
-      defender.SetRange(this.GridCellSize * 2.5);
+      defender.SetRange(this.DefenderSize * 2.5);
       defender.SetCost(20);
-      defender.SetSize(this.GridCellSize, this.GridCellSize);
+      defender.SetSize(this.DefenderSize, this.DefenderSize);
       return defender;
     }
     else {
       let defender = new Wall();
-      defender.SetSize(this.GridCellSize, this.GridCellSize);
+      defender.SetSize(this.DefenderSize, this.DefenderSize);
       return defender;
     }
   }
@@ -147,7 +147,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (newDefender.Cost && Game.Credits < newDefender.Cost)
         return;
 
-      let location = this.theGrid.AddObstacle(this.RoundStarted);
+      let location = this.theGrid.AddObstacle(this.RoundStarted, this.DefenderSize);
       if (location) {
         this.createDefender(newDefender, location.X, location.Y, eLayerTypes.Object + newDefender.Location.Z);
       }

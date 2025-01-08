@@ -2,9 +2,11 @@
 import { Attacker } from "../GameObjects/attacker.gameobject";
 import { Block } from "../GameObjects/block.gameobject";
 import { Boundary } from "../GameObjects/boundary.gameobject";
+import { Defender } from "../GameObjects/defender.gameobject";
 import { EditStageSettings } from "../GameObjects/editstagesettings.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Grid } from "../GameObjects/grid.gameobject";
+import { Turret } from "../GameObjects/turret.gameobject";
 import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { Slider } from "../GameObjects/Utilities/slider.gameobject";
 import { TextBox } from "../GameObjects/Utilities/textbox.gameobject";
@@ -54,7 +56,7 @@ export class EditStage extends BaseLevel {
   protected get EndingCells(): Vector2[] {
     return this.endingCells;
   }
-  protected get TurretCellSize(): number {
+  protected get DefenderSize(): number {
     return 100;
   }
   protected get GridCellSize(): number {
@@ -90,11 +92,19 @@ export class EditStage extends BaseLevel {
     this.LoadGameObject(this.rightBoundary);
     this.LoadGameObject(this.leftBoundary);
     
-    this.slider.SetLocation(Game.CANVAS_WIDTH / 2 - 100, 25, 5);
-    this.slider.SetSize(200, 25);
-    this.slider.SetValueRange(20, 175);
-    this.slider.SetValue(this.GridCellSize);
-    this.LoadGameObject(this.slider);
+    this.gridSlider.SetLocation(Game.CANVAS_WIDTH / 2 - 225, 25, 5);
+    this.gridSlider.SetSize(200, 25);
+    this.gridSlider.SetValueRange(10, 175);
+    this.gridSlider.SetValue(this.GridCellSize);
+    this.LoadGameObject(this.gridSlider);
+
+    this.defenderSlider.SetLocation(Game.CANVAS_WIDTH / 2 + 25, 25, 5);
+    this.defenderSlider.SetSize(200, 25);
+    this.defenderSlider.SetValueRange(1, 10);
+    this.defenderSlider.SetValue(Math.ceil(this.DefenderSize / this.GridCellSize));
+    this.LoadGameObject(this.defenderSlider);
+
+    this.turret.SetLocation
 
     this.selectStartButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 1, eLayerTypes.UI);
     this.selectStartButton.SetSize(this.UICellSize, this.UICellSize);
@@ -156,10 +166,12 @@ export class EditStage extends BaseLevel {
     });
     this.LoadGameObject(this.settingsButton);
 
+    
+
     if (this.sceneInfoString) {
       let sceneInfo: BlankSceneInfo = JSON.parse(this.sceneInfoString);
 
-      this.slider.SetValue(sceneInfo.GridSize);
+      this.gridSlider.SetValue(sceneInfo.GridSize);
       this.theGrid.SetGridCellSize(sceneInfo.GridSize);
       this.theGrid.SetUpGrid();
 
@@ -179,11 +191,11 @@ export class EditStage extends BaseLevel {
   override Update(deltaTime: number): void {
     super.Update(deltaTime);
     
-    if (this.theGrid.GridCellSize !== this.slider.Value) {
+    if (this.theGrid.GridCellSize !== this.gridSlider.Value) {
       this.updateGrid = true;
-      this.theGrid.SetGridCellSize(this.slider.Value);
+      this.theGrid.SetGridCellSize(this.gridSlider.Value);
     }
-    else if (this.updateGrid && !this.slider.Pressed) {
+    else if (this.updateGrid && !this.gridSlider.Pressed) {
       this.updateGrid = false;
       this.theGrid.SetUpGrid();
       this.setUpBoundaries();
@@ -229,7 +241,8 @@ export class EditStage extends BaseLevel {
 
   private updateGrid = false;
 
-  private slider: Slider = new Slider();
+  private gridSlider: Slider = new Slider();
+  private defenderSlider: Slider = new Slider();
   private topBoundary: Boundary = new Boundary();
   private bottomBoundary: Boundary = new Boundary();
   private rightBoundary: Boundary = new Boundary();
@@ -240,6 +253,8 @@ export class EditStage extends BaseLevel {
   private settingsButton: Button = new Button();
 
   private theGrid: Grid = new Grid();
+
+  private turret: Turret = new Turret();
 
   private settingsOpen = false;
   private settings: EditStageSettings = new EditStageSettings();

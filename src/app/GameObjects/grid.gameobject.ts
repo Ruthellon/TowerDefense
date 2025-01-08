@@ -155,6 +155,10 @@ export class Grid extends Base {
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
+
+      if (cell.X > this.grid.length || cell.Y > this.grid[cell.X].length)
+        return false;
+
       if (this.grid[cell.X][cell.Y] === ePathCellStatus.OutOfBounds) {
         if (this.checkNeighboringCells(cell)) {
           this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
@@ -205,32 +209,53 @@ export class Grid extends Base {
     return false;
   }
 
-  public AddObstacle(roundStarted: boolean): Vector2 | null {
-    if (!this.grid || !this.mousePreviousClickCell)
+  public AddObstacle(roundStarted: boolean, defenderSize: number, location?: Vector2): Vector2 | null {
+    if (!this.grid)
       return null;
 
-    if (this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] >= ePathCellStatus.OutOfBounds)
+    let cell: Vector2 = new Vector2(0,0);
+
+    if (location) {
+      cell = new Vector2(Math.floor((location.X - this.remainderX) / this.GridCellSize),
+        Math.floor((location.Y - this.remainderY) / this.GridCellSize));
+    }
+    else if (this.mousePreviousClickCell)
+      cell = this.mousePreviousClickCell;
+    else
       return null;
 
-    let worldCells = new Vector2((this.mousePreviousClickCell.X * this.GridCellSize) + this.remainderX, (this.mousePreviousClickCell.Y * this.GridCellSize) + this.remainderY);
-    if (roundStarted) {
-      if (this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] === ePathCellStatus.Path)
-        return null;
+    let defenderCells = Math.floor(defenderSize / this.GridCellSize);
+    let cells: Vector2[] = [];
 
-      this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] = ePathCellStatus.Blocked;
+    for (let i = 0; i < defenderCells; i++) {
+      for (let j = 0; j < defenderCells; j++) {
+        let newCell = new Vector2(cell.X + i, cell.Y + j);
 
-      return worldCells;
+        if (newCell.X >= this.grid.length || newCell.Y >= this.grid[newCell.X].length)
+          return null;
+
+        if (this.grid[newCell.X][newCell.Y] >= ePathCellStatus.OutOfBounds)
+          return null;
+
+        if (roundStarted && this.grid[newCell.X][newCell.Y] === ePathCellStatus.Path)
+          return null;
+
+        cells.push(newCell);
+      }
     }
 
-    this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] = ePathCellStatus.Blocked;
+    cells.forEach((c) => {
+      this.grid[c.X][c.Y] = ePathCellStatus.Blocked;
+    });
 
-    if (this.CalculatePaths()) {
-      return worldCells;
-    }
-    else {
-      this.grid[this.mousePreviousClickCell.X][this.mousePreviousClickCell.Y] = ePathCellStatus.Open;
+    if (!roundStarted && !this.CalculatePaths()) {
+      cells.forEach((c) => {
+        this.grid[c.X][c.Y] = ePathCellStatus.Open;
+      });
       return null;
     }
+
+    return new Vector2((cell.X * this.GridCellSize) + this.remainderX, (cell.Y * this.GridCellSize) + this.remainderY);
   }
 
   public RemoveObstacle(cell: Vector2): void {

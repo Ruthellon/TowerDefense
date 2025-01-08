@@ -49,8 +49,9 @@ export class BlankLevelScene extends DefenseBaseLevel {
   protected override get EndingCells(): Vector2[] {
     return this.endingCells;
   }
-  protected get TurretCellSize(): number {
-    return 100;
+  private defenderSize = 100;
+  protected get DefenderSize(): number {
+    return this.defenderSize;
   }
   private gridSize = 100;
   protected get GridCellSize(): number {
@@ -221,6 +222,10 @@ export class BlankLevelScene extends DefenseBaseLevel {
 
   public SetGridSize(gridSize: number) {
     this.gridSize = gridSize;
+  }
+
+  public SetDefenderSize(defenderSize: number) {
+    this.defenderSize = defenderSize;
   }
 
   public SetStartEndCells(startingCells: Vector2[], endingCells: Vector2[]) {

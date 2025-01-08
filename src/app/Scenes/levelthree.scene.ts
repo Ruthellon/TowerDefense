@@ -44,7 +44,7 @@ export class LevelThreeScene extends DefenseBaseLevel {
   protected override get EndingCells(): Vector2[] {
     return this.endingCells;
   }
-  protected get TurretCellSize(): number {
+  protected get DefenderSize(): number {
     return 100;
   }
   protected get GridCellSize(): number {

@@ -47,7 +47,7 @@ export class LevelSevenScene extends DefenseBaseLevel {
   protected override get EndingCells(): Vector2[] {
     return this.endingCells;
   }
-  protected get TurretCellSize(): number {
+  protected get DefenderSize(): number {
     return 40;
   }
   protected get GridCellSize(): number {
