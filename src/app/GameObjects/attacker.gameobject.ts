@@ -71,12 +71,12 @@ export abstract class Attacker extends Base {
     Game.CONTEXT.fillStyle = '#000000';
     Game.CONTEXT.fillRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
     if (this.Color) {
-      Game.CONTEXT.strokeStyle = this.Color;
+      Game.CONTEXT.strokeStyle = '#000000';
       Game.CONTEXT.fillStyle = this.Color;
     }
     let percentFilled = (this.health / this.startingHealth);
 
-    Game.CONTEXT.lineWidth = 2;
+    Game.CONTEXT.lineWidth = 4;
     Game.CONTEXT.strokeRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
     Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
     Game.CONTEXT.lineWidth = 1;
@@ -118,9 +118,6 @@ export abstract class Attacker extends Base {
 
       this.target = new Vector2(this.path[this.pointOnPath].X + (gridSize / 2),
         this.path[this.pointOnPath].Y + (gridSize / 2));
-
-      this.location.X = this.target.X - (this.Size.X / 2);
-      this.location.Y = this.target.Y - (this.Size.Y / 2);
 
       if (this.CanFly) {
         this.pointOnPath = this.path.length - 2;

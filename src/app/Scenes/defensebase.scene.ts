@@ -264,7 +264,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (this.enemiesRemoved >= this.EnemyRounds[this.currentRound]) {
         this.enemiesRemoved = 0;
         this.roundStarted = false;
-        this.secondsToStart = this.SecondsToStart;
+        this.secondsToStart = 20;
         this.enemiesSpawned = 0;
         this.secondsSinceLastMonster = 0;
       }

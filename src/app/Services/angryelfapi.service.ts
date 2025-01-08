@@ -71,10 +71,10 @@ export class AngryElfAPI implements IAngryElfAPIService {
 
     this.http.delete(`https://api.angryelfgames.com/TowerDefense/CustomLevel/${levelUnid}`, httpOptions).subscribe({
       next: (result: any) => {
-        console.log(result);
+        //console.log(result);
       },
       error: (err: any) => {
-        console.log(err);
+        //console.log(err);
       }
     });
   }

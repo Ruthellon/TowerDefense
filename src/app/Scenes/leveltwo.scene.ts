@@ -113,7 +113,9 @@ export class LevelTwoScene extends DefenseBaseLevel {
       newAttacker.SetDamage(5);
     }
 
-    newAttacker.SetLocation(this.StartingCells[0].X - this.GridCellSize, this.StartingCells[0].Y - this.GridCellSize, eLayerTypes.Object - 5);
+    newAttacker.SetLocation(this.StartingCells[0].X * this.GridCellSize,
+      this.StartingCells[0].Y * this.GridCellSize,
+      eLayerTypes.Object);
     newAttacker.SetPath(this.GetPath(0), this.GridCellSize);
 
     return newAttacker;

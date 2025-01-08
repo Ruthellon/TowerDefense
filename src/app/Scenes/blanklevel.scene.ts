@@ -111,11 +111,14 @@ export class BlankLevelScene extends DefenseBaseLevel {
   override HandleAttackers(deltaTime: number) {
     let round = this.rounds[this.CurrentRound];
 
-    round.EnemyBatches.forEach((batch) => {
+    for (let i = 0; i < round.EnemyBatches.length; i++) {
+      let batch = round.EnemyBatches[i];
       if (batch.TimeBetweenCurrent <= 0 && batch.EnemyCountCurrent < batch.EnemyCountStart) {
         let newAttacker = new Block();
         newAttacker.SetDamage(batch.EnemyDamage);
-        newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCell - 1].X - this.GridCellSize, this.StartingCells[batch.EnemyStartCell - 1].Y - this.GridCellSize, eLayerTypes.Object - 5);
+        newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCell - 1].X * this.GridCellSize,
+          this.StartingCells[batch.EnemyStartCell - 1].Y * this.GridCellSize,
+          eLayerTypes.Object - i);
         newAttacker.SetPath(this.GetPath(batch.EnemyStartCell - 1), this.GridCellSize);
         newAttacker.SetSize(batch.EnemySize, batch.EnemySize);
         newAttacker.SetStartingSpeed(batch.EnemySpeed);
@@ -137,76 +140,11 @@ export class BlankLevelScene extends DefenseBaseLevel {
       else if (batch.EnemyCountCurrent < batch.EnemyCountStart) {
         batch.TimeBetweenCurrent -= deltaTime;
       }
-    });
-
+    }
   }
 
   protected CreateNewAttacker(attackerCount: number): Attacker {
-    let newAttacker = new Block();
-    newAttacker.SetDamage(1);
-    newAttacker.SetColor('#22BB22');
-
-    if (this.CurrentRound === 0) {
-      this.startSeconds = 60;
-      newAttacker.SetSize(20, 20);
-      newAttacker.SetStartingSpeed(7);
-      newAttacker.SetStartingHealth(15);
-      newAttacker.SetValue(3);
-    }
-    else if (this.CurrentRound === 1) {
-      newAttacker.SetSize(20, 20);
-      newAttacker.SetStartingSpeed(7);
-      newAttacker.SetStartingHealth(15);
-      newAttacker.SetValue(3);
-    }
-    else if (this.CurrentRound === 2) {
-      newAttacker.SetSize(30, 30);
-      newAttacker.SetStartingSpeed(8);
-      newAttacker.SetStartingHealth(18);
-      newAttacker.SetValue(3);
-    }
-    else if (this.CurrentRound === 3) {
-      newAttacker.SetSize(30, 30);
-      newAttacker.SetStartingSpeed(8);
-      newAttacker.SetStartingHealth(24);
-      newAttacker.SetValue(3);
-    }
-    else if (this.CurrentRound === 4) {
-      this.secondsBetweenMonsters = .75;
-
-      if (attackerCount % 2 === 0) {
-        newAttacker.SetSize(20, 20);
-        newAttacker.SetStartingSpeed(10);
-        newAttacker.SetStartingHealth(18);
-        newAttacker.SetValue(3);
-      }
-      else {
-        newAttacker.SetSize(40, 40);
-        newAttacker.SetStartingSpeed(7);
-        newAttacker.SetStartingHealth(24);
-        newAttacker.SetValue(3);
-      }
-    }
-    else if (this.CurrentRound === 5) {
-      this.secondsBetweenMonsters = .75;
-
-      if (attackerCount % 2 === 0) {
-        newAttacker.SetSize(20, 20);
-        newAttacker.SetStartingSpeed(10);
-        newAttacker.SetStartingHealth(21);
-        newAttacker.SetValue(3);
-      }
-      else {
-        newAttacker.SetSize(40, 40);
-        newAttacker.SetStartingSpeed(7);
-        newAttacker.SetStartingHealth(27);
-        newAttacker.SetValue(3);
-      }
-    }
-    newAttacker.SetLocation(this.StartingCells[0].X - this.GridCellSize, this.StartingCells[0].Y - this.GridCellSize, eLayerTypes.Object - 5);
-    newAttacker.SetPath(this.GetPath(0), this.GridCellSize);
-
-    return newAttacker;
+    return new Block();
   }
 
   private firstWonCall = true;

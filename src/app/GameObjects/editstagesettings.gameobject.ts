@@ -60,6 +60,33 @@ export class EditStageSettings extends Base {
     this.saveButton.Load();
     this.gameObjects.push(this.saveButton);
 
+    this.presetEasy.SetLocation(this.ObjectRect.TopRight.X - 100, this.ObjectRect.TopRight.Y + 25, eLayerTypes.UI);
+    this.presetEasy.SetSize(75, 50);
+    this.presetEasy.SetText('Easy');
+    this.presetEasy.SetClickFunction(() => {
+      this.setPresetEasy();
+    });
+    this.presetEasy.Load();
+    this.gameObjects.push(this.presetEasy);
+
+    this.presetMedium.SetLocation(this.ObjectRect.TopRight.X - 100, this.ObjectRect.TopRight.Y + 100, eLayerTypes.UI);
+    this.presetMedium.SetSize(75, 50);
+    this.presetMedium.SetText('Med.');
+    this.presetMedium.SetClickFunction(() => {
+      this.setPresetMedium();
+    });
+    this.presetMedium.Load();
+    this.gameObjects.push(this.presetMedium);
+
+    this.presetHard.SetLocation(this.ObjectRect.TopRight.X - 100, this.ObjectRect.TopRight.Y + 175, eLayerTypes.UI);
+    this.presetHard.SetSize(75, 50);
+    this.presetHard.SetText('Hard');
+    this.presetHard.SetClickFunction(() => {
+      this.setPresetHard();
+    });
+    this.presetHard.Load();
+    this.gameObjects.push(this.presetHard);
+
     this.creditPrompt.SetLocation(this.ObjectRect.Center.X - 75, this.Location.Y + 50, eLayerTypes.UI + 1);
     this.creditPrompt.SetSize(150, 50);
     this.creditPrompt.SetText('40');
@@ -283,6 +310,17 @@ export class EditStageSettings extends Base {
     }
   }
 
+  public AddRound(round: EnemyRound) {
+    let roundCount = Number(this.roundsPrompt.Text) + 1;
+    this.roundsPrompt.SetText(roundCount.toFixed(0));
+    this.setRoundButtons(roundCount);
+
+    for (let j = 0; j < round.EnemyBatches.length; j++) {
+      let batch = round.EnemyBatches[j];
+      this.roundEditors[(roundCount - 1)].AddBatch(batch);
+    }
+  }
+
   private setRoundButtons(rounds: number): void {
     for (let i = 0; i < 10; i++) {
       if (i < rounds) {
@@ -292,6 +330,215 @@ export class EditStageSettings extends Base {
         this.roundButtons[i].SetHidden(true);
       }
     }
+  }
+
+  private setPresetEasy() {
+    this.SetCredits(150);
+    this.SetHealth(20);
+    this.roundsPrompt.SetText('0');
+    this.setRoundButtons(0);
+
+    let enemyRound1 = new EnemyRound();
+    let enemyBatch1 = new EnemyBatch();
+    enemyBatch1.EnemyCountStart = 15;
+    enemyBatch1.EnemyDamage = 1;
+    enemyBatch1.EnemyHealth = 18;
+    enemyBatch1.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch1.EnemySpeed = 8;
+    enemyBatch1.EnemyStartCell = 1;
+    enemyBatch1.EnemyValue = 3;
+    enemyBatch1.TimeBetweenStart = 1;
+    enemyRound1.EnemyBatches.push(enemyBatch1);
+    this.AddRound(enemyRound1);
+
+    let enemyRound2 = new EnemyRound();
+    let enemyBatch2 = new EnemyBatch();
+    enemyBatch2.EnemyCountStart = 10;
+    enemyBatch2.EnemyDamage = 1;
+    enemyBatch2.EnemyHealth = 18;
+    enemyBatch2.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch2.EnemySpeed = 10;
+    enemyBatch2.EnemyStartCell = 1;
+    enemyBatch2.EnemyValue = 3;
+    enemyBatch2.TimeBetweenStart = 1;
+    enemyRound2.EnemyBatches.push(enemyBatch2);
+    let enemyBatch22 = new EnemyBatch();
+    enemyBatch22.EnemyCountStart = 10;
+    enemyBatch22.EnemyDamage = 1;
+    enemyBatch22.EnemyHealth = 27;
+    enemyBatch22.EnemySize = this.gridSize;
+    enemyBatch22.EnemySpeed = 8;
+    enemyBatch22.EnemyStartCell = 1;
+    enemyBatch22.EnemyValue = 3;
+    enemyBatch22.TimeBetweenStart = 1.5;
+    enemyRound2.EnemyBatches.push(enemyBatch22);
+    this.AddRound(enemyRound2);
+
+    let enemyRound3 = new EnemyRound();
+    let enemyBatch3 = new EnemyBatch();
+    enemyBatch3.EnemyCountStart = 15;
+    enemyBatch3.EnemyDamage = 1;
+    enemyBatch3.EnemyHealth = 21;
+    enemyBatch3.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch3.EnemySpeed = 12;
+    enemyBatch3.EnemyStartCell = 1;
+    enemyBatch3.EnemyValue = 3;
+    enemyBatch3.TimeBetweenStart = 1;
+    enemyRound3.EnemyBatches.push(enemyBatch3);
+    let enemyBatch32 = new EnemyBatch();
+    enemyBatch32.EnemyCountStart = 15;
+    enemyBatch32.EnemyDamage = 1;
+    enemyBatch32.EnemyHealth = 30;
+    enemyBatch32.EnemySize = this.gridSize;
+    enemyBatch32.EnemySpeed = 10;
+    enemyBatch32.EnemyStartCell = 1;
+    enemyBatch32.EnemyValue = 3;
+    enemyBatch32.TimeBetweenStart = 1;
+    enemyRound3.EnemyBatches.push(enemyBatch32);
+    this.AddRound(enemyRound3);
+
+    let enemyRound4 = new EnemyRound();
+    let enemyBatch4 = new EnemyBatch();
+    enemyBatch4.EnemyCountStart = 1;
+    enemyBatch4.EnemyDamage = 5;
+    enemyBatch4.EnemyHealth = 300;
+    enemyBatch4.EnemySize = Math.floor(this.gridSize * 1.25);
+    enemyBatch4.EnemySpeed = 8;
+    enemyBatch4.EnemyStartCell = 1;
+    enemyBatch4.EnemyValue = 30;
+    enemyBatch4.TimeBetweenStart = 1;
+    enemyRound4.EnemyBatches.push(enemyBatch4);
+    this.AddRound(enemyRound4);
+  }
+
+  private setPresetMedium() {
+    this.SetCredits(100);
+    this.SetHealth(15);
+    this.roundsPrompt.SetText('0');
+    this.setRoundButtons(0);
+
+    let enemyRound1 = new EnemyRound();
+    let enemyBatch1 = new EnemyBatch();
+    enemyBatch1.EnemyCountStart = 10;
+    enemyBatch1.EnemyDamage = 1;
+    enemyBatch1.EnemyHealth = 18;
+    enemyBatch1.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch1.EnemySpeed = 8;
+    enemyBatch1.EnemyStartCell = 1;
+    enemyBatch1.EnemyValue = 3;
+    enemyBatch1.TimeBetweenStart = 1;
+    enemyRound1.EnemyBatches.push(enemyBatch1);
+    let enemyBatch12 = new EnemyBatch();
+    enemyBatch12.EnemyCountStart = 10;
+    enemyBatch12.EnemyDamage = 1;
+    enemyBatch12.EnemyHealth = 18;
+    enemyBatch12.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch12.EnemySpeed = 8;
+    enemyBatch12.EnemyStartCell = 2;
+    enemyBatch12.EnemyValue = 3;
+    enemyBatch12.TimeBetweenStart = 1;
+    enemyRound1.EnemyBatches.push(enemyBatch12);
+    this.AddRound(enemyRound1);
+
+    let enemyRound2 = new EnemyRound();
+    let enemyBatch2 = new EnemyBatch();
+    enemyBatch2.EnemyCountStart = 10;
+    enemyBatch2.EnemyDamage = 1;
+    enemyBatch2.EnemyHealth = 21;
+    enemyBatch2.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch2.EnemySpeed = 10;
+    enemyBatch2.EnemyStartCell = 1;
+    enemyBatch2.EnemyValue = 3;
+    enemyBatch2.TimeBetweenStart = 1;
+    enemyRound2.EnemyBatches.push(enemyBatch2);
+    let enemyBatch22 = new EnemyBatch();
+    enemyBatch22.EnemyCountStart = 10;
+    enemyBatch22.EnemyDamage = 1;
+    enemyBatch22.EnemyHealth = 27;
+    enemyBatch22.EnemySize = this.gridSize;
+    enemyBatch22.EnemySpeed = 8;
+    enemyBatch22.EnemyStartCell = 1;
+    enemyBatch22.EnemyValue = 3;
+    enemyBatch22.TimeBetweenStart = 1.5;
+    enemyRound2.EnemyBatches.push(enemyBatch22);
+    let enemyBatch23 = new EnemyBatch();
+    enemyBatch23.EnemyCountStart = 10;
+    enemyBatch23.EnemyDamage = 1;
+    enemyBatch23.EnemyHealth = 21;
+    enemyBatch23.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch23.EnemySpeed = 10;
+    enemyBatch23.EnemyStartCell = 1;
+    enemyBatch23.EnemyValue = 3;
+    enemyBatch23.TimeBetweenStart = 1;
+    enemyRound2.EnemyBatches.push(enemyBatch23);
+    let enemyBatch24 = new EnemyBatch();
+    enemyBatch24.EnemyCountStart = 10;
+    enemyBatch24.EnemyDamage = 1;
+    enemyBatch24.EnemyHealth = 27;
+    enemyBatch24.EnemySize = this.gridSize;
+    enemyBatch24.EnemySpeed = 8;
+    enemyBatch24.EnemyStartCell = 2;
+    enemyBatch24.EnemyValue = 3;
+    enemyBatch24.TimeBetweenStart = 1.5;
+    enemyRound2.EnemyBatches.push(enemyBatch24);
+    this.AddRound(enemyRound2);
+
+    let enemyRound3 = new EnemyRound();
+    let enemyBatch3 = new EnemyBatch();
+    enemyBatch3.EnemyCountStart = 15;
+    enemyBatch3.EnemyDamage = 1;
+    enemyBatch3.EnemyHealth = 21;
+    enemyBatch3.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch3.EnemySpeed = 12;
+    enemyBatch3.EnemyStartCell = 1;
+    enemyBatch3.EnemyValue = 3;
+    enemyBatch3.TimeBetweenStart = 1;
+    enemyRound3.EnemyBatches.push(enemyBatch3);
+    let enemyBatch32 = new EnemyBatch();
+    enemyBatch32.EnemyCountStart = 15;
+    enemyBatch32.EnemyDamage = 1;
+    enemyBatch32.EnemyHealth = 30;
+    enemyBatch32.EnemySize = this.gridSize;
+    enemyBatch32.EnemySpeed = 10;
+    enemyBatch32.EnemyStartCell = 1;
+    enemyBatch32.EnemyValue = 3;
+    enemyBatch32.TimeBetweenStart = 1;
+    enemyRound3.EnemyBatches.push(enemyBatch32);
+    let enemyBatch33 = new EnemyBatch();
+    enemyBatch33.EnemyCountStart = 15;
+    enemyBatch33.EnemyDamage = 1;
+    enemyBatch33.EnemyHealth = 21;
+    enemyBatch33.EnemySize = Math.floor(this.gridSize / 2);
+    enemyBatch33.EnemySpeed = 12;
+    enemyBatch33.EnemyStartCell = 2;
+    enemyBatch33.EnemyValue = 3;
+    enemyBatch33.TimeBetweenStart = 1;
+    enemyRound3.EnemyBatches.push(enemyBatch33);
+    let enemyBatch34 = new EnemyBatch();
+    enemyBatch34.EnemyCountStart = 15;
+    enemyBatch34.EnemyDamage = 1;
+    enemyBatch34.EnemyHealth = 30;
+    enemyBatch34.EnemySize = this.gridSize;
+    enemyBatch34.EnemySpeed = 10;
+    enemyBatch34.EnemyStartCell = 2;
+    enemyBatch34.EnemyValue = 3;
+    enemyBatch34.TimeBetweenStart = 1;
+    enemyRound3.EnemyBatches.push(enemyBatch34);
+    let enemyBatch35 = new EnemyBatch();
+    enemyBatch35.EnemyCountStart = 1;
+    enemyBatch35.EnemyDamage = 5;
+    enemyBatch35.EnemyHealth = 360;
+    enemyBatch35.EnemySize = this.gridSize;
+    enemyBatch35.EnemySpeed = 10;
+    enemyBatch35.EnemyStartCell = 1;
+    enemyBatch35.EnemyValue = 50;
+    enemyBatch35.TimeBetweenStart = 5;
+    enemyRound3.EnemyBatches.push(enemyBatch35);
+    this.AddRound(enemyRound3);
+  }
+
+  private setPresetHard() {
+
   }
 
   private saveScene(): void {
@@ -306,6 +553,7 @@ export class EditStageSettings extends Base {
 
     let enemyRounds: EnemyRound[] = [];
 
+    let highestStartCell = 0;
     this.roundEditors.forEach((editor) => {
       let round = new EnemyRound();
 
@@ -317,6 +565,8 @@ export class EditStageSettings extends Base {
         enemyBatch.EnemySize = batch.EnemySize;
         enemyBatch.EnemySpeed = batch.EnemySpeed;
         enemyBatch.EnemyStartCell = batch.StartCell;
+        if (batch.StartCell > highestStartCell)
+          highestStartCell = batch.StartCell;
         enemyBatch.EnemyValue = batch.EnemyValue;
         enemyBatch.TimeBetweenStart = (batch.EnemyCooldownTime / 1000);
         enemyBatch.EnemyCanFly = batch.EnemiesCanFly;
@@ -326,6 +576,11 @@ export class EditStageSettings extends Base {
       if (round.EnemyBatches.length > 0)
         enemyRounds.push(round);
     });
+
+    if (highestStartCell > this.startingCells.length) {
+      alert(`Missing ${highestStartCell - this.startingCells.length} Start and End cells`);
+      return;
+    }
 
     sceneInfo.Rounds = enemyRounds;
 
@@ -348,6 +603,10 @@ export class EditStageSettings extends Base {
   private homeButton: Button = new Button();
   private resetButton: Button = new Button();
   private saveButton: Button = new Button();
+
+  private presetEasy: Button = new Button();
+  private presetMedium: Button = new Button();
+  private presetHard: Button = new Button();
 
   private roundButtons: Button[] = [];
   private roundEditors: EditRound[] = [];

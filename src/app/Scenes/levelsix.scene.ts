@@ -82,7 +82,9 @@ export class LevelSixScene extends DefenseBaseLevel {
     newAttacker.SetColor('#22BB22');
     newAttacker.SetDamage(1);
     newAttacker.SetValue(2);
-    newAttacker.SetLocation(0, 0, eLayerTypes.Object - 5);
+    newAttacker.SetLocation(this.StartingCells[(attackerCount % 2)].X * this.GridCellSize,
+      this.StartingCells[(attackerCount % 2)].Y * this.GridCellSize,
+      eLayerTypes.Object);
     newAttacker.SetPath(this.GetPath((attackerCount % 2)), this.GridCellSize);
     return newAttacker;
   }
