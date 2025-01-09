@@ -171,7 +171,7 @@ export class PathFinder {
   }
 
   private static isBlocked(grid: number[][], point: Vector2) {
-    return grid[point.X][point.Y] >= ePathCellStatus.OutOfBounds;
+    return (grid[point.X][point.Y] >= ePathCellStatus.OutOfBounds || grid[point.X][point.Y] <= ePathCellStatus.StartingPoint);
   }
 
   private static isDestination(dest: Vector2, point: Vector2): boolean {

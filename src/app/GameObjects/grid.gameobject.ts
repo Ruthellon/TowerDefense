@@ -416,6 +416,11 @@ export class Grid extends Base {
       this.thePaths.push(thePath);
     }
 
+    for (let i = 0; i < this.StartingCells.length; i++) {
+      this.grid[this.StartingCells[i].X][this.StartingCells[i].Y] = ePathCellStatus.StartingPoint;
+      this.grid[this.EndingCells[i].X][this.EndingCells[i].Y] = ePathCellStatus.EndingPoint;
+    }
+
     return true;
   }
 
@@ -428,19 +433,19 @@ export class Grid extends Base {
 
   private checkNeighboringCells(cell: Vector2): boolean {
     //Check north
-    if (this.grid[cell.X][Math.max(0, cell.Y - 1)] === ePathCellStatus.Open)
+    if (this.grid[cell.X][Math.max(0, cell.Y - 1)] !== ePathCellStatus.OutOfBounds)
       return true;
 
     //Check east
-    if (this.grid[Math.min(this.grid.length - 1, cell.X + 1)][cell.Y] === ePathCellStatus.Open)
+    if (this.grid[Math.min(this.grid.length - 1, cell.X + 1)][cell.Y] !== ePathCellStatus.OutOfBounds)
       return true;
 
     //Check south
-    if (this.grid[cell.X][Math.min(this.grid[cell.X].length - 1, cell.Y + 1)] === ePathCellStatus.Open)
+    if (this.grid[cell.X][Math.min(this.grid[cell.X].length - 1, cell.Y + 1)] !== ePathCellStatus.OutOfBounds)
       return true;
 
     //Check west
-    if (this.grid[Math.max(0, cell.X - 1)][cell.Y] === ePathCellStatus.Open)
+    if (this.grid[Math.max(0, cell.X - 1)][cell.Y] !== ePathCellStatus.OutOfBounds)
       return true;
 
     return false;

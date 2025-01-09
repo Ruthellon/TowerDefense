@@ -234,7 +234,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
 
       if (this.playerHealth <= 0) {
-        this.restartButton.SetLocation((Game.CANVAS_WIDTH / 2) - 140, (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
+        this.restartButton.SetLocation((Game.CANVAS_WIDTH / 2) - (this.restartButton.Size.X / 2), (Game.CANVAS_HEIGHT / 2) + 200, eLayerTypes.UI);
       }
       this.homeButton.SetLocation((Game.CANVAS_WIDTH / 2) - (this.homeButton.Size.X / 2), (Game.CANVAS_HEIGHT / 2) + 325, eLayerTypes.UI);
 

@@ -100,7 +100,14 @@ export class BlankLevelScene extends DefenseBaseLevel {
 
   override Load(): void {
     super.Load();
-    Game.AddCredits(this.StartingCredits);
+
+    if (Game.Credits === 0) {
+      Game.SetStartingCredits(this.StartingCredits);
+      this.startCredits = 0;
+    }
+    else
+      Game.AddCredits(30);
+
     this.restartButton.SetClickFunction(() => {
       Game.SetStartingCredits(this.StartingCredits >= 10 ? (this.StartingCredits - 10) : this.StartingCredits);
       let blankScene = new BlankLevelScene(this.sceneInfoString);
