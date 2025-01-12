@@ -50,7 +50,7 @@ export class EditBatch extends Base {
     this.valuePrompt.SetText('3');
     this.sizePrompt.SetText('25');
     this.damagePrompt.SetText('1');
-    this.startLocalPrompt.SetText('1');
+    this.startLocalPrompt.SetText('1,2');
     this.canFlyPrompt.SetText('0');
 
     this.numEnemiesPrompt.SetPrompt('Set number of enemies for batch (1 - 50):');
@@ -205,23 +205,24 @@ export class EditBatch extends Base {
     });
     this.startLocalPrompt.SetVerifyFunction((text: string | null) => {
       if (text) {
-        if (text.includes(',')) {
-          let numbers = text.split(',');
+        if (text.includes(',') || text.includes('-')) {
+          let numbers = text.includes(',') ? text.split(',') : text.split('-');
           for (let i = 0; i < numbers.length; i++) {
             let num = Number(numbers[i]);
 
             if (isNaN(num)) {
-              alert('Enter a valid number, or list of numbers (eg 1,2)');
-              return '1';
+              alert('Enter a valid number, a list of numbers (1,3), or a range (1-3)');
+              return this.startLocalPrompt.Text;
             }
           }
+          return text;
         }
         else {
           let textAsNumber = Number(text);
 
           if (isNaN(textAsNumber)) {
-            alert('Enter a valid number, or list of numbers (eg 1,2)');
-            return '1';
+            alert('Enter a valid number, a list of numbers (1,3), or a range (1-3)');
+            return this.startLocalPrompt.Text;
           }
 
           if (textAsNumber < 1)
@@ -234,7 +235,7 @@ export class EditBatch extends Base {
         }
       }
 
-      return '1';
+      return this.startLocalPrompt.Text;
     });
     this.canFlyPrompt.SetVerifyFunction((text: string | null) => {
       if (text) {
@@ -349,19 +350,39 @@ export class EditBatch extends Base {
   }
 
   public get StartCells(): number[] {
-    let nums = this.startLocalPrompt.Text!.split(',');
-    let cells: number[] = [];
+    if (this.startLocalPrompt.Text!.includes('-')) {
+      let nums = this.startLocalPrompt.Text!.split('-');
+      let cells: number[] = [];
 
-    nums.forEach((num) => {
-      cells.push(Number(num) - 1);
-    });
+      for (let i = Number(nums[0]); i <= Number(nums[1]); i++) {
+        cells.push(i - 1);
+      }
 
-    return cells;
+      return cells;
+    }
+    else if (this.startLocalPrompt.Text!.includes(',')) {
+      let nums = this.startLocalPrompt.Text!.split(',');
+      let cells: number[] = [];
+
+      nums.forEach((num) => {
+        cells.push(Number(num) - 1);
+      });
+
+      return cells;
+    }
+    else {
+      return [Number(this.startLocalPrompt.Text!)]
+    }
   }
   public SetStartCells(nums: number[]): void {
     let text = (nums[0] + 1).toFixed(0);
-    for (let i = 1; i < nums.length; i++) {
-      text += ',' + (nums[i] + 1).toFixed(0);
+    if (nums.length > 3 && ((nums[nums.length - 1] - nums[0]) + 1) === nums.length) {
+      text += '-' + (nums[nums.length - 1] + 1).toFixed(0);
+    }
+    else {
+      for (let i = 1; i < nums.length; i++) {
+        text += ',' + (nums[i] + 1).toFixed(0);
+      }
     }
 
     this.startLocalPrompt.SetText(text);
