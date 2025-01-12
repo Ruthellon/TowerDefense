@@ -205,20 +205,33 @@ export class EditBatch extends Base {
     });
     this.startLocalPrompt.SetVerifyFunction((text: string | null) => {
       if (text) {
-        let textAsNumber = Number(text);
+        if (text.includes(',')) {
+          let numbers = text.split(',');
+          for (let i = 0; i < numbers.length; i++) {
+            let num = Number(numbers[i]);
 
-        if (isNaN(textAsNumber)) {
-          alert('Enter a valid number');
-          return '1';
+            if (isNaN(num)) {
+              alert('Enter a valid number, or list of numbers (eg 1,2)');
+              return '1';
+            }
+          }
         }
+        else {
+          let textAsNumber = Number(text);
 
-        if (textAsNumber < 1)
-          return '1';
+          if (isNaN(textAsNumber)) {
+            alert('Enter a valid number, or list of numbers (eg 1,2)');
+            return '1';
+          }
 
-        if (textAsNumber > 100)
-          return '100';
+          if (textAsNumber < 1)
+            return '1';
 
-        return textAsNumber.toFixed(0);
+          if (textAsNumber > 100)
+            return '100';
+
+          return textAsNumber.toFixed(0);
+        }
       }
 
       return '1';
@@ -335,11 +348,23 @@ export class EditBatch extends Base {
     this.speedPrompt.SetText(num.toFixed(0));
   }
 
-  public get StartCell(): number {
-    return Number(this.startLocalPrompt.Text!);
+  public get StartCells(): number[] {
+    let nums = this.startLocalPrompt.Text!.split(',');
+    let cells: number[] = [];
+
+    nums.forEach((num) => {
+      cells.push(Number(num) - 1);
+    });
+
+    return cells;
   }
-  public SetStartCell(num: number): void {
-    this.startLocalPrompt.SetText(num.toFixed(0));
+  public SetStartCells(nums: number[]): void {
+    let text = (nums[0] + 1).toFixed(0);
+    for (let i = 1; i < nums.length; i++) {
+      text += ',' + (nums[i] + 1).toFixed(0);
+    }
+
+    this.startLocalPrompt.SetText(text);
   }
 
   public get EnemyValue(): number {

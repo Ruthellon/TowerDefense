@@ -160,7 +160,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.EndingCells.forEach((cell) => {
       this.theGrid.AddEndPoint(cell);
     });
-
+    this.theGrid.CalculatePaths();
 
     this.playerHealth = this.PlayerStartingHealth;
     this.secondsToStart = this.SecondsToStart;

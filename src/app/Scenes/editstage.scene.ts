@@ -201,10 +201,10 @@ export class EditStage extends BaseLevel {
       }
 
       sceneInfo.StartingCells.forEach((start) => {
-        this.theGrid.AddStartPoint(new Vector2(start.X, start.Y), false);
+        this.theGrid.AddStartPoint(new Vector2(start.X, start.Y));
       });
       sceneInfo.EndingCells.forEach((end) => {
-        this.theGrid.AddEndPoint(new Vector2(end.X, end.Y), false);
+        this.theGrid.AddEndPoint(new Vector2(end.X, end.Y));
       });
 
       this.settings.SetCredits(sceneInfo.Credits);

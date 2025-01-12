@@ -118,7 +118,7 @@ export class EditRound extends Base {
       batchEdit.SetEnemyHealth(batch.EnemyHealth);
       batchEdit.SetEnemySize(batch.EnemySize);
       batchEdit.SetEnemySpeed(batch.EnemySpeed);
-      batchEdit.SetStartCell(batch.EnemyStartCell);
+      batchEdit.SetStartCells(batch.EnemyStartCells);
       batchEdit.SetEnemyValue(batch.EnemyValue);
       batchEdit.SetEnemyCooldown(batch.TimeBetweenStart * 1000);
       batchEdit.SetEnemyCanFly(batch.EnemyCanFly);

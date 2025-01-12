@@ -153,16 +153,13 @@ export class Grid extends Base {
     }
   }
 
-  public AddStartPoint(cell?: Vector2, calculatePath: boolean = true): boolean {
+  public AddStartPoint(cell?: Vector2): boolean {
     if (!this.grid)
       return false;
 
     if (cell) {
       this.grid[cell.X][cell.Y] = ePathCellStatus.StartingPoint;
       this.startingCells.push(cell);
-
-      if (calculatePath)
-        this.CalculatePaths();
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
@@ -190,13 +187,10 @@ export class Grid extends Base {
     return false;
   }
 
-  public AddEndPoint(cell?: Vector2, calculatePath: boolean = true): boolean {
+  public AddEndPoint(cell?: Vector2): boolean {
     if (cell) {
       this.grid[cell.X][cell.Y] = ePathCellStatus.EndingPoint;
       this.endingCells.push(cell);
-
-      if (calculatePath)
-        this.CalculatePaths();
     }
     else if (this.mousePreviousClickCell) {
       cell = this.mousePreviousClickCell;
@@ -391,19 +385,15 @@ export class Grid extends Base {
       tempPaths.push(tempPath);
     }
 
+    for (let x = 0; x < this.grid.length; x++) {
+      for (let y = 0; y < this.grid[x].length; y++) {
+        if (this.grid[x][y] === ePathCellStatus.Path)
+          this.grid[x][y] = ePathCellStatus.Open;
+      }
+    }
+
     this.thePaths = [];
     for (let p = 0; p < tempPaths.length; p++) {
-      //let allGood = true;
-      //this.GameObjects.forEach((obj) => {
-      //  allGood = allGood && obj.UpdatePath(this.grid, this.GridCellSize, this.EndingCells[0])
-      //});
-      for (let x = 0; x < this.grid.length; x++) {
-        for (let y = 0; y < this.grid[x].length; y++) {
-          if (this.grid[x][y] === ePathCellStatus.Path)
-            this.grid[x][y] = ePathCellStatus.Open;
-        }
-      }
-
       let thePath: Vector2[] = [];
       for (let i = tempPaths[p].length - 1; i >= 0; i--) {
         this.grid[tempPaths[p][i].X][tempPaths[p][i].Y] = ePathCellStatus.Path;
@@ -465,6 +455,6 @@ export class Grid extends Base {
   private mousePreviousClickCell: Vector2 | null = null;
   private mouseHighlightCell: Vector2 | null = null;
 
-  private showAttackerPath: boolean = true;
+  private showAttackerPath: boolean = false;
   private showGrid: boolean = false;
 }

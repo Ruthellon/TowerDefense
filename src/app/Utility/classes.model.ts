@@ -122,7 +122,7 @@ export class EnemyBatch {
   public EnemyValue: number = 0;
   public EnemySize: number = 0;
   public EnemyDamage: number = 0;
-  public EnemyStartCell: number = 0;
+  public EnemyStartCells: number[] = [];
   public EnemyCanFly: boolean = false;
 
   public TimeBetweenCurrent: number = 0;

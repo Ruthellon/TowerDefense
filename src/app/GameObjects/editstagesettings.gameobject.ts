@@ -345,7 +345,7 @@ export class EditStageSettings extends Base {
     enemyBatch1.EnemyHealth = 18;
     enemyBatch1.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch1.EnemySpeed = 8;
-    enemyBatch1.EnemyStartCell = 1;
+    enemyBatch1.EnemyStartCells = [0];
     enemyBatch1.EnemyValue = 3;
     enemyBatch1.TimeBetweenStart = 1;
     enemyRound1.EnemyBatches.push(enemyBatch1);
@@ -358,7 +358,7 @@ export class EditStageSettings extends Base {
     enemyBatch2.EnemyHealth = 18;
     enemyBatch2.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch2.EnemySpeed = 10;
-    enemyBatch2.EnemyStartCell = 1;
+    enemyBatch2.EnemyStartCells = [0];
     enemyBatch2.EnemyValue = 3;
     enemyBatch2.TimeBetweenStart = 1;
     enemyRound2.EnemyBatches.push(enemyBatch2);
@@ -368,7 +368,7 @@ export class EditStageSettings extends Base {
     enemyBatch22.EnemyHealth = 27;
     enemyBatch22.EnemySize = this.gridSize;
     enemyBatch22.EnemySpeed = 8;
-    enemyBatch22.EnemyStartCell = 1;
+    enemyBatch22.EnemyStartCells = [0];
     enemyBatch22.EnemyValue = 3;
     enemyBatch22.TimeBetweenStart = 1.5;
     enemyRound2.EnemyBatches.push(enemyBatch22);
@@ -381,7 +381,7 @@ export class EditStageSettings extends Base {
     enemyBatch3.EnemyHealth = 21;
     enemyBatch3.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch3.EnemySpeed = 12;
-    enemyBatch3.EnemyStartCell = 1;
+    enemyBatch3.EnemyStartCells = [0];
     enemyBatch3.EnemyValue = 3;
     enemyBatch3.TimeBetweenStart = 1;
     enemyRound3.EnemyBatches.push(enemyBatch3);
@@ -391,7 +391,7 @@ export class EditStageSettings extends Base {
     enemyBatch32.EnemyHealth = 30;
     enemyBatch32.EnemySize = this.gridSize;
     enemyBatch32.EnemySpeed = 10;
-    enemyBatch32.EnemyStartCell = 1;
+    enemyBatch32.EnemyStartCells = [0];
     enemyBatch32.EnemyValue = 3;
     enemyBatch32.TimeBetweenStart = 1;
     enemyRound3.EnemyBatches.push(enemyBatch32);
@@ -404,7 +404,7 @@ export class EditStageSettings extends Base {
     enemyBatch4.EnemyHealth = 300;
     enemyBatch4.EnemySize = Math.floor(this.gridSize * 1.25);
     enemyBatch4.EnemySpeed = 8;
-    enemyBatch4.EnemyStartCell = 1;
+    enemyBatch4.EnemyStartCells = [0];
     enemyBatch4.EnemyValue = 30;
     enemyBatch4.TimeBetweenStart = 1;
     enemyRound4.EnemyBatches.push(enemyBatch4);
@@ -424,7 +424,7 @@ export class EditStageSettings extends Base {
     enemyBatch1.EnemyHealth = 18;
     enemyBatch1.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch1.EnemySpeed = 8;
-    enemyBatch1.EnemyStartCell = 1;
+    enemyBatch1.EnemyStartCells = [0];
     enemyBatch1.EnemyValue = 3;
     enemyBatch1.TimeBetweenStart = 1;
     enemyRound1.EnemyBatches.push(enemyBatch1);
@@ -434,7 +434,7 @@ export class EditStageSettings extends Base {
     enemyBatch12.EnemyHealth = 18;
     enemyBatch12.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch12.EnemySpeed = 8;
-    enemyBatch12.EnemyStartCell = 2;
+    enemyBatch12.EnemyStartCells = [1];
     enemyBatch12.EnemyValue = 3;
     enemyBatch12.TimeBetweenStart = 1;
     enemyRound1.EnemyBatches.push(enemyBatch12);
@@ -447,7 +447,7 @@ export class EditStageSettings extends Base {
     enemyBatch2.EnemyHealth = 21;
     enemyBatch2.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch2.EnemySpeed = 10;
-    enemyBatch2.EnemyStartCell = 1;
+    enemyBatch2.EnemyStartCells = [0];
     enemyBatch2.EnemyValue = 3;
     enemyBatch2.TimeBetweenStart = 1;
     enemyRound2.EnemyBatches.push(enemyBatch2);
@@ -457,7 +457,7 @@ export class EditStageSettings extends Base {
     enemyBatch22.EnemyHealth = 27;
     enemyBatch22.EnemySize = this.gridSize;
     enemyBatch22.EnemySpeed = 8;
-    enemyBatch22.EnemyStartCell = 1;
+    enemyBatch22.EnemyStartCells = [0];
     enemyBatch22.EnemyValue = 3;
     enemyBatch22.TimeBetweenStart = 1.5;
     enemyRound2.EnemyBatches.push(enemyBatch22);
@@ -467,7 +467,7 @@ export class EditStageSettings extends Base {
     enemyBatch23.EnemyHealth = 21;
     enemyBatch23.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch23.EnemySpeed = 10;
-    enemyBatch23.EnemyStartCell = 1;
+    enemyBatch23.EnemyStartCells = [0];
     enemyBatch23.EnemyValue = 3;
     enemyBatch23.TimeBetweenStart = 1;
     enemyRound2.EnemyBatches.push(enemyBatch23);
@@ -477,7 +477,7 @@ export class EditStageSettings extends Base {
     enemyBatch24.EnemyHealth = 27;
     enemyBatch24.EnemySize = this.gridSize;
     enemyBatch24.EnemySpeed = 8;
-    enemyBatch24.EnemyStartCell = 2;
+    enemyBatch24.EnemyStartCells = [1];
     enemyBatch24.EnemyValue = 3;
     enemyBatch24.TimeBetweenStart = 1.5;
     enemyRound2.EnemyBatches.push(enemyBatch24);
@@ -490,7 +490,7 @@ export class EditStageSettings extends Base {
     enemyBatch3.EnemyHealth = 21;
     enemyBatch3.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch3.EnemySpeed = 12;
-    enemyBatch3.EnemyStartCell = 1;
+    enemyBatch3.EnemyStartCells = [0];
     enemyBatch3.EnemyValue = 3;
     enemyBatch3.TimeBetweenStart = 1;
     enemyRound3.EnemyBatches.push(enemyBatch3);
@@ -500,7 +500,7 @@ export class EditStageSettings extends Base {
     enemyBatch32.EnemyHealth = 30;
     enemyBatch32.EnemySize = this.gridSize;
     enemyBatch32.EnemySpeed = 10;
-    enemyBatch32.EnemyStartCell = 1;
+    enemyBatch32.EnemyStartCells = [0];
     enemyBatch32.EnemyValue = 3;
     enemyBatch32.TimeBetweenStart = 1;
     enemyRound3.EnemyBatches.push(enemyBatch32);
@@ -510,7 +510,7 @@ export class EditStageSettings extends Base {
     enemyBatch33.EnemyHealth = 21;
     enemyBatch33.EnemySize = Math.floor(this.gridSize / 2);
     enemyBatch33.EnemySpeed = 12;
-    enemyBatch33.EnemyStartCell = 2;
+    enemyBatch33.EnemyStartCells = [1];
     enemyBatch33.EnemyValue = 3;
     enemyBatch33.TimeBetweenStart = 1;
     enemyRound3.EnemyBatches.push(enemyBatch33);
@@ -520,7 +520,7 @@ export class EditStageSettings extends Base {
     enemyBatch34.EnemyHealth = 30;
     enemyBatch34.EnemySize = this.gridSize;
     enemyBatch34.EnemySpeed = 10;
-    enemyBatch34.EnemyStartCell = 2;
+    enemyBatch34.EnemyStartCells = [1];
     enemyBatch34.EnemyValue = 3;
     enemyBatch34.TimeBetweenStart = 1;
     enemyRound3.EnemyBatches.push(enemyBatch34);
@@ -530,7 +530,7 @@ export class EditStageSettings extends Base {
     enemyBatch35.EnemyHealth = 360;
     enemyBatch35.EnemySize = this.gridSize;
     enemyBatch35.EnemySpeed = 10;
-    enemyBatch35.EnemyStartCell = 1;
+    enemyBatch35.EnemyStartCells = [0];
     enemyBatch35.EnemyValue = 50;
     enemyBatch35.TimeBetweenStart = 5;
     enemyRound3.EnemyBatches.push(enemyBatch35);
@@ -564,9 +564,13 @@ export class EditStageSettings extends Base {
         enemyBatch.EnemyHealth = batch.EnemyHealth;
         enemyBatch.EnemySize = batch.EnemySize;
         enemyBatch.EnemySpeed = batch.EnemySpeed;
-        enemyBatch.EnemyStartCell = batch.StartCell;
-        if (batch.StartCell > highestStartCell)
-          highestStartCell = batch.StartCell;
+        enemyBatch.EnemyStartCells = batch.StartCells;
+
+        enemyBatch.EnemyStartCells.forEach((cell) => {
+          if ((cell + 1) > highestStartCell)
+            highestStartCell = (cell + 1);
+        });
+
         enemyBatch.EnemyValue = batch.EnemyValue;
         enemyBatch.TimeBetweenStart = (batch.EnemyCooldownTime / 1000);
         enemyBatch.EnemyCanFly = batch.EnemiesCanFly;

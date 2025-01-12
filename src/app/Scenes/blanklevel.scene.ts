@@ -123,10 +123,15 @@ export class BlankLevelScene extends DefenseBaseLevel {
       if (batch.TimeBetweenCurrent <= 0 && batch.EnemyCountCurrent < batch.EnemyCountStart) {
         let newAttacker = new Block();
         newAttacker.SetDamage(batch.EnemyDamage);
-        newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCell - 1].X * this.GridCellSize,
-          this.StartingCells[batch.EnemyStartCell - 1].Y * this.GridCellSize,
+
+        let startCell = 0;
+        if (batch.EnemyStartCells.length > 1)
+          startCell = Math.floor(Math.random() * (batch.EnemyStartCells[batch.EnemyStartCells.length - 1] - batch.EnemyStartCells[0] + 1) + batch.EnemyStartCells[0]);
+
+        newAttacker.SetLocation(this.StartingCells[startCell].X * this.GridCellSize,
+          this.StartingCells[startCell].Y * this.GridCellSize,
           eLayerTypes.Object - i);
-        newAttacker.SetPath(this.GetPath(batch.EnemyStartCell - 1), this.GridCellSize);
+        newAttacker.SetPath(this.GetPath(startCell), this.GridCellSize);
         newAttacker.SetSize(batch.EnemySize, batch.EnemySize);
         newAttacker.SetStartingSpeed(batch.EnemySpeed);
         newAttacker.SetStartingHealth(batch.EnemyHealth);
