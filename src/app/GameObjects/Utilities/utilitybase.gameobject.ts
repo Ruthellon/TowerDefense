@@ -65,6 +65,7 @@ export abstract class UtilityBase extends IGameObject {
   }
 
   public Load() {
+    this.objectRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
   public Update(deltaTime: number) {

@@ -128,6 +128,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     }
   }
 
+  protected RestartFunction() {
+    Game.SetStartingCredits(this.startingCredits >= 10 ? (this.startingCredits - 10) : this.startingCredits);
+    Game.SetTheScene(this.CurrentSceneName);
+  }
+
   /*
       L         OOOOO     AAAAA     DDDD  
       L        O     O   A     A    D   D 
@@ -148,9 +153,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (newDefender.Cost && Game.Credits < newDefender.Cost)
         return;
 
-      let location = this.theGrid.AddObstacle(this.RoundStarted, this.DefenderSize);
-      if (location) {
-        this.createDefender(newDefender, location.X, location.Y, eLayerTypes.Object + newDefender.Location.Z);
+      if (this.theGrid.AddObstacle(newDefender, !this.RoundStarted)) {
+        if (newDefender.Cost)
+          Game.SubtractCredits(newDefender.Cost);
+
+        newDefender.SetSelected(true);
+        this.upgradeButton.SetText(`Upgrade (${newDefender.Cost}cr)`);
       }
     });
     this.LoadGameObject(this.theGrid);
@@ -387,60 +395,42 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   }
 
-
   private updateDefenderStuff(deltaTime: number): void {
-
-    //Check each defender to see if clicked
-    this.defenders.forEach((defender) => {
-      if (defender.Clicked) {
-        this.selectedDefender = defender;
-        defender.SetSelected(true);
-        this.upgradeButton.SetText(`Upgrade (${this.selectedDefender.Cost}cr)`);
-      }
-      else if (defender !== this.selectedDefender) {
-        defender.SetSelected(false);
-      }
-    });
-
-    if (this.selectedDefender) {
+    if (this.theGrid.SelectedObstacle && this.theGrid.SelectedObstacle instanceof Defender) {
+      let selectedDefender: Defender = this.theGrid.SelectedObstacle;
+      this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
 
       if (this.deleteButton.IsHidden)
         this.deleteButton.SetHidden(false);
 
-      if (this.selectedDefender.CanUpgrade) {
-        if (this.upgradeButton.IsHidden)
-          this.upgradeButton.SetHidden(false);
-
-        this.upgradeButton.Update(deltaTime);
+      if (selectedDefender.CanUpgrade && this.upgradeButton.IsHidden) {
+        this.upgradeButton.SetHidden(false);
       }
-      else if (!this.upgradeButton.IsHidden)
+      else if (!this.upgradeButton.IsHidden) {
         this.upgradeButton.SetHidden(true);
+      }
 
-      this.deleteButton.Update(deltaTime);
       if (this.deleteButton.Clicked) {
-        if (this.selectedDefender.Cost) {
-          if (!this.RoundStarted && this.selectedDefender.Value)
-            Game.AddCredits(this.selectedDefender.Value);
-          else if (this.selectedDefender.Value)
-            Game.AddCredits(Math.floor(this.selectedDefender.Value / 3));
+        if (selectedDefender.Value && selectedDefender.Value > 0) {
+          if (!this.RoundStarted)
+            Game.AddCredits(selectedDefender.Value);
+          else
+            Game.AddCredits(Math.floor(selectedDefender.Value / 3));
         }
 
-        this.theGrid.RemoveObstacle(new Vector2(this.selectedDefender.Location.X + 1, this.selectedDefender.Location.Y + 1), this.DefenderSize);
-
-        if (!this.RoundStarted)
-          this.theGrid.CalculatePaths();
-
-        this.DestroyGameObject(this.selectedDefender);
-        let i = this.defenders.findIndex((def) => def === this.selectedDefender);
-        this.defenders.splice(i, 1);
-        this.selectedDefender = null;
+        this.theGrid.RemoveObstacle(selectedDefender, !this.RoundStarted);
       }
-      else if (this.selectedDefender.CanUpgrade && this.selectedDefender.Cost && this.upgradeButton.Clicked) {
-        if (Game.Credits >= this.selectedDefender.Cost) {
-          Game.SubtractCredits(this.selectedDefender.Cost);
-          this.selectedDefender.Upgrade();
-
-          this.upgradeButton.SetText(`Upgrade (${this.selectedDefender.Cost}cr)`);
+      else if (this.upgradeButton.Clicked && selectedDefender.CanUpgrade) {
+        if (selectedDefender.Cost) {
+          if (Game.Credits >= selectedDefender.Cost) {
+            Game.SubtractCredits(selectedDefender.Cost);
+            selectedDefender.Upgrade();
+            this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
+          }
+        }
+        else {
+          selectedDefender.Upgrade();
+          this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
         }
       }
     }
@@ -452,24 +442,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         this.upgradeButton.SetHidden(true);
     }
 
-    if (this.attackers.length > 0 && this.defenders.length > 0) {
-      this.defenders.forEach((turret) => {
-        turret.FindTarget(this.attackers);
+    if (this.attackers.length > 0) {
+      this.theGrid.Obstacles.forEach((turret) => {
+        if (turret instanceof Defender) {
+          turret.FindTarget(this.attackers);
+        }
       });
     }
-  }
-
-  private createDefender(defender: Defender, x: number, y: number, z: number): void {
-    defender.SetLocation(x,y,z);
-
-    if (defender.Cost)
-      Game.SubtractCredits(defender.Cost);
-    this.LoadGameObject(defender);
-    this.defenders.push(defender);
-
-    this.selectedDefender = defender;
-    defender.SetSelected(true);
-    this.upgradeButton.SetText(`Upgrade (${this.selectedDefender.Cost}cr)`);
   }
 
   private setButtons(): void {
@@ -485,7 +464,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       });
       this.newDefender = eDefenderTypes.Wall
       wallButton.SetSelected(true);
-      this.selectedDefender = null;
+      this.theGrid.ClearSelectedObstacle();
     });
     this.defenderButtons.push(wallButton);
     this.LoadGameObject(wallButton);
@@ -501,7 +480,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         });
         this.newDefender = eDefenderTypes.BasicTurret
         turretButton.SetSelected(true);
-        this.selectedDefender = null;
+        this.theGrid.ClearSelectedObstacle();
       });
       this.defenderButtons.push(turretButton);
       this.LoadGameObject(turretButton);
@@ -518,7 +497,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         });
         this.newDefender = eDefenderTypes.SAMTurret
         samButton.SetSelected(true);
-        this.selectedDefender = null;
+        this.theGrid.ClearSelectedObstacle();
       });
       this.defenderButtons.push(samButton);
       this.LoadGameObject(samButton);
@@ -535,8 +514,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.restartButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.restartButton.SetText('Restart');
     this.restartButton.SetClickFunction(() => {
-      Game.SetStartingCredits(this.startingCredits >= 10 ? (this.startingCredits - 10) : this.startingCredits);
-      Game.SetTheScene(this.CurrentSceneName);
+      this.RestartFunction();
     });
 
     this.homeButton.SetLocation((this.UICellSize * 5) + 5, 5, eLayerTypes.UI);
@@ -664,23 +642,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private deleteButton: Button = new Button();
   private nextLevelButton = new Button();
   private startButton: Button = new Button();
-  protected restartButton: Button = new Button();
+  private restartButton: Button = new Button();
   private homeButton: Button = new Button();
   private settingsButton: Button = new Button();
   private resumeButton: Button = new Button();
   private speedButton: Button = new Button();
-  private remainderX: number = 0;
-  private remainderY: number = 0;
-  private defenders: Defender[] = [];
   private secondsToStart = 0;
   private enemiesSpawned = 0;
   private secondsSinceLastMonster = 0;
-  private previousMouse: Vector2 | null = null;
-  private mouseCell: Vector2 | null = null;
-  private mouseHighlightCell: Vector2 | null = null;
-  private previousCell: Vector2 | null = null;
-  private cellPressed: boolean = false;
-  private selectedDefender: Defender | null = null;
   private sentAPIMessage: boolean = false;
   private floor: Sprite = new Sprite();
   private startingCredits: number = 0;

@@ -7,6 +7,7 @@ export abstract class IGameObject {
   public abstract get CollisionBox(): Rect | null;
   public abstract get IsHidden(): boolean;
   public abstract get IsEnabled(): boolean;
+  public abstract get Clicked(): boolean;
 
   public abstract OnCollision(collision: IGameObject): void;
 

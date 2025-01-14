@@ -64,6 +64,12 @@ export class BlankLevelScene extends DefenseBaseLevel {
   private rounds: EnemyRound[] = [];
   private sceneInfoString: string = '';
 
+  protected override RestartFunction() {
+    Game.SetStartingCredits(this.StartingCredits >= 10 ? (this.StartingCredits - 10) : this.StartingCredits);
+    let blankScene = new BlankLevelScene(this.sceneInfoString);
+    Game.SetTheScene('blank', blankScene);
+  }
+
   constructor(sceneJSON?: string) {
     super();
 
@@ -107,12 +113,6 @@ export class BlankLevelScene extends DefenseBaseLevel {
     }
     else
       Game.AddCredits(30);
-
-    this.restartButton.SetClickFunction(() => {
-      Game.SetStartingCredits(this.StartingCredits >= 10 ? (this.StartingCredits - 10) : this.StartingCredits);
-      let blankScene = new BlankLevelScene(this.sceneInfoString);
-      Game.SetTheScene('blank', blankScene);
-    });
   }
 
   override HandleAttackers(deltaTime: number) {

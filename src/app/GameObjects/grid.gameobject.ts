@@ -35,6 +35,16 @@ export class Grid extends Base {
     return this.thePaths.length;
   }
 
+  private obstacles: IGameObject[] = [];
+  public get Obstacles(): IGameObject[] {
+    return this.obstacles;
+  }
+
+  private selectedObstacle: IGameObject | null = null;
+  public get SelectedObstacle(): IGameObject | null {
+    return this.selectedObstacle;
+  }
+
   public override Load() {
     super.Load();
 
@@ -62,6 +72,8 @@ export class Grid extends Base {
 
       this.mousePreviousClickCell = null;
     }
+
+    super.Update(deltaTime);
   }
 
   public override Draw(deltaTime: number) {
@@ -106,7 +118,7 @@ export class Grid extends Base {
       }
     }
 
-    for (let i = 0; i < this.startingCells.length; i++) {
+    for (let i = 0; i < this.StartingCells.length; i++) {
       let x = (this.startingCells[i].X * this.GridCellSize) + this.remainderX;
       let y = (this.startingCells[i].Y * this.GridCellSize) + this.remainderY;
       Game.CONTEXT.lineWidth = 5;
@@ -121,7 +133,7 @@ export class Grid extends Base {
       Game.CONTEXT.fillText(`${i + 1}`, x + (this.GridCellSize / 2), y + (this.GridCellSize / 2));
     }
 
-    for (let i = 0; i < this.endingCells.length; i++) {
+    for (let i = 0; i < this.EndingCells.length; i++) {
       let x = (this.endingCells[i].X * this.GridCellSize) + this.remainderX;
       let y = (this.endingCells[i].Y * this.GridCellSize) + this.remainderY;
       Game.CONTEXT.lineWidth = 5;
@@ -151,6 +163,8 @@ export class Grid extends Base {
         }
       }
     }
+
+    super.Draw(deltaTime);
   }
 
   public AddStartPoint(cell?: Vector2): boolean {
@@ -218,9 +232,9 @@ export class Grid extends Base {
     return false;
   }
 
-  public AddObstacle(roundStarted: boolean, defenderSize: number, location?: Vector2): Vector2 | null {
+  public AddObstacle(obstacle: IGameObject, calculatePath: boolean, location?: Vector2): boolean {
     if (!this.grid)
-      return null;
+      return false;
 
     let cell: Vector2 = new Vector2(0,0);
 
@@ -231,9 +245,9 @@ export class Grid extends Base {
     else if (this.mousePreviousClickCell)
       cell = this.mousePreviousClickCell;
     else
-      return null;
+      return false;
 
-    let defenderCells = Math.floor(defenderSize / this.GridCellSize);
+    let defenderCells = Math.floor(obstacle.Size.X / this.GridCellSize);
     let cells: Vector2[] = [];
 
     for (let i = 0; i < defenderCells; i++) {
@@ -241,13 +255,13 @@ export class Grid extends Base {
         let newCell = new Vector2(cell.X + i, cell.Y + j);
 
         if (newCell.X >= this.grid.length || newCell.Y >= this.grid[newCell.X].length)
-          return null;
+          return false;
 
         if (this.grid[newCell.X][newCell.Y] >= ePathCellStatus.OutOfBounds)
-          return null;
+          return false;
 
-        if (roundStarted && this.grid[newCell.X][newCell.Y] === ePathCellStatus.Path)
-          return null;
+        if (!calculatePath && this.grid[newCell.X][newCell.Y] === ePathCellStatus.Path)
+          return false;
 
         cells.push(newCell);
       }
@@ -257,27 +271,43 @@ export class Grid extends Base {
       this.grid[c.X][c.Y] = ePathCellStatus.Blocked;
     });
 
-    if (!roundStarted && !this.CalculatePaths()) {
+    if (calculatePath && !this.CalculatePaths()) {
       cells.forEach((c) => {
         this.grid[c.X][c.Y] = ePathCellStatus.Open;
       });
-      return null;
+      return false;
     }
-
-    return new Vector2((cell.X * this.GridCellSize) + this.remainderX, (cell.Y * this.GridCellSize) + this.remainderY);
+    obstacle.SetLocation((cell.X * this.GridCellSize) + this.remainderX, (cell.Y * this.GridCellSize) + this.remainderY, eLayerTypes.Object);
+    this.LoadGameObject(obstacle);
+    this.selectedObstacle = obstacle;
+    this.obstacles.push(obstacle);
+    return true;
   }
 
-  public RemoveObstacle(location: Vector2, defenderSize: number): void {
-    let x = Math.floor((location.X + this.remainderX) / this.gridCellSize);
-    let y = Math.floor((location.Y + this.remainderY) / this.gridCellSize);
+  public RemoveObstacle(obstacle: IGameObject, calculatePath: boolean): void {
+    let x = Math.floor((obstacle.Location.X + this.remainderX) / this.GridCellSize);
+    let y = Math.floor((obstacle.Location.Y + this.remainderY) / this.GridCellSize);
 
-    let defenderLoop = Math.floor(defenderSize / this.gridCellSize);
+    let defenderLoop = Math.floor(obstacle.Size.X / this.GridCellSize);
 
     for (let i = 0; i < defenderLoop; i++) {
       for (let j = 0; j < defenderLoop; j++) {
         this.grid[x + i][y + j] = ePathCellStatus.Open;
       }
     }
+
+    this.DestroyGameObject(obstacle);
+
+    let i = this.obstacles.findIndex((def) => def === obstacle);
+    this.obstacles.splice(i, 1);
+    this.selectedObstacle = null;
+
+    if (calculatePath)
+      this.CalculatePaths();
+  }
+
+  public ClearSelectedObstacle(): void {
+    this.selectedObstacle = null;
   }
 
   public SetGridCellSize(cellSize: number) {

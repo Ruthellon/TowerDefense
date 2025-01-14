@@ -289,15 +289,6 @@ export class EditBatch extends Base {
     this.gameObjects.push(this.canFlyPrompt);
   }
 
-  public override Update(deltaTime: number) {
-    if (!this.isHidden && this.isEnabled) {
-      this.GameObjects.forEach((obj) => {
-        if (!obj.IsHidden && obj.IsEnabled)
-          obj.Update(deltaTime);
-      });
-    }
-  }
-
   public override Draw(deltaTime: number) {
     if (!this.isHidden) {
       Game.CONTEXT!.fillStyle = '#555555';
@@ -306,11 +297,6 @@ export class EditBatch extends Base {
       Game.CONTEXT.lineWidth = 5;
       Game.CONTEXT.strokeStyle = '#ffffff';
       Game.CONTEXT.strokeRect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
-
-      this.GameObjects.forEach((obj) => {
-        if (!obj.IsHidden)
-          obj.Draw(deltaTime);
-      });
     }
   }
 

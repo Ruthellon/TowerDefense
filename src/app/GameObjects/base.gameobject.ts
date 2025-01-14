@@ -79,20 +79,40 @@ export abstract class Base extends IGameObject {
     return this.objectRect;
   }
 
+  public OnCollision(collision: IGameObject) {
+
+  }
+
   public Load() {
     this.objectRect = new Rect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
   }
 
   public Update(deltaTime: number) {
+    for (let i = 0; i < this.objectsToDestroy.length; i++) {
+      for (let j = 0; j < this.GameObjects.length; j++) {
+        if (this.objectsToDestroy[i] === this.GameObjects[j]) {
+          this.GameObjects.splice(j, 1);
+          break;
+        }
+      }
+    }
+    this.objectsToDestroy = [];
 
+    if (!this.isHidden && this.isEnabled) {
+      this.GameObjects.forEach((obj) => {
+        if (!obj.IsHidden && obj.IsEnabled)
+          obj.Update(deltaTime);
+      });
+    }
   }
 
   public Draw(deltaTime: number) {
-
-  }
-
-  public OnCollision(collision: IGameObject) {
-
+    if (!this.isHidden) {
+      this.GameObjects.forEach((obj) => {
+        if (!obj.IsHidden)
+          obj.Draw(deltaTime);
+      });
+    }
   }
 
   public SetLocation(x: number, y: number, z: number): void {
@@ -146,6 +166,16 @@ export abstract class Base extends IGameObject {
     this.isEnabled = enabled;
   }
 
+  protected LoadGameObject(gameObject: IGameObject) {
+    gameObject.Load();
+    this.gameObjects.push(gameObject);
+  }
+
+  protected DestroyGameObject(gameObject: IGameObject) {
+    gameObject.SetHidden(true);
+    this.objectsToDestroy.push(gameObject);
+  }
+
   protected UpdateClick(): void {
     if (Game.MOUSE_PRESSED && this.ObjectRect.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
       this.pressed = true;
@@ -163,4 +193,6 @@ export abstract class Base extends IGameObject {
       this.pressed = false;
     }
   }
+
+  private objectsToDestroy: IGameObject[] = [];
 }

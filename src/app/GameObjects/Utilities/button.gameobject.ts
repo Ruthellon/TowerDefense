@@ -15,7 +15,7 @@ export class Button extends UtilityBase {
   }
 
   public override Update(deltaTime: number): void {
-    if (!this.isHidden) {
+    if (!this.isHidden && this.isEnabled) {
       this.UpdateClick();
     }
   }

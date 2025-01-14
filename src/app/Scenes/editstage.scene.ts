@@ -10,6 +10,7 @@ import { Turret } from "../GameObjects/turret.gameobject";
 import { Button } from "../GameObjects/Utilities/button.gameobject";
 import { Slider } from "../GameObjects/Utilities/slider.gameobject";
 import { TextBox } from "../GameObjects/Utilities/textbox.gameobject";
+import { Wall } from "../GameObjects/wall.gameobject";
 import { BlankSceneInfo, Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { ePathCellStatus } from "../Utility/pathfinding.service";
@@ -100,48 +101,20 @@ export class EditStage extends BaseLevel {
     this.gridSlider.SetSize(200, 25);
     this.gridSlider.SetValueRange(10, 150);
     this.gridSlider.SetValue(this.GridCellSize);
+    this.gridSlider.SetText('Grid Cell Size');
     this.LoadGameObject(this.gridSlider);
 
     this.defenderSlider.SetLocation(Game.CANVAS_WIDTH / 2 + 25, 25, 5);
     this.defenderSlider.SetSize(200, 25);
     this.defenderSlider.SetValueRange(1, Math.ceil(150 / this.GridCellSize));
     this.defenderSlider.SetValue(this.defenderMultiplier);
+    this.defenderSlider.SetText('Defender Cell Size');
     this.LoadGameObject(this.defenderSlider);
 
-    let turretlocal = this.theGrid.AddObstacle(true, this.DefenderSize, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y));
-
-    if (turretlocal) {
-      this.turret.SetLocation(turretlocal.X, turretlocal.Y, eLayerTypes.Object);
-      this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+    this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+    if (this.theGrid.AddObstacle(this.turret, false, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y))) {
       this.LoadGameObject(this.turret);
     }
-
-    this.selectStartButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 1, eLayerTypes.UI);
-    this.selectStartButton.SetSize(this.UICellSize, this.UICellSize);
-    this.selectStartButton.SetText(`Start`);
-    this.selectStartButton.SetSelected(true);
-    this.selectStartButton.SetClickFunction(() => {
-      this.selectEndButton.SetSelected(false);
-      this.selectStartButton.SetSelected(true);
-
-      this.theGrid.SetClickFunction(() => {
-        this.theGrid.AddStartPoint();
-      });
-    });
-    this.LoadGameObject(this.selectStartButton);
-
-    this.selectEndButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 2, eLayerTypes.UI);
-    this.selectEndButton.SetSize(this.UICellSize, this.UICellSize);
-    this.selectEndButton.SetText(`End`);
-    this.selectEndButton.SetClickFunction(() => {
-      this.selectStartButton.SetSelected(false);
-      this.selectEndButton.SetSelected(true);
-
-      this.theGrid.SetClickFunction(() => {
-        this.theGrid.AddEndPoint();
-      });
-    });
-    this.LoadGameObject(this.selectEndButton);
 
     this.settings.SetLocation((Game.CANVAS_WIDTH / 2) - 300, 50, eLayerTypes.UI);
     this.settings.SetSize(600, 800);
@@ -177,6 +150,52 @@ export class EditStage extends BaseLevel {
     });
     this.LoadGameObject(this.settingsButton);
 
+    this.selectStartButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 1, eLayerTypes.UI);
+    this.selectStartButton.SetSize(this.UICellSize, this.UICellSize);
+    this.selectStartButton.SetText(`Start`);
+    this.selectStartButton.SetSelected(true);
+    this.selectStartButton.SetClickFunction(() => {
+      this.selectEndButton.SetSelected(false);
+      this.addObstacleButton.SetSelected(false);
+      this.selectStartButton.SetSelected(true);
+
+      this.theGrid.SetClickFunction(() => {
+        this.theGrid.AddStartPoint();
+      });
+    });
+    this.LoadGameObject(this.selectStartButton);
+    
+    this.selectEndButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 2, eLayerTypes.UI);
+    this.selectEndButton.SetSize(this.UICellSize, this.UICellSize);
+    this.selectEndButton.SetText(`End`);
+    this.selectEndButton.SetClickFunction(() => {
+      this.selectStartButton.SetSelected(false);
+      this.addObstacleButton.SetSelected(false);
+      this.selectEndButton.SetSelected(true);
+
+      this.theGrid.SetClickFunction(() => {
+        this.theGrid.AddEndPoint();
+      });
+    });
+    this.LoadGameObject(this.selectEndButton);
+
+    this.addObstacleButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 3, eLayerTypes.UI);
+    this.addObstacleButton.SetSize(this.UICellSize, this.UICellSize);
+    this.addObstacleButton.SetText(`Obstacle`);
+    this.addObstacleButton.SetSelected(false);
+    this.addObstacleButton.SetClickFunction(() => {
+      this.selectStartButton.SetSelected(false);
+      this.selectEndButton.SetSelected(false);
+      this.addObstacleButton.SetSelected(true);
+
+      this.theGrid.SetClickFunction(() => {
+        let wall = new Wall();
+        wall.SetSize(this.theGrid.GridCellSize, this.theGrid.GridCellSize);
+        this.theGrid.AddObstacle(wall, false);
+      });
+    });
+    this.LoadGameObject(this.addObstacleButton);
+
     if (this.sceneInfoString) {
       let sceneInfo: BlankSceneInfo = JSON.parse(this.sceneInfoString);
 
@@ -191,13 +210,10 @@ export class EditStage extends BaseLevel {
       this.theGrid.SetUpGrid();
       this.setUpBoundaries();
 
-      let turretlocal = this.theGrid.AddObstacle(true, this.DefenderSize, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y));
-
-      if (turretlocal) {
-        this.turret.SetLocation(turretlocal.X, turretlocal.Y, eLayerTypes.Object);
-        this.turret.SetSize(this.DefenderSize, this.DefenderSize);
-        this.turret.SetRange(this.DefenderSize * 1.5);
+      this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+      if (this.theGrid.AddObstacle(this.turret, false, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y))) {
         this.turret.Load();
+        this.turret.SetRange(this.DefenderSize * 1.5);
       }
 
       sceneInfo.StartingCells.forEach((start) => {
@@ -233,13 +249,10 @@ export class EditStage extends BaseLevel {
       this.defenderSlider.SetValueRange(1, Math.ceil(150 / this.gridSlider.Value));
       this.defenderSlider.SetValue(this.defenderMultiplier);
 
-      let turretlocal = this.theGrid.AddObstacle(true, this.DefenderSize, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y));
-
-      if (turretlocal) {
-        this.turret.SetLocation(turretlocal.X, turretlocal.Y, eLayerTypes.Object);
-        this.turret.SetSize(this.DefenderSize, this.DefenderSize);
-        this.turret.SetRange(this.DefenderSize * 1.5);
+      this.turret.SetSize(this.DefenderSize, this.DefenderSize);
+      if (this.theGrid.AddObstacle(this.turret, false, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y))) {
         this.turret.Load();
+        this.turret.SetRange(this.DefenderSize * 1.5);
       }
     }
 
@@ -302,6 +315,7 @@ export class EditStage extends BaseLevel {
   private selectStartButton: Button = new Button();
   private selectEndButton: Button = new Button();
   private settingsButton: Button = new Button();
+  private addObstacleButton: Button = new Button();
 
   private theGrid: Grid = new Grid();
 
