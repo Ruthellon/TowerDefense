@@ -666,5 +666,5 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private floor: Sprite = new Sprite();
   private startingCredits: number = 0;
 
-  private theGrid: Grid = new Grid();
+  protected theGrid: Grid = new Grid();
 }

@@ -3,7 +3,20 @@ export class Vector2 {
   X: number;
   Y: number;
 
-  constructor(x: number, y: number) {
+  constructor(x: number = 0, y: number = 0) {
+    this.X = x;
+    this.Y = y;
+  }
+
+  public SetX(x: number) {
+    this.X = x;
+  }
+
+  public SetY(y: number) {
+    this.Y = y;
+  }
+
+  public SetCoordinate(x: number, y: number) {
     this.X = x;
     this.Y = y;
   }
@@ -108,6 +121,7 @@ export class BlankSceneInfo {
   public DefSizeMulti: number = 1;
   public StartingCells: Vector2[] = [];
   public EndingCells: Vector2[] = [];
+  public ObstacleCells: Vector2[] = [];
   public Credits: number = 0;
   public Health: number = 0;
 

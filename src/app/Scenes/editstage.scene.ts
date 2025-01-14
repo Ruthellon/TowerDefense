@@ -84,6 +84,7 @@ export class EditStage extends BaseLevel {
     this.theGrid.SetSize(Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
     this.theGrid.SetGridCellSize(this.GridCellSize);
     this.theGrid.SetUICellSize(this.UICellSize);
+    this.theGrid.SetDevMode(true);
     this.theGrid.SetClickFunction(() => {
       this.theGrid.AddStartPoint();
     });
@@ -112,9 +113,9 @@ export class EditStage extends BaseLevel {
     this.LoadGameObject(this.defenderSlider);
 
     this.turret.SetSize(this.DefenderSize, this.DefenderSize);
-    if (this.theGrid.AddObstacle(this.turret, false, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y))) {
-      this.LoadGameObject(this.turret);
-    }
+    let gridLocal = this.theGrid.GetGridCellCoordinate(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y + 1);
+    this.turret.SetLocation(gridLocal!.X, gridLocal!.Y, eLayerTypes.Object);
+    this.LoadGameObject(this.turret);
 
     this.settings.SetLocation((Game.CANVAS_WIDTH / 2) - 300, 50, eLayerTypes.UI);
     this.settings.SetSize(600, 800);
@@ -132,6 +133,7 @@ export class EditStage extends BaseLevel {
           obj.SetEnabled(false);
         });
         this.settings.SetStartEndCells(this.theGrid.StartingCells, this.theGrid.EndingCells);
+        this.settings.SetObstacles(this.theGrid.GetObstacleCells());
         this.settings.SetGridSize(this.theGrid.GridCellSize);
         this.settings.SetDefenderMultiplier(this.defenderMultiplier)
         this.settings.SetHidden(false);
@@ -191,6 +193,7 @@ export class EditStage extends BaseLevel {
       this.theGrid.SetClickFunction(() => {
         let wall = new Wall();
         wall.SetSize(this.theGrid.GridCellSize, this.theGrid.GridCellSize);
+        wall.SetColor('#777777');
         this.theGrid.AddObstacle(wall, false);
       });
     });
@@ -211,16 +214,22 @@ export class EditStage extends BaseLevel {
       this.setUpBoundaries();
 
       this.turret.SetSize(this.DefenderSize, this.DefenderSize);
-      if (this.theGrid.AddObstacle(this.turret, false, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y))) {
-        this.turret.Load();
-        this.turret.SetRange(this.DefenderSize * 1.5);
-      }
-
+      let gridLocal = this.theGrid.GetGridCellCoordinate(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y + 1);
+      this.turret.SetLocation(gridLocal!.X, gridLocal!.Y, eLayerTypes.Object);
+      this.turret.Load();
+      this.turret.SetRange(this.DefenderSize * 1.5);
+      
       sceneInfo.StartingCells.forEach((start) => {
         this.theGrid.AddStartPoint(new Vector2(start.X, start.Y));
       });
       sceneInfo.EndingCells.forEach((end) => {
         this.theGrid.AddEndPoint(new Vector2(end.X, end.Y));
+      });
+      sceneInfo.ObstacleCells.forEach((cell) => {
+        let wall = new Wall();
+        wall.SetSize(this.theGrid.GridCellSize, this.theGrid.GridCellSize);
+        wall.SetColor('#777777');
+        this.theGrid.AddObstacle(wall, false, cell, true);
       });
 
       this.settings.SetCredits(sceneInfo.Credits);
@@ -234,7 +243,14 @@ export class EditStage extends BaseLevel {
 
   override Update(deltaTime: number): void {
     super.Update(deltaTime);
-    
+
+    if (this.defenderSlider.Pressed && this.turret.IsHidden) {
+      this.turret.SetHidden(false);
+    }
+    else if (!this.defenderSlider.Pressed && !this.turret.IsHidden) {
+      this.turret.SetHidden(true);
+    }
+
     if (this.theGrid.GridCellSize !== this.gridSlider.Value) {
       this.updateGrid = true;
       this.theGrid.SetGridCellSize(this.gridSlider.Value);
@@ -250,10 +266,11 @@ export class EditStage extends BaseLevel {
       this.defenderSlider.SetValue(this.defenderMultiplier);
 
       this.turret.SetSize(this.DefenderSize, this.DefenderSize);
-      if (this.theGrid.AddObstacle(this.turret, false, new Vector2(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y))) {
-        this.turret.Load();
-        this.turret.SetRange(this.DefenderSize * 1.5);
-      }
+
+      let gridLocal = this.theGrid.GetGridCellCoordinate(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopRight.Y + 1);
+      this.turret.SetLocation(gridLocal!.X, gridLocal!.Y, eLayerTypes.Object);
+      this.turret.Load();
+      this.turret.SetRange(this.DefenderSize * 1.5);
     }
 
     if (this.defenderMultiplier !== this.defenderSlider.Value) {

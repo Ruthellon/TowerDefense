@@ -166,7 +166,7 @@ export class Grid extends Base {
       Game.CONTEXT.strokeStyle = '#ffffff';
       let highlightVector = new Vector2(Math.floor((this.mouseHighlightCell.X - this.remainderX) / this.gridCellSize),
         Math.floor((this.mouseHighlightCell.Y - this.remainderY) / this.gridCellSize));
-      if (this.PlayableArea.ContainsPoint(this.mouseHighlightCell)) {
+      if (this.PlayableArea.ContainsPoint(this.mouseHighlightCell) && !this.isDevMode) {
         Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
           (highlightVector.Y * this.gridCellSize) + this.remainderY,
           this.obstacleCellSize, this.obstacleCellSize);
@@ -244,15 +244,18 @@ export class Grid extends Base {
     return false;
   }
 
-  public AddObstacle(obstacle: IGameObject, calculatePath: boolean, location?: Vector2): boolean {
+  public AddObstacle(obstacle: IGameObject, calculatePath: boolean, location?: Vector2, isGridLocation: boolean = true): boolean {
     if (!this.grid)
       return false;
 
     let cell: Vector2 = new Vector2(0,0);
 
     if (location) {
-      cell = new Vector2(Math.floor((location.X - this.remainderX) / this.GridCellSize),
-        Math.floor((location.Y - this.remainderY) / this.GridCellSize));
+      if (isGridLocation)
+        cell = location;
+      else
+        cell = new Vector2(Math.floor((location.X - this.remainderX) / this.GridCellSize),
+          Math.floor((location.Y - this.remainderY) / this.GridCellSize));
     }
     else if (this.mousePreviousClickCell)
       cell = this.mousePreviousClickCell;
@@ -352,6 +355,10 @@ export class Grid extends Base {
     this.showGrid = show;
   }
 
+  public SetDevMode(isDevMode: boolean) {
+    this.isDevMode = isDevMode;
+  }
+
   public SetUpGrid(): void {
     this.remainderX = Math.floor((this.Size.X % this.GridCellSize) / 2);
     this.remainderY = Math.floor((this.Size.Y % this.GridCellSize) / 2);
@@ -362,6 +369,12 @@ export class Grid extends Base {
 
     this.startingCells = [];
     this.endingCells = [];
+
+    this.obstacles.forEach((ob) => {
+      this.DestroyGameObject(ob);
+    });
+
+    this.obstacles = [];
 
     let startX = 0;
     let endX = 0;
@@ -463,6 +476,29 @@ export class Grid extends Base {
       return null;
   }
 
+  public GetGridCellCoordinate(x: number, y: number): Vector2 | null {
+    let response = new Vector2(x, y);
+
+    if (!this.PlayableArea.ContainsPoint(response))
+      return null;
+
+    response.SetX((Math.floor((x - this.remainderX) / this.GridCellSize) * this.GridCellSize) + this.remainderX);
+    response.SetY((Math.floor((y - this.remainderY) / this.GridCellSize) * this.GridCellSize) + this.remainderY);
+
+    return response;
+  }
+
+  public GetObstacleCells(): Vector2[] {
+    let cells: Vector2[] = [];
+
+    this.obstacles.forEach((obstacle) => {
+      cells.push(new Vector2(Math.floor((obstacle.Location.X - this.remainderX) / this.GridCellSize),
+        Math.floor((obstacle.Location.Y - this.remainderY) / this.GridCellSize)));
+    });
+
+    return cells;
+  }
+
   private checkNeighboringCells(cell: Vector2): boolean {
     //Check north
     if (this.grid[cell.X][Math.max(0, cell.Y - 1)] !== ePathCellStatus.OutOfBounds)
@@ -499,4 +535,5 @@ export class Grid extends Base {
 
   private showAttackerPath: boolean = false;
   private showGrid: boolean = false;
+  private isDevMode: boolean = false;
 }

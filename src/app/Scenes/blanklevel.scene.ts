@@ -2,6 +2,7 @@
 import { Attacker } from "../GameObjects/attacker.gameobject";
 import { Block } from "../GameObjects/block.gameobject";
 import { Button } from "../GameObjects/Utilities/button.gameobject";
+import { Wall } from "../GameObjects/wall.gameobject";
 import { BlankSceneInfo, EnemyRound, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { DefenseBaseLevel, eDefenderTypes } from "./defensebase.scene";
@@ -82,6 +83,7 @@ export class BlankLevelScene extends DefenseBaseLevel {
         this.SetGridSize(sceneInfo.GridSize);
         this.SetDefenderSize(sceneInfo.GridSize * sceneInfo.DefSizeMulti);
         this.SetStartEndCells(sceneInfo.StartingCells, sceneInfo.EndingCells);
+        this.SetObstacles(sceneInfo.ObstacleCells);
         this.SetStartingCredits(sceneInfo.Credits);
         this.SetStartingHealth(sceneInfo.Health);
         this.SetRounds(sceneInfo.Rounds);
@@ -107,6 +109,18 @@ export class BlankLevelScene extends DefenseBaseLevel {
   override Load(): void {
     super.Load();
 
+    if (this.obstaclesToLoad) {
+      this.obstaclesToLoad.forEach((cell) => {
+        let wall = new Wall();
+        wall.SetSize(this.theGrid.GridCellSize, this.theGrid.GridCellSize);
+        wall.SetColor('#770000');
+        wall.SetEnabled(false);
+        this.theGrid.AddObstacle(wall, true, cell, true);
+      });
+
+      this.obstaclesToLoad = [];
+    }
+
     if (Game.Credits === 0) {
       Game.SetStartingCredits(this.StartingCredits);
       this.startCredits = 0;
@@ -128,10 +142,10 @@ export class BlankLevelScene extends DefenseBaseLevel {
         if (batch.EnemyStartCells.length > 1)
           startCell = Math.floor(Math.random() * ((batch.EnemyStartCells.length - 1) + 1));
 
-        newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCells[startCell]].X * this.GridCellSize,
-          this.StartingCells[batch.EnemyStartCells[startCell]].Y * this.GridCellSize,
+        newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCells[startCell] - 1].X * this.GridCellSize,
+          this.StartingCells[batch.EnemyStartCells[startCell] - 1].Y * this.GridCellSize,
           eLayerTypes.Object - i);
-        newAttacker.SetPath(this.GetPath(batch.EnemyStartCells[startCell]), this.GridCellSize);
+        newAttacker.SetPath(this.GetPath(batch.EnemyStartCells[startCell] - 1), this.GridCellSize);
         newAttacker.SetSize(batch.EnemySize, batch.EnemySize);
         newAttacker.SetStartingSpeed(batch.EnemySpeed);
         newAttacker.SetStartingHealth(batch.EnemyHealth);
@@ -188,6 +202,11 @@ export class BlankLevelScene extends DefenseBaseLevel {
     endingCells.forEach((cell) => {
       this.endingCells.push(new Vector2(cell.X, cell.Y));
     });
+  }
+
+  private obstaclesToLoad: Vector2[] = [];
+  public SetObstacles(obstaclesCells: Vector2[]) {
+    this.obstaclesToLoad = obstaclesCells;
   }
 
   public SetStartingCredits(credits: number) {

@@ -277,6 +277,10 @@ export class EditStageSettings extends Base {
     this.endingCells = endCells;
   }
 
+  public SetObstacles(obstaclesCells: Vector2[]) {
+    this.obstaclesCells = obstaclesCells;
+  }
+
   public SetGridSize(gridSize: number) {
     this.gridSize = gridSize;
   }
@@ -548,6 +552,7 @@ export class EditStageSettings extends Base {
     sceneInfo.DefSizeMulti = this.defenderMultiplier;
     sceneInfo.StartingCells = this.startingCells;
     sceneInfo.EndingCells = this.endingCells;
+    sceneInfo.ObstacleCells = this.obstaclesCells;
     sceneInfo.Credits = this.creditPrompt.Text ? Number(this.creditPrompt.Text) : 30;
     sceneInfo.Health = this.healthPrompt.Text ? Number(this.healthPrompt.Text) : 10;
 
@@ -567,8 +572,8 @@ export class EditStageSettings extends Base {
         enemyBatch.EnemyStartCells = batch.StartCells;
 
         enemyBatch.EnemyStartCells.forEach((cell) => {
-          if ((cell + 1) > highestStartCell)
-            highestStartCell = (cell + 1);
+          if (cell > highestStartCell)
+            highestStartCell = cell;
         });
 
         enemyBatch.EnemyValue = batch.EnemyValue;
@@ -627,6 +632,7 @@ export class EditStageSettings extends Base {
 
   private startingCells: Vector2[] = [];
   private endingCells: Vector2[] = [];
+  private obstaclesCells: Vector2[] = [];
 
   private gridSize: number = 0;
   private defenderMultiplier: number = 0;

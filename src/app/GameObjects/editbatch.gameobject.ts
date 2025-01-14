@@ -298,6 +298,8 @@ export class EditBatch extends Base {
       Game.CONTEXT.strokeStyle = '#ffffff';
       Game.CONTEXT.strokeRect(this.Location.X, this.Location.Y, this.Size.X, this.Size.Y);
     }
+
+    super.Draw(deltaTime);
   }
 
   public get NumberEnemies(): number {
@@ -361,13 +363,13 @@ export class EditBatch extends Base {
     }
   }
   public SetStartCells(nums: number[]): void {
-    let text = (nums[0] + 1).toFixed(0);
-    if (nums.length > 3 && ((nums[nums.length - 1] - nums[0]) + 1) === nums.length) {
-      text += '-' + (nums[nums.length - 1] + 1).toFixed(0);
+    let text = nums[0].toFixed(0);
+    if (nums.length > 3 && (nums[nums.length - 1] - nums[0]) === nums.length) {
+      text += '-' + nums[nums.length - 1].toFixed(0);
     }
     else {
       for (let i = 1; i < nums.length; i++) {
-        text += ',' + (nums[i] + 1).toFixed(0);
+        text += ',' + nums[i].toFixed(0);
       }
     }
 
