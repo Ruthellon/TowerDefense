@@ -73,10 +73,10 @@ export abstract class Defender extends Base {
 
   public override Draw(deltaTime: number) {
     if (this.Selected) {
-      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.lineWidth = 4;
       Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT.strokeRect(this.Location.X, this.Location.Y,
-        this.Size.X, this.Size.Y);
+      Game.CONTEXT.strokeRect(this.Location.X + 2, this.Location.Y + 2,
+        this.Size.X - 4, this.Size.Y - 4);
     }
   }
 

@@ -154,10 +154,26 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         return;
 
       if (this.theGrid.AddObstacle(newDefender, !this.RoundStarted)) {
-        if (newDefender.Cost)
-          Game.SubtractCredits(newDefender.Cost);
+        Game.SubtractCredits(newDefender.Cost!);
 
+        this.theGrid.Obstacles.forEach((def) => {
+          if (def instanceof Defender) {
+            def.SetSelected(false);
+          }
+        });
         newDefender.SetSelected(true);
+
+        if (this.deleteButton.IsHidden)
+          this.deleteButton.SetHidden(false);
+
+        if (newDefender.CanUpgrade) {
+          this.upgradeButton.SetHidden(false);
+          this.upgradeButton.SetText(`Upgrade (${newDefender.Cost}cr)`);
+        }
+        else if (!this.upgradeButton.IsHidden) {
+          this.upgradeButton.SetHidden(true);
+        }
+
         this.upgradeButton.SetText(`Upgrade (${newDefender.Cost}cr)`);
       }
     });
@@ -398,16 +414,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private updateDefenderStuff(deltaTime: number): void {
     if (this.theGrid.SelectedObstacle && this.theGrid.SelectedObstacle instanceof Defender) {
       let selectedDefender: Defender = this.theGrid.SelectedObstacle;
-      this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
 
-      if (this.deleteButton.IsHidden)
-        this.deleteButton.SetHidden(false);
-
-      if (selectedDefender.CanUpgrade && this.upgradeButton.IsHidden) {
-        this.upgradeButton.SetHidden(false);
-      }
-      else if (!this.upgradeButton.IsHidden) {
+      if (!selectedDefender.CanUpgrade && !this.upgradeButton.IsHidden) {
         this.upgradeButton.SetHidden(true);
+      }
+      else if (selectedDefender.CanUpgrade && this.upgradeButton.IsHidden) {
+        this.upgradeButton.SetHidden(false);
       }
 
       if (this.deleteButton.Clicked) {

@@ -52,6 +52,20 @@ export class Grid extends Base {
   }
 
   public override Update(deltaTime: number) {
+    super.Update(deltaTime);
+
+    this.Obstacles.forEach((def) => {
+      if (def instanceof Defender) {
+        if (def.Clicked) {
+          def.SetSelected(true);
+          this.selectedObstacle = def;
+        }
+        else if (def.Selected && def !== this.selectedObstacle) {
+          def.SetSelected(false);
+        }
+      }
+    });
+
     if (Game.MOUSE_LOCATION.X > 0 && Game.MOUSE_LOCATION.Y > 0) {
       this.mouseHighlightCell = Game.MOUSE_LOCATION;
     }
@@ -72,8 +86,6 @@ export class Grid extends Base {
 
       this.mousePreviousClickCell = null;
     }
-
-    super.Update(deltaTime);
   }
 
   public override Draw(deltaTime: number) {
@@ -98,23 +110,6 @@ export class Grid extends Base {
         Game.CONTEXT.moveTo(0, y);
         Game.CONTEXT.lineTo(Game.CANVAS_WIDTH, y);
         Game.CONTEXT.stroke();
-      }
-    }
-
-    if (this.mouseHighlightCell) {
-      Game.CONTEXT.lineWidth = 5;
-      Game.CONTEXT.strokeStyle = '#ffffff';
-      let highlightVector = new Vector2(Math.floor((this.mouseHighlightCell.X - this.remainderX) / this.gridCellSize),
-        Math.floor((this.mouseHighlightCell.Y - this.remainderY) / this.gridCellSize));
-      if (this.PlayableArea.ContainsPoint(this.mouseHighlightCell)) {
-        Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
-          (highlightVector.Y * this.gridCellSize) + this.remainderY,
-          this.obstacleCellSize, this.obstacleCellSize);
-      }
-      else {
-        Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
-          (highlightVector.Y * this.gridCellSize) + this.remainderY,
-          this.gridCellSize, this.gridCellSize);
       }
     }
 
@@ -165,6 +160,23 @@ export class Grid extends Base {
     }
 
     super.Draw(deltaTime);
+
+    if (this.mouseHighlightCell) {
+      Game.CONTEXT.lineWidth = 5;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      let highlightVector = new Vector2(Math.floor((this.mouseHighlightCell.X - this.remainderX) / this.gridCellSize),
+        Math.floor((this.mouseHighlightCell.Y - this.remainderY) / this.gridCellSize));
+      if (this.PlayableArea.ContainsPoint(this.mouseHighlightCell)) {
+        Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
+          (highlightVector.Y * this.gridCellSize) + this.remainderY,
+          this.obstacleCellSize, this.obstacleCellSize);
+      }
+      else {
+        Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
+          (highlightVector.Y * this.gridCellSize) + this.remainderY,
+          this.gridCellSize, this.gridCellSize);
+      }
+    }
   }
 
   public AddStartPoint(cell?: Vector2): boolean {

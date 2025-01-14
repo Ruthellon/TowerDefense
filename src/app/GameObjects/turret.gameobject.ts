@@ -93,19 +93,20 @@ export class Turret extends Defender {
     Game.CONTEXT.fillRect(this.location.X, this.location.Y,
       this.Size.X, this.Size.Y);
 
+    if (this.Selected) {
+      const centerX = this.CenterMassLocation.X;
+      const centerY = this.CenterMassLocation.Y;
+      const radius = this.range!;
+      const strokeColor = '#00ff00';
+      const lineWidth = 2;
 
-    const centerX = this.CenterMassLocation.X;
-    const centerY = this.CenterMassLocation.Y;
-    const radius = this.range!;
-    const strokeColor = '#00ff00';
-    const lineWidth = 2;
-
-    // Draw the circle
-    Game.CONTEXT.beginPath();
-    Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    Game.CONTEXT.strokeStyle = strokeColor;
-    Game.CONTEXT.lineWidth = lineWidth;
-    Game.CONTEXT.stroke();
+      // Draw the circle
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      Game.CONTEXT.strokeStyle = strokeColor;
+      Game.CONTEXT.lineWidth = lineWidth;
+      Game.CONTEXT.stroke();
+    }
 
     super.Draw(deltaTime);
   }
