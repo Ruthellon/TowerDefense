@@ -217,7 +217,6 @@ export class EditStage extends BaseLevel {
       let gridLocal = this.theGrid.GetGridCellCoordinate(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopLeft.Y + 1);
       this.turret.SetLocation(gridLocal!.X, gridLocal!.Y, eLayerTypes.Object);
       this.turret.Load();
-      this.turret.SetRange(this.DefenderSize * 1.5);
       
       sceneInfo.StartingCells.forEach((start) => {
         this.theGrid.AddStartPoint(new Vector2(start.X, start.Y));
@@ -270,7 +269,6 @@ export class EditStage extends BaseLevel {
       let gridLocal = this.theGrid.GetGridCellCoordinate(this.theGrid.PlayableArea.Center.X, this.theGrid.PlayableArea.TopRight.Y + 1);
       this.turret.SetLocation(gridLocal!.X, gridLocal!.Y, eLayerTypes.Object);
       this.turret.Load();
-      this.turret.SetRange(this.DefenderSize * 1.5);
     }
 
     if (this.defenderMultiplier !== this.defenderSlider.Value) {
@@ -278,7 +276,6 @@ export class EditStage extends BaseLevel {
       this.defenderSize = this.gridSlider.Value * this.defenderMultiplier;
       this.theGrid.SetObstacleCellSize(this.DefenderSize);
       this.turret.SetSize(this.DefenderSize, this.DefenderSize);
-      this.turret.SetRange(this.DefenderSize * 1.5);
       this.turret.Load();
     }
 

@@ -28,8 +28,8 @@ export class LevelSevenScene extends DefenseBaseLevel {
   protected override get SecondsToStart(): number {
     return this.startSeconds;
   }
-  private availableDefenders = [eDefenderTypes.BasicTurret, eDefenderTypes.SAMTurret];
-  protected get AvailableDefenders(): eDefenderTypes[] {
+  private availableDefenders = [eDefenderTypes.BasicTurret, eDefenderTypes.PlasmaTurret, eDefenderTypes.SAMTurret];
+  protected override get AvailableDefenders(): eDefenderTypes[] {
     return this.availableDefenders;
   }
   private enemyRounds = [5, 5, 5, 10, 15];

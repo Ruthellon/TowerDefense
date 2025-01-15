@@ -28,10 +28,6 @@ export class LevelOneScene extends DefenseBaseLevel {
   protected override get SecondsToStart(): number {
     return this.startSeconds;
   }
-  private availableDefenders = [eDefenderTypes.BasicTurret];
-  protected get AvailableDefenders(): eDefenderTypes[] {
-    return this.availableDefenders;
-  }
   private enemyRounds = [5, 5, 5, 10, 10, 15];
   protected get EnemyRounds(): number[] {
     return this.enemyRounds;

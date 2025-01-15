@@ -1,10 +1,8 @@
 import { Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
-import { Attacker } from "./attacker.gameobject";
 import { Defender } from "./defender.gameobject";
-import { IGameObject } from "./gameobject.interface";
 
-export class Turret extends Defender {
+export class PlasmaTurret extends Defender {
   protected override location = new Vector3(0, 0, 2);
   private canUpgrade = true;
   public get CanUpgrade(): boolean {
@@ -14,15 +12,15 @@ export class Turret extends Defender {
   public get Level(): number {
     return this.level;
   }
-  private cost: number | null = 5;
+  private cost: number | null = 10;
   public override get Cost(): number | null {
     return this.cost;
   }
-  private shootingCooldown = 1.5;
+  private shootingCooldown = .5;
   public override get ShootingCooldown(): number {
     return this.shootingCooldown;
   }
-  private value: number | null = 5;
+  private value: number | null = 10;
   public override get Value(): number | null {
     return this.value;
   }
@@ -36,7 +34,7 @@ export class Turret extends Defender {
   public get Range(): number {
     return this.range;
   }
-  private damage: number = 5;
+  private damage: number = 1;
   public get Damage(): number {
     return this.damage;
   }
@@ -45,7 +43,7 @@ export class Turret extends Defender {
     super.Load();
 
     this.range = this.Size.X * 1.5;
-    this.color = '#333333';
+    this.color = '#5555aa';
     this.altColor = '#888888';
   }
 

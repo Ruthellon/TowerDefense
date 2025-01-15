@@ -7,55 +7,35 @@ export abstract class Defender extends Base {
   public abstract get Cost(): number | null;
   public abstract get CanUpgrade(): boolean;
   public abstract get Level(): number;
+  public abstract get Range(): number;
+  public abstract get Damage(): number;
   public abstract get ShootingCooldown(): number;
-  public abstract FindTarget(enemies: Attacker[]): void;
+  public abstract get CanShootGround(): boolean;
+  public abstract get CanShootAerial(): boolean;
 
-
-  protected range: number | null = null;
-  public get Range(): number | null {
-    return this.range;
-  }
-
-  public Upgrade(): void {
-
-  }
-
-  protected damage: number = 0;
-  public get Damage(): number {
-    return this.damage;
+  public get DPS(): number {
+    return this.Damage / this.ShootingCooldown;
   }
 
   protected enemyInRange: Attacker | null = null;
   protected get EnemyInRange(): Attacker | null {
     return this.enemyInRange;
   }
-  protected cooldown: number = 0;
 
-  ///////
-  //
-  // FOR FUTURE USE
-  // When allowing obstacle adding DURING the match
-  //
-  ///////
-  //UpdatePath(grid: number[][], gridSize:number, dest: Vector2): boolean {
-  //  let startingCell = new Vector2(this.location.X / gridSize, this.location.Y / gridSize)
-  //  let tempPath = PathFinder.AStarSearch(grid, startingCell, dest);
+  public Upgrade(): void {
+    return;
+  }
 
-  //  if (tempPath.length > 0)
-  //    return true;
-
-  //  return false;
-  //}
   public override Update(deltaTime: number) {
-    if (this.cooldown > 0) {
-      this.cooldown -= deltaTime;
+    if (this.cooldownTimer > 0) {
+      this.cooldownTimer -= deltaTime;
     }
 
     if (this.EnemyInRange && this.Range) {
-      if (this.cooldown <= 0) {
+      if (this.cooldownTimer <= 0) {
         this.EnemyInRange.ReduceHealth(this.Damage);
 
-        this.cooldown = this.ShootingCooldown;
+        this.cooldownTimer = this.ShootingCooldown;
       }
 
       let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
@@ -80,28 +60,27 @@ export abstract class Defender extends Base {
     }
   }
 
-  //public FindTarget(enemies: Attacker[]) {
-  //  if (!this.enemyInRange && this.Range) {
-  //    for (let i = 0; i < enemies.length; i++) {
-  //      let enemy = enemies[i];
-  //      let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
-  //        Math.max(enemy.Location.X, Math.min(this.CenterMassLocation.X, enemy.Location.X + enemy.Size.X)),
-  //        Math.max(enemy.Location.Y, Math.min(this.CenterMassLocation.Y, enemy.Location.Y + enemy.Size.Y)),
-  //        enemy.Location.Z)));
+  public FindTarget(enemies: Attacker[]) {
+    if (!this.enemyInRange && this.Range) {
+      for (let i = 0; i < enemies.length; i++) {
+        let enemy = enemies[i];
 
-  //      if (distance <= this.Range) {
-  //        this.enemyInRange = enemies[i];
-  //        break;
-  //      }
-  //    }
-  //  }
-  //}
+        if ((!this.CanShootGround && !enemy.CanFly) || (!this.CanShootAerial && enemy.CanFly))
+          continue;
 
-  public SetDamage(damage: number): void {
-    this.damage = damage;
+        let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
+          Math.max(enemy.Location.X, Math.min(this.CenterMassLocation.X, enemy.Location.X + enemy.Size.X)),
+          Math.max(enemy.Location.Y, Math.min(this.CenterMassLocation.Y, enemy.Location.Y + enemy.Size.Y)),
+          enemy.Location.Z)));
+
+        if (distance <= this.Range) {
+          this.enemyInRange = enemies[i];
+          break;
+        }
+      }
+    }
   }
 
-  public SetRange(range: number): void {
-    this.range = range;
-  }
+  protected altColor: string | undefined;
+  private cooldownTimer: number = 0;
 }

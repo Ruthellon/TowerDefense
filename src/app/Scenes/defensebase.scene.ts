@@ -13,10 +13,13 @@ import { eLayerTypes } from "./scene.interface";
 import { Base } from "../GameObjects/base.gameobject";
 import { Sprite } from "../GameObjects/Utilities/sprite.gameobject";
 import { Grid } from "../GameObjects/grid.gameobject";
+import { PlasmaTurret } from "../GameObjects/plasmaturret.gameobject";
+import { SAMTurret } from "../GameObjects/samturret.gameobject";
 
 export enum eDefenderTypes {
   Wall,
   BasicTurret,
+  PlasmaTurret,
   SAMTurret
 }
 
@@ -27,7 +30,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected abstract get EndingCells(): Vector2[];
   protected abstract get PlayerStartingHealth(): number;
   protected abstract get EnemyRounds(): number[];
-  protected abstract get AvailableDefenders(): eDefenderTypes[];
   protected abstract get CurrentSceneName(): string;
   protected abstract get NextLevelName(): string;
   protected abstract get SecondsBetweenMonsters(): number;
@@ -79,19 +81,25 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   public get IsGameOver(): boolean {
     return this.isGameOver;
   }
+
+  protected get AvailableDefenders(): eDefenderTypes[] {
+    return [eDefenderTypes.BasicTurret, eDefenderTypes.PlasmaTurret];
+  }
+
   private newDefender: eDefenderTypes = eDefenderTypes.Wall;
   protected get CreateNewDefender(): Defender {
     if (this.newDefender === eDefenderTypes.BasicTurret) {
       let defender = new Turret();
-      defender.SetRange(this.DefenderSize * 1.5);
+      defender.SetSize(this.DefenderSize, this.DefenderSize);
+      return defender;
+    }
+    else if (this.newDefender === eDefenderTypes.PlasmaTurret) {
+      let defender = new PlasmaTurret();
       defender.SetSize(this.DefenderSize, this.DefenderSize);
       return defender;
     }
     else if (this.newDefender === eDefenderTypes.SAMTurret) {
-      let defender = new Turret();
-      defender.SetIsSurfaceToAir(true);
-      defender.SetRange(this.DefenderSize * 2.5);
-      defender.SetCost(20);
+      let defender = new SAMTurret();
       defender.SetSize(this.DefenderSize, this.DefenderSize);
       return defender;
     }
@@ -498,9 +506,26 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       this.LoadGameObject(turretButton);
     }
 
+    if (this.AvailableDefenders.find((defender) => defender === eDefenderTypes.PlasmaTurret)) {
+      let plasmaButton = new Button();
+      plasmaButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), this.UICellSize * 2, eLayerTypes.UI);
+      plasmaButton.SetSize(this.UICellSize, this.UICellSize);
+      plasmaButton.SetText('Plasma');
+      plasmaButton.SetClickFunction(() => {
+        this.defenderButtons.forEach((butt) => {
+          butt.SetSelected(false);
+        });
+        this.newDefender = eDefenderTypes.PlasmaTurret
+        plasmaButton.SetSelected(true);
+        this.theGrid.ClearSelectedObstacle();
+      });
+      this.defenderButtons.push(plasmaButton);
+      this.LoadGameObject(plasmaButton);
+    }
+
     if (this.AvailableDefenders.find((defender) => defender === eDefenderTypes.SAMTurret)) {
       let samButton = new Button();
-      samButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), this.UICellSize * 2, eLayerTypes.UI);
+      samButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 1), this.UICellSize * 2, eLayerTypes.UI);
       samButton.SetSize(this.UICellSize, this.UICellSize);
       samButton.SetText('S.A.M.');
       samButton.SetClickFunction(() => {
