@@ -7,6 +7,9 @@ import { IGameObject } from "./gameobject.interface";
 
 
 export class Wall extends Defender {
+  public get Name(): string {
+    return "Wall";
+  }
   public get Range(): number {
     return 0;
   }
@@ -56,11 +59,27 @@ export class Wall extends Defender {
     Game.CONTEXT.fillRect(this.Location.X, this.Location.Y,
       this.Size.X, this.Size.Y);
 
-    Game.CONTEXT.lineWidth = 2;
     let width = this.size.X;
     Game.CONTEXT.strokeStyle = this.altColor!;
+
+    Game.CONTEXT.lineWidth = 1.5;
+    //HORIZONTAL LINES
     let x = this.Location.X;
-    let y = this.Location.Y + Math.floor(this.size.Y / 4);
+    let y = this.Location.Y;
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(this.objectRect.TopRight.X, y);
+    Game.CONTEXT.stroke();
+
+    y = this.objectRect.BottomLeft.Y;
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(this.objectRect.TopRight.X, y);
+    Game.CONTEXT.stroke();
+    
+
+    Game.CONTEXT.lineWidth = 2;
+    y = this.Location.Y + (Math.floor(this.size.Y / 4) * 1);
     Game.CONTEXT.beginPath();
     Game.CONTEXT.moveTo(x, y);
     Game.CONTEXT.lineTo(this.objectRect.TopRight.X, y);
@@ -78,42 +97,75 @@ export class Wall extends Defender {
     Game.CONTEXT.lineTo(this.objectRect.TopRight.X, y);
     Game.CONTEXT.stroke();
 
-    x = this.Location.X + (Math.floor(this.size.X / 4));
-    y = this.Location.Y;
-    Game.CONTEXT.beginPath();
-    Game.CONTEXT.moveTo(x, y);
-    Game.CONTEXT.lineTo(x, this.Location.Y + Math.floor(this.size.Y / 4));
-    Game.CONTEXT.stroke();
-
-    x = this.Location.X + (Math.floor(this.size.X / 4) * 3);
-    Game.CONTEXT.beginPath();
-    Game.CONTEXT.moveTo(x, y);
-    Game.CONTEXT.lineTo(x, this.Location.Y + Math.floor(this.size.Y / 4));
-    Game.CONTEXT.stroke();
-
-    x = this.Location.X + (Math.floor(this.size.X / 4) * 2);
-    y = this.Location.Y + (Math.floor(this.size.Y / 4));
+    Game.CONTEXT.lineWidth = 1.5;
+    //VERTICAL LINES
+    x = this.Location.X;
+    y = this.Location.Y + (Math.floor(this.size.Y / 4) * 1);
     Game.CONTEXT.beginPath();
     Game.CONTEXT.moveTo(x, y);
     Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 2));
     Game.CONTEXT.stroke();
 
-    x = this.Location.X + (Math.floor(this.size.X / 4) * 1);
-    y = this.Location.Y + (Math.floor(this.size.Y / 4) * 2);
+    x = this.objectRect.TopRight.X;
+    y = this.Location.Y + (Math.floor(this.size.Y / 4) * 1);
     Game.CONTEXT.beginPath();
     Game.CONTEXT.moveTo(x, y);
-    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 3));
+    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 2));
     Game.CONTEXT.stroke();
 
-    x = this.Location.X + (Math.floor(this.size.X / 4) * 3);
-    y = this.Location.Y + (Math.floor(this.size.Y / 4) * 2);
-    Game.CONTEXT.beginPath();
-    Game.CONTEXT.moveTo(x, y);
-    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 3));
-    Game.CONTEXT.stroke();
-
-    x = this.Location.X + (Math.floor(this.size.X / 4) * 2);
+    x = this.Location.X;
     y = this.Location.Y + (Math.floor(this.size.Y / 4) * 3);
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(x, this.ObjectRect.BottomLeft.Y);
+    Game.CONTEXT.stroke();
+
+    x = this.objectRect.TopRight.X;
+    y = this.Location.Y + (Math.floor(this.size.Y / 4) * 3);
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(x, this.ObjectRect.BottomLeft.Y);
+    Game.CONTEXT.stroke();
+
+
+    Game.CONTEXT.lineWidth = 2;
+    x = this.Location.X + (Math.floor(this.Size.X / 4));
+    y = this.Location.Y;
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 1));
+    Game.CONTEXT.stroke();
+
+    x = this.Location.X + (Math.floor(this.Size.X / 4) * 3);
+    y = this.Location.Y;
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 1));
+    Game.CONTEXT.stroke();
+
+    x = this.Location.X + (Math.floor(this.Size.X / 4) * 2);
+    y = this.Location.Y + (Math.floor(this.Size.Y / 4) * 1);
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 2));
+    Game.CONTEXT.stroke();
+
+    x = this.Location.X + (Math.floor(this.Size.X / 4));
+    y = this.Location.Y + (Math.floor(this.Size.Y / 4) * 2);
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 3));
+    Game.CONTEXT.stroke();
+
+    x = this.Location.X + (Math.floor(this.Size.X / 4) * 3);
+    y = this.Location.Y + (Math.floor(this.Size.Y / 4) * 2);
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.moveTo(x, y);
+    Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 3));
+    Game.CONTEXT.stroke();
+
+    x = this.Location.X + (Math.floor(this.Size.X / 4) * 2);
+    y = this.Location.Y + (Math.floor(this.Size.Y / 4) * 3);
     Game.CONTEXT.beginPath();
     Game.CONTEXT.moveTo(x, y);
     Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 4));

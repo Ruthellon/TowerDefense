@@ -3,6 +3,9 @@ import { Game } from "../Utility/game.model";
 import { Defender } from "./defender.gameobject";
 
 export class PlasmaTurret extends Defender {
+  public get Name(): string {
+    return "Plasma Turret";
+  }
   protected override location = new Vector3(0, 0, 2);
   private canUpgrade = true;
   public get CanUpgrade(): boolean {

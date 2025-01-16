@@ -5,6 +5,9 @@ import { Defender } from "./defender.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
 export class Turret extends Defender {
+  public get Name(): string {
+    return "Basic Turret";
+  }
   protected override location = new Vector3(0, 0, 2);
   private canUpgrade = true;
   public get CanUpgrade(): boolean {

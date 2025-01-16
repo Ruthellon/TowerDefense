@@ -171,7 +171,7 @@ export class Grid extends Base {
           (highlightVector.Y * this.gridCellSize) + this.remainderY,
           this.obstacleCellSize, this.obstacleCellSize);
       }
-      else {
+      else if (this.isDevMode) {
         Game.CONTEXT.strokeRect((highlightVector.X * this.gridCellSize) + this.remainderX,
           (highlightVector.Y * this.gridCellSize) + this.remainderY,
           this.gridCellSize, this.gridCellSize);
