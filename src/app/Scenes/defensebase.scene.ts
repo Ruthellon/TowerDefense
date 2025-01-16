@@ -117,6 +117,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected get GameSpeed(): number {
     return this.gameSpeed;
   }
+  private levelStarted: boolean = false;
+  protected get LevelStarted(): boolean {
+    return this.levelStarted;
+  }
 
   protected showAttackerPath: boolean = true;
   protected attackers: Attacker[] = [];
@@ -283,9 +287,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     this.updateDefenderStuff(deltaTime);
 
-    if (!this.roundStarted) {
+    if (!this.LevelStarted) {
       if (this.secondsToStart <= 0) {
+        this.levelStarted = true;
         this.roundStarted = true;
+        this.secondsToStart = 60;
         this.currentRound++;
 
         if (this.previousSelectedObstacle) {
@@ -297,18 +303,21 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
     }
     else {
+      this.secondsToStart -= deltaTime;
+
+      if (this.secondsToStart <= 0) {
+        this.secondsToStart = 60;
+        this.currentRound++;
+        this.roundStarted = true;
+      }
+
       this.HandleAttackers(deltaTime);
 
       if (this.enemiesRemoved >= this.EnemyRounds[this.currentRound]) {
         this.enemiesRemoved = 0;
         this.roundStarted = false;
-        this.secondsToStart = 20;
         this.enemiesSpawned = 0;
         this.secondsSinceLastMonster = 0;
-
-        if (this.previousSelectedObstacle) {
-          this.updateSellButton(this.previousSelectedObstacle);
-        }
       }
       else {
         for (let i = 0; i < this.attackers.length; i++) {
@@ -441,7 +450,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
             let textMetrics = Game.CONTEXT.measureText(this.defenderDisplay.Description);
             let width = textMetrics.width;
-            let uiwidth = ((this.UICellSize * 2) - 6);
+            let uiwidth = ((this.UICellSize * 2) - 8);
 
             if (width > uiwidth) {
               let words = this.defenderDisplay.Description.split(' ');
@@ -499,7 +508,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   private previousSelectedObstacle: Defender | undefined;
   private updateDefenderStuff(deltaTime: number): void {
-    if (this.theGrid.SelectedObstacle && this.theGrid.SelectedObstacle instanceof Defender) {
+    if (this.theGrid.SelectedObstacle != null && this.theGrid.SelectedObstacle instanceof Defender) {
       let selectedDefender: Defender = this.theGrid.SelectedObstacle;
       if (!this.previousSelectedObstacle || this.previousSelectedObstacle != this.theGrid.SelectedObstacle) {
         this.previousSelectedObstacle = selectedDefender;
@@ -566,7 +575,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   private updateSellButton(defender: Defender): void {
     if (defender.Value && defender.Value > 0) {
-      if (!this.RoundStarted)
+      if (!this.LevelStarted)
         this.deleteButton.SetText(`Sell (${defender.Value}cr)`);
       else
         this.deleteButton.SetText(`Sell (${Math.floor(defender.Value / 3)}cr)`);

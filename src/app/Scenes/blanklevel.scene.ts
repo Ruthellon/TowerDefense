@@ -113,7 +113,7 @@ export class BlankLevelScene extends DefenseBaseLevel {
         wall.SetEnabled(false);
         this.theGrid.AddObstacle(wall, true, cell, true);
       });
-
+      this.theGrid.ClearSelectedObstacle();
       this.obstaclesToLoad = [];
     }
 
