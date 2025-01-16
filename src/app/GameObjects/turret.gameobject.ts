@@ -19,6 +19,10 @@ export class Turret extends Defender {
   public get CanUpgrade(): boolean {
     return this.canUpgrade;
   }
+  private timeToUpgrade: number = 2;
+  protected get TimeToUpgrade(): number {
+    return this.timeToUpgrade;
+  }
   private level = 1;
   public get Level(): number {
     return this.level;
@@ -58,7 +62,9 @@ export class Turret extends Defender {
     this.altColor = '#888888';
   }
 
-  public override Upgrade() {
+  public override Upgrade(levelStarted: boolean) {
+    super.Upgrade(levelStarted);
+
     if (this.level === 1) {
       this.level = 2;
       this.altColor = '#22dd22';
@@ -66,6 +72,7 @@ export class Turret extends Defender {
       this.shootingCooldown = .9;
       this.cost = 10;
       this.value = 10;
+      this.timeToUpgrade = 5;
     }
     else if (this.level === 2) {
       this.level = 3;
@@ -74,6 +81,7 @@ export class Turret extends Defender {
       this.shootingCooldown = .8;
       this.cost = 10;
       this.value = 20;
+      this.timeToUpgrade = 10;
     }
     else if (this.level === 3) {
       this.level = 4;
@@ -82,6 +90,7 @@ export class Turret extends Defender {
       this.shootingCooldown = .7;
       this.cost = 20;
       this.value = 30;
+      this.timeToUpgrade = 15;
     }
     else if (this.level === 4) {
       this.level = 5;
@@ -92,6 +101,7 @@ export class Turret extends Defender {
       this.shootingCooldown = .5;
       this.cost = null;
       this.value = 50;
+      this.timeToUpgrade = 20;
     }
   }
 }

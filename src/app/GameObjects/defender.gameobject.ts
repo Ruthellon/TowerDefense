@@ -16,6 +16,8 @@ export abstract class Defender extends Base {
   public abstract get Name(): string;
   public abstract get Description(): string;
 
+  protected abstract get TimeToUpgrade(): number;
+
   public get DPS(): number {
     return this.Damage / this.ShootingCooldown;
   }
@@ -25,7 +27,19 @@ export abstract class Defender extends Base {
     return this.enemyInRange;
   }
 
-  public Upgrade(): void {
+  private previousFillColor = '';
+  private upgradeCoundownStart = 0;
+  private upgradeCountdown = 0;
+  private isUpgrading = false;
+  public Upgrade(levelStarted: boolean): void {
+    this.isUpgrading = true;
+
+    if (levelStarted) {
+      this.upgradeCoundownStart = this.TimeToUpgrade;
+      this.upgradeCountdown = this.TimeToUpgrade;
+      this.previousFillColor = this.altColor!;
+    }
+
     return;
   }
 
@@ -34,7 +48,15 @@ export abstract class Defender extends Base {
       this.cooldownTimer -= deltaTime;
     }
 
-    if (this.EnemyInRange && this.Range) {
+    if (this.isUpgrading) {
+      this.upgradeCountdown -= deltaTime;
+
+      if (this.upgradeCountdown <= 0) {
+        this.enemyInRange = null;
+        this.isUpgrading = false;
+      }
+    }
+    else if (this.EnemyInRange && this.Range) {
       if (this.cooldownTimer <= 0) {
         this.EnemyInRange.ReduceHealth(this.Damage);
 
@@ -64,15 +86,34 @@ export abstract class Defender extends Base {
     let percentFilled = (1.0 - (this.cooldownTimer / this.ShootingCooldown));
     Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
     
-
     const centerX = this.CenterMassLocation.X;
     const centerY = this.CenterMassLocation.Y;
     let radius = this.size.X / 3;
 
-    Game.CONTEXT.beginPath();
-    Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    Game.CONTEXT.fillStyle = this.altColor!;
-    Game.CONTEXT.fill();
+    if (this.isUpgrading) {
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      Game.CONTEXT.fillStyle = this.previousFillColor!;
+      Game.CONTEXT.fill();
+
+      let startAngle = Math.PI;
+      let endAngle = 2 * Math.PI;
+      let progress = 1 - (this.upgradeCountdown / this.upgradeCoundownStart);
+
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.moveTo(centerX, centerY); // Move to the center
+      const currentEndAngle = startAngle + (progress * endAngle);
+      Game.CONTEXT.arc(centerX, centerY, radius, startAngle, currentEndAngle);
+      Game.CONTEXT.closePath();
+      Game.CONTEXT.fillStyle = this.altColor!;
+      Game.CONTEXT.fill();
+    }
+    else {
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      Game.CONTEXT.fillStyle = this.altColor!;
+      Game.CONTEXT.fill();
+    }
 
     if (this.Selected) {
       if (this.Range > 0) {

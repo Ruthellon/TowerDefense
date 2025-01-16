@@ -29,6 +29,9 @@ export class Wall extends Defender {
   public get CanUpgrade(): boolean {
     return false;
   }
+  protected get TimeToUpgrade(): number {
+    return 0;
+  }
   public get Level(): number {
     return 0;
   }

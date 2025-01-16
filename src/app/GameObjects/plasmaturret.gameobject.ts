@@ -17,6 +17,10 @@ export class PlasmaTurret extends Defender {
   public get CanUpgrade(): boolean {
     return this.canUpgrade;
   }
+  private timeToUpgrade: number = 2;
+  protected get TimeToUpgrade(): number {
+    return this.timeToUpgrade;
+  }
   private level = 1;
   public get Level(): number {
     return this.level;
@@ -56,40 +60,42 @@ export class PlasmaTurret extends Defender {
     this.altColor = '#888888';
   }
 
-  public override Upgrade() {
+  public override Upgrade(levelStarted: boolean) {
+    super.Upgrade(levelStarted);
+
     if (this.level === 1) {
       this.level = 2;
       this.altColor = '#22dd22';
-      this.damage = 6;
-      this.shootingCooldown = .9;
+      this.damage = 2;
+      this.shootingCooldown = .45;
       this.cost = 10;
-      this.value = 10;
+      this.value = 20;
     }
     else if (this.level === 2) {
       this.level = 3;
       this.altColor = '#2222dd';
-      this.damage = 7;
-      this.shootingCooldown = .8;
+      this.damage = 3;
+      this.shootingCooldown = .4;
       this.cost = 10;
-      this.value = 20;
+      this.value = 30;
     }
     else if (this.level === 3) {
       this.level = 4;
       this.altColor = '#dd22dd';
-      this.damage = 8;
-      this.shootingCooldown = .7;
+      this.damage = 4;
+      this.shootingCooldown = .35;
       this.cost = 20;
-      this.value = 30;
+      this.value = 40;
     }
     else if (this.level === 4) {
       this.level = 5;
       this.canUpgrade = false;
       this.altColor = '#dddd22';
       this.range! *= 1.25;
-      this.damage = 10;
-      this.shootingCooldown = .5;
+      this.damage = 8;
+      this.shootingCooldown = .25;
       this.cost = null;
-      this.value = 50;
+      this.value = 70;
     }
   }
 }

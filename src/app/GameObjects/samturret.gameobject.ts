@@ -17,6 +17,10 @@ export class SAMTurret extends Defender {
   public get CanUpgrade(): boolean {
     return this.canUpgrade;
   }
+  private timeToUpgrade: number = 5;
+  protected get TimeToUpgrade(): number {
+    return this.timeToUpgrade;
+  }
   private level = 1;
   public get Level(): number {
     return this.level;
@@ -56,7 +60,8 @@ export class SAMTurret extends Defender {
     this.altColor = '#888888';
   }
 
-  public override Upgrade() {
+  public override Upgrade(levelStarted: boolean) {
+    super.Upgrade(levelStarted);
     if (this.level === 1) {
       this.level = 2;
       this.altColor = '#22dd22';

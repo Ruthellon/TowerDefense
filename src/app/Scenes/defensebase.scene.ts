@@ -291,6 +291,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (this.secondsToStart <= 0) {
         this.levelStarted = true;
         this.roundStarted = true;
+        this.startButton.SetText('Send\nWave');
+        this.startButton.SetHidden(true);
         this.secondsToStart = 60;
         this.currentRound++;
 
@@ -306,18 +308,20 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       this.secondsToStart -= deltaTime;
 
       if (this.secondsToStart <= 0) {
+        this.enemiesSpawned = 0;
         this.secondsToStart = 60;
         this.currentRound++;
         this.roundStarted = true;
+        this.enemiesRemoved = 0;
+        this.secondsSinceLastMonster = 0;
+        this.startButton.SetHidden(true);
       }
 
       this.HandleAttackers(deltaTime);
 
       if (this.enemiesRemoved >= this.EnemyRounds[this.currentRound]) {
-        this.enemiesRemoved = 0;
         this.roundStarted = false;
-        this.enemiesSpawned = 0;
-        this.secondsSinceLastMonster = 0;
+        this.startButton.SetHidden(false);
       }
       else {
         for (let i = 0; i < this.attackers.length; i++) {
@@ -516,8 +520,11 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         if (!selectedDefender.CanUpgrade && !this.upgradeButton.IsHidden) {
           this.upgradeButton.SetHidden(true);
         }
-        else if (selectedDefender.CanUpgrade && this.upgradeButton.IsHidden) {
-          this.upgradeButton.SetHidden(false);
+        else if (selectedDefender.CanUpgrade) {
+          this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
+
+          if (this.upgradeButton.IsHidden)
+            this.upgradeButton.SetHidden(false);
         }
 
         this.updateSellButton(selectedDefender);
@@ -541,13 +548,19 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         if (selectedDefender.Cost) {
           if (Game.Credits >= selectedDefender.Cost) {
             Game.SubtractCredits(selectedDefender.Cost);
-            selectedDefender.Upgrade();
-            this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
+            selectedDefender.Upgrade(this.LevelStarted);
+            if (selectedDefender.CanUpgrade)
+              this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
+            else
+              this.upgradeButton.SetHidden(true);
           }
         }
         else {
-          selectedDefender.Upgrade();
-          this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
+          selectedDefender.Upgrade(this.LevelStarted);
+          if (selectedDefender.CanUpgrade)
+            this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
+          else
+            this.upgradeButton.SetHidden(true);
         }
 
         this.updateSellButton(selectedDefender);
@@ -663,7 +676,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.startButton.SetSize(this.UICellSize - 10, this.UICellSize - 10);
     this.startButton.SetText('Start');
     this.startButton.SetClickFunction(() => {
-      this.secondsToStart = 0;
+      if (!this.RoundStarted)
+        this.secondsToStart = 0;
     });
 
     this.restartButton.SetLocation((this.UICellSize * 4) + 5, 5, eLayerTypes.UI);
