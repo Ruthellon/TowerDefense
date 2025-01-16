@@ -10,6 +10,9 @@ export class Wall extends Defender {
   public get Name(): string {
     return "Wall";
   }
+  public get Description(): string {
+    return "It's a wall, it does wall things.";
+  }
   public get Range(): number {
     return 0;
   }

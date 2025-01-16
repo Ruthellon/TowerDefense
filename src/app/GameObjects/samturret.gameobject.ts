@@ -6,6 +6,12 @@ export class SAMTurret extends Defender {
   public get Name(): string {
     return "(S)urface to (A)ir (M)issile";
   }
+  private description =
+    "This is a turret that fire slow, but explosive, missiles at flying enemies, dealing damage to nearby enemies as well. " +
+    "It cannot hit ground targets directly.";
+  public get Description(): string {
+    return this.description;
+  }
   protected override location = new Vector3(0, 0, 2);
   private canUpgrade = true;
   public get CanUpgrade(): boolean {
@@ -37,7 +43,7 @@ export class SAMTurret extends Defender {
   public get Range(): number {
     return this.range;
   }
-  private damage: number = 5;
+  private damage: number = 20;
   public get Damage(): number {
     return this.damage;
   }

@@ -6,6 +6,12 @@ export class PlasmaTurret extends Defender {
   public get Name(): string {
     return "Plasma Turret";
   }
+  private description =
+    "This is a plasma turret. It fires quick, soft hitting super-heated plasma rounds against enemies within its range. " +
+    "It's more effective against shields than it is against normal targets.";
+  public get Description(): string {
+    return this.description;
+  }
   protected override location = new Vector3(0, 0, 2);
   private canUpgrade = true;
   public get CanUpgrade(): boolean {

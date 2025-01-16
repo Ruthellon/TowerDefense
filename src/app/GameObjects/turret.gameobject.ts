@@ -8,6 +8,12 @@ export class Turret extends Defender {
   public get Name(): string {
     return "Basic Turret";
   }
+  private description =
+    "This is a basic turret. It fires slow, hard hitting rounds against enemies within its range. " +
+    "It's less effective against enemies with shields, and more effective against those without.";
+  public get Description(): string {
+    return this.description;
+  }
   protected override location = new Vector3(0, 0, 2);
   private canUpgrade = true;
   public get CanUpgrade(): boolean {

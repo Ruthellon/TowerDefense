@@ -13,6 +13,7 @@ export abstract class Defender extends Base {
   public abstract get CanShootGround(): boolean;
   public abstract get CanShootAerial(): boolean;
   public abstract get Name(): string;
+  public abstract get Description(): string;
 
   public get DPS(): number {
     return this.Damage / this.ShootingCooldown;

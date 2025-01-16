@@ -209,6 +209,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.floor.Load();
 
     this.setButtons();
+
     //Top Wall
     let boundary = new Boundary();
     boundary.SetLocation(0, 0, eLayerTypes.Boundary);
@@ -374,8 +375,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     super.Draw(deltaTime);
 
-    
-
     if (this.secondsToStart > 0) {
       Game.CONTEXT.fillStyle = '#ffffff';
       Game.CONTEXT.font = '24px serif';
@@ -395,14 +394,15 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     Game.CONTEXT.textAlign = "center";
     Game.CONTEXT.fillText(`Credits: ${Game.Credits.toFixed(0)}`, Game.CANVAS_WIDTH - this.UICellSize * 2.5, this.UICellSize / 2);
 
+    Game.CONTEXT!.fillStyle = '#555555';
+    Game.CONTEXT!.fillRect(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 3, (this.UICellSize * 4) + 3, (this.UICellSize * 2) - 6, (this.UICellSize * 2) - 6);
+
+    Game.CONTEXT.lineWidth = 2;
+    Game.CONTEXT.strokeStyle = '#ffffff';
+    Game.CONTEXT!.strokeRect(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 3, (this.UICellSize * 4) + 3, (this.UICellSize * 2) - 6, (this.UICellSize * 2) - 6);
+
     if (this.theGrid.SelectedObstacle && this.theGrid.SelectedObstacle instanceof Defender) {
-      Game.CONTEXT!.fillStyle = '#555555';
-      Game.CONTEXT!.fillRect(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 3, (this.UICellSize * 4) + 3, (this.UICellSize * 2) - 6, (this.UICellSize * 2) - 6);
-
-      Game.CONTEXT.lineWidth = 2;
-      Game.CONTEXT.strokeStyle = '#ffffff';
-      Game.CONTEXT!.strokeRect(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 3, (this.UICellSize * 4) + 3, (this.UICellSize * 2) - 6, (this.UICellSize * 2) - 6);
-
+      
       let defender: Defender = this.theGrid.SelectedObstacle;
 
       Game.CONTEXT.fillStyle = '#ffffff';
@@ -417,7 +417,50 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     else {
       for (let i = 0; i < this.defenderButtons.length; i++) {
         if (this.defenderButtons[i].Selected) {
-          //if ()
+          let uiStartText = (Game.CANVAS_WIDTH - (this.UICellSize * 2)) + 5;
+          if (this.defenderDisplay) {
+            Game.CONTEXT.fillStyle = '#ffffff';
+            Game.CONTEXT.font = '16px serif';
+            Game.CONTEXT.textAlign = "center";
+            Game.CONTEXT.textBaseline = "middle";
+            Game.CONTEXT.fillText(this.defenderDisplay.Name, (Game.CANVAS_WIDTH - (this.UICellSize * 1)), (this.UICellSize * 4) + 16);
+
+            Game.CONTEXT.textAlign = "left";
+            Game.CONTEXT.textBaseline = "middle";
+
+            let textMetrics = Game.CONTEXT.measureText(this.defenderDisplay.Description);
+            let width = textMetrics.width;
+            let uiwidth = ((this.UICellSize * 2) - 6);
+            
+            if (width > uiwidth) {
+              let words = this.defenderDisplay.Description.split(' ');
+              let currentLine = '';
+              let lineMultiplier = 3;
+              for (let j = 0; j < words.length; j++) {
+                let testLine = currentLine + (currentLine ? ' ' : '') + words[j];
+                let testWidth = Game.CONTEXT.measureText(testLine).width;
+
+                if (testWidth > uiwidth) {
+                  Game.CONTEXT.fillText(currentLine, uiStartText, (this.UICellSize * 4) + (16 * lineMultiplier));
+                  currentLine = words[j];
+                  lineMultiplier++;
+                }
+                else {
+                  currentLine = testLine;
+                }
+              }
+
+              if (currentLine) {
+                Game.CONTEXT.fillText(currentLine, uiStartText, (this.UICellSize * 4) + (16 * lineMultiplier));
+              }
+            }
+            else {
+              Game.CONTEXT.fillText(this.defenderDisplay.Description, uiStartText, (this.UICellSize * 4) + 48);
+            }
+
+            if (this.defenderDisplay.Damage > 0)
+              Game.CONTEXT.fillText(`DPS: ${this.defenderDisplay.DPS.toFixed(1)}`, uiStartText, (this.UICellSize * 6) - 16);
+          }
         }
       }
     }
@@ -496,7 +539,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   }
 
   private setButtons(): void {
-
     let wallButton = new Button();
     wallButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2), this.UICellSize, eLayerTypes.UI);
     wallButton.SetSize(this.UICellSize, this.UICellSize);
@@ -508,10 +550,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       });
       this.newDefender = eDefenderTypes.Wall;
       wallButton.SetSelected(true);
+      this.defenderDisplay = this.CreateNewDefender;
       this.theGrid.ClearSelectedObstacle();
     });
     this.defenderButtons.push(wallButton);
     this.LoadGameObject(wallButton);
+
+    this.defenderDisplay = this.CreateNewDefender;
 
     if (this.AvailableDefenders.find((defender) => defender === eDefenderTypes.BasicTurret)) {
       let turretButton = new Button();
@@ -524,6 +569,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         });
         this.newDefender = eDefenderTypes.BasicTurret
         turretButton.SetSelected(true);
+        this.defenderDisplay = this.CreateNewDefender;
         this.theGrid.ClearSelectedObstacle();
       });
       this.defenderButtons.push(turretButton);
@@ -541,6 +587,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         });
         this.newDefender = eDefenderTypes.PlasmaTurret
         plasmaButton.SetSelected(true);
+        this.defenderDisplay = this.CreateNewDefender;
         this.theGrid.ClearSelectedObstacle();
       });
       this.defenderButtons.push(plasmaButton);
@@ -558,6 +605,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         });
         this.newDefender = eDefenderTypes.SAMTurret
         samButton.SetSelected(true);
+        this.defenderDisplay = this.CreateNewDefender;
         this.theGrid.ClearSelectedObstacle();
       });
       this.defenderButtons.push(samButton);
@@ -719,8 +767,5 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   protected theGrid: Grid = new Grid();
 
   //for use in drawing stats without instantiating a new one all the time
-  private defender: Defender | undefined;
-  private defenderName: string = '';
-  private defenderDescription: string = '';
-  private defenderDPS: string = '';
+  private defenderDisplay: Defender | undefined;
 }
