@@ -170,6 +170,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         });
         newDefender.SetSelected(true);
 
+        this.updateSellButton(newDefender);
+
         if (this.deleteButton.IsHidden)
           this.deleteButton.SetHidden(false);
 
@@ -285,6 +287,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (this.secondsToStart <= 0) {
         this.roundStarted = true;
         this.currentRound++;
+
+        if (this.previousSelectedObstacle) {
+          this.updateSellButton(this.previousSelectedObstacle);
+        }
       }
       else {
         this.secondsToStart -= deltaTime;
@@ -299,32 +305,36 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         this.secondsToStart = 20;
         this.enemiesSpawned = 0;
         this.secondsSinceLastMonster = 0;
-      }
 
-      for (let i = 0; i < this.attackers.length; i++) {
-        let attacker = this.attackers[i];
-        let attackerDied = false;
-        if (attacker.ReachedEnd) {
-          this.ReduceHealth(attacker.Damage);
-
-          attackerDied = true;
-        }
-        else if (attacker.Health <= 0) {
-          if (attacker.Value)
-            Game.AddCredits(attacker.Value);
-
-          attackerDied = true;
-        }
-
-        if (attackerDied) {
-          this.enemiesRemoved++;
-          this.totalEnemies--;
-          this.DestroyGameObject(attacker);
-          this.attackers.splice(i, 1);
-          i--;
+        if (this.previousSelectedObstacle) {
+          this.updateSellButton(this.previousSelectedObstacle);
         }
       }
+      else {
+        for (let i = 0; i < this.attackers.length; i++) {
+          let attacker = this.attackers[i];
+          let attackerDied = false;
+          if (attacker.ReachedEnd) {
+            this.ReduceHealth(attacker.Damage);
 
+            attackerDied = true;
+          }
+          else if (attacker.Health <= 0) {
+            if (attacker.Value)
+              Game.AddCredits(attacker.Value);
+
+            attackerDied = true;
+          }
+
+          if (attackerDied) {
+            this.enemiesRemoved++;
+            this.totalEnemies--;
+            this.DestroyGameObject(attacker);
+            this.attackers.splice(i, 1);
+            i--;
+          }
+        }
+      }
     }
 
     super.Update(deltaTime);
@@ -402,7 +412,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     Game.CONTEXT!.strokeRect(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 3, (this.UICellSize * 4) + 3, (this.UICellSize * 2) - 6, (this.UICellSize * 2) - 6);
 
     if (this.theGrid.SelectedObstacle && this.theGrid.SelectedObstacle instanceof Defender) {
-      
+
       let defender: Defender = this.theGrid.SelectedObstacle;
 
       Game.CONTEXT.fillStyle = '#ffffff';
@@ -410,6 +420,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       Game.CONTEXT.textAlign = "center";
       Game.CONTEXT.textBaseline = "middle";
       Game.CONTEXT.fillText(defender.Name, (Game.CANVAS_WIDTH - (this.UICellSize * 1)), (this.UICellSize * 4) + 15);
+
     }
     else if (this.selectedAttacker) {
 
@@ -431,7 +442,7 @@ export abstract class DefenseBaseLevel extends BaseLevel {
             let textMetrics = Game.CONTEXT.measureText(this.defenderDisplay.Description);
             let width = textMetrics.width;
             let uiwidth = ((this.UICellSize * 2) - 6);
-            
+
             if (width > uiwidth) {
               let words = this.defenderDisplay.Description.split(' ');
               let currentLine = '';
@@ -486,15 +497,25 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
   }
 
+  private previousSelectedObstacle: Defender | undefined;
   private updateDefenderStuff(deltaTime: number): void {
     if (this.theGrid.SelectedObstacle && this.theGrid.SelectedObstacle instanceof Defender) {
       let selectedDefender: Defender = this.theGrid.SelectedObstacle;
+      if (!this.previousSelectedObstacle || this.previousSelectedObstacle != this.theGrid.SelectedObstacle) {
+        this.previousSelectedObstacle = selectedDefender;
 
-      if (!selectedDefender.CanUpgrade && !this.upgradeButton.IsHidden) {
-        this.upgradeButton.SetHidden(true);
-      }
-      else if (selectedDefender.CanUpgrade && this.upgradeButton.IsHidden) {
-        this.upgradeButton.SetHidden(false);
+        if (!selectedDefender.CanUpgrade && !this.upgradeButton.IsHidden) {
+          this.upgradeButton.SetHidden(true);
+        }
+        else if (selectedDefender.CanUpgrade && this.upgradeButton.IsHidden) {
+          this.upgradeButton.SetHidden(false);
+        }
+
+        this.updateSellButton(selectedDefender);
+
+        if (this.deleteButton.IsHidden) {
+          this.deleteButton.SetHidden(false);
+        }
       }
 
       if (this.deleteButton.Clicked) {
@@ -519,9 +540,14 @@ export abstract class DefenseBaseLevel extends BaseLevel {
           selectedDefender.Upgrade();
           this.upgradeButton.SetText(`Upgrade (${selectedDefender.Cost}cr)`);
         }
+
+        this.updateSellButton(selectedDefender);
       }
     }
     else {
+      if (this.previousSelectedObstacle)
+        this.previousSelectedObstacle = undefined;
+
       if (!this.deleteButton.IsHidden)
         this.deleteButton.SetHidden(true);
 
@@ -535,6 +561,18 @@ export abstract class DefenseBaseLevel extends BaseLevel {
           turret.FindTarget(this.attackers);
         }
       });
+    }
+  }
+
+  private updateSellButton(defender: Defender): void {
+    if (defender.Value && defender.Value > 0) {
+      if (!this.RoundStarted)
+        this.deleteButton.SetText(`Sell (${defender.Value}cr)`);
+      else
+        this.deleteButton.SetText(`Sell (${Math.floor(defender.Value / 3)}cr)`);
+    }
+    else {
+      this.deleteButton.SetText(`Sell`);
     }
   }
 
@@ -676,15 +714,15 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     this.LoadGameObject(this.settingsButton);
     this.LoadGameObject(this.speedButton);
 
-    this.upgradeButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 7) + 5, eLayerTypes.UI);
+    this.upgradeButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 6) + 5, eLayerTypes.UI);
     this.upgradeButton.SetSize((this.UICellSize * 2) - 20, (this.UICellSize) - 10);
     this.upgradeButton.SetText(`Upgrade`);
     this.upgradeButton.SetHidden(true);
     this.LoadGameObject(this.upgradeButton);
 
-    this.deleteButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 6) + 5, eLayerTypes.UI);
+    this.deleteButton.SetLocation(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 10, (this.UICellSize * 7) + 5, eLayerTypes.UI);
     this.deleteButton.SetSize((this.UICellSize * 2) - 20, (this.UICellSize) - 10);
-    this.deleteButton.SetText('Delete');
+    this.deleteButton.SetText('Sell');
     this.deleteButton.SetHidden(true);
     this.LoadGameObject(this.deleteButton);
 

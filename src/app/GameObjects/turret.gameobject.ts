@@ -54,7 +54,7 @@ export class Turret extends Defender {
     super.Load();
 
     this.range = this.Size.X * 1.5;
-    this.color = '#333333';
+    this.color = '#555555';
     this.altColor = '#888888';
   }
 
@@ -93,37 +93,5 @@ export class Turret extends Defender {
       this.cost = null;
       this.value = 50;
     }
-  }
-
-  public override Update(deltaTime: number): void {
-    super.Update(deltaTime);
-  }
-
-  public override Draw(deltaTime: number): void {
-    Game.CONTEXT.fillStyle = this.color!;
-    Game.CONTEXT.fillRect(this.location.X, this.location.Y,
-      this.Size.X, this.Size.Y);
-
-    const centerX = this.CenterMassLocation.X;
-    const centerY = this.CenterMassLocation.Y;
-    let radius = this.size.X / 3;
-
-    Game.CONTEXT.beginPath();
-    Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    Game.CONTEXT.fillStyle = this.altColor!;
-    Game.CONTEXT.fill();
-
-    if (this.Selected) {
-      radius = this.range!;
-
-      // Draw the circle
-      Game.CONTEXT.beginPath();
-      Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      Game.CONTEXT.strokeStyle = '#00ff00';
-      Game.CONTEXT.lineWidth = 2;
-      Game.CONTEXT.stroke();
-    }
-
-    super.Draw(deltaTime);
   }
 }

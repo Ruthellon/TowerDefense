@@ -174,7 +174,13 @@ export class Wall extends Defender {
     Game.CONTEXT.lineTo(x, this.Location.Y + (Math.floor(this.size.Y / 4) * 4));
     Game.CONTEXT.stroke();
 
-    super.Draw(deltaTime);
+    if (this.Selected) {
+      Game.CONTEXT.lineWidth = 4;
+      Game.CONTEXT.strokeStyle = '#ffffff';
+      Game.CONTEXT.strokeRect(this.Location.X + 2, this.Location.Y + 2,
+        this.Size.X - 4, this.Size.Y - 4);
+    }
+    Game.CONTEXT.lineWidth = 1;
   }
 
   public override FindTarget(enemies: Attacker[]) {

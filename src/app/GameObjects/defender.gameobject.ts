@@ -6,6 +6,7 @@ import { Base } from "./base.gameobject";
 export abstract class Defender extends Base {
   public abstract get Cost(): number | null;
   public abstract get CanUpgrade(): boolean;
+  //public abstract get UpgradeTime(): number;
   public abstract get Level(): number;
   public abstract get Range(): number;
   public abstract get Damage(): number;
@@ -54,7 +55,37 @@ export abstract class Defender extends Base {
   }
 
   public override Draw(deltaTime: number) {
+    Game.CONTEXT.fillStyle = '#000000';
+    Game.CONTEXT.fillRect(this.location.X, this.location.Y,
+      this.Size.X, this.Size.Y);
+
+    Game.CONTEXT.fillStyle = this.Color!;
+
+    let percentFilled = (1.0 - (this.cooldownTimer / this.ShootingCooldown));
+    Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
+    
+
+    const centerX = this.CenterMassLocation.X;
+    const centerY = this.CenterMassLocation.Y;
+    let radius = this.size.X / 3;
+
+    Game.CONTEXT.beginPath();
+    Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    Game.CONTEXT.fillStyle = this.altColor!;
+    Game.CONTEXT.fill();
+
     if (this.Selected) {
+      if (this.Range > 0) {
+        radius = this.Range;
+
+        // Draw the circle
+        Game.CONTEXT.beginPath();
+        Game.CONTEXT.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        Game.CONTEXT.strokeStyle = '#00ff00';
+        Game.CONTEXT.lineWidth = 2;
+        Game.CONTEXT.stroke();
+      }
+
       Game.CONTEXT.lineWidth = 4;
       Game.CONTEXT.strokeStyle = '#ffffff';
       Game.CONTEXT.strokeRect(this.Location.X + 2, this.Location.Y + 2,
