@@ -82,8 +82,12 @@ export abstract class Attacker extends Base {
     Game.CONTEXT.lineWidth = 1;
   }
 
-  public ReduceHealth(reduceBy: number): void {
+  public ReduceHealth(reduceBy: number): boolean {
     this.health -= reduceBy;
+    if (this.health <= 0)
+      return true;
+
+    return false;
   }
 
   public SetStartingHealth(health: number): void {

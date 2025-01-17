@@ -425,15 +425,66 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     Game.CONTEXT!.strokeRect(Game.CANVAS_WIDTH - (this.UICellSize * 2) + 3, (this.UICellSize * 4) + 3, (this.UICellSize * 2) - 6, (this.UICellSize * 2) - 6);
 
     if (this.theGrid.SelectedObstacle && this.theGrid.SelectedObstacle instanceof Defender) {
-
       let defender: Defender = this.theGrid.SelectedObstacle;
+
+      let uiStartTextMiddleLeft = (Game.CANVAS_WIDTH - (this.UICellSize * 1.5)) + 5;
+      let uiStartTextCenter = (Game.CANVAS_WIDTH - this.UICellSize);
+      let uiStartTextMiddleRight = (Game.CANVAS_WIDTH - (this.UICellSize / 2)) + 5;
 
       Game.CONTEXT.fillStyle = '#ffffff';
       Game.CONTEXT.font = '16px serif';
       Game.CONTEXT.textAlign = "center";
       Game.CONTEXT.textBaseline = "middle";
-      Game.CONTEXT.fillText(defender.Name, (Game.CANVAS_WIDTH - (this.UICellSize * 1)), (this.UICellSize * 4) + 15);
+      Game.CONTEXT.fillText(defender.Name, uiStartTextCenter, (this.UICellSize * 4) + 16);
 
+      if (defender.Level > 0) {
+        Game.CONTEXT.textAlign = "right";
+        Game.CONTEXT.fillText(`Level:`, uiStartTextMiddleLeft - 5, (this.UICellSize * 4) + 48);
+        Game.CONTEXT.textAlign = "left";
+        Game.CONTEXT.fillText(`${defender.Level}`, uiStartTextMiddleLeft + 5, (this.UICellSize * 4) + 48);
+
+        Game.CONTEXT.textAlign = "right";
+        Game.CONTEXT.fillText(`DPS:`, uiStartTextMiddleLeft - 5, (this.UICellSize * 4) + 64);
+        Game.CONTEXT.textAlign = "left";
+        Game.CONTEXT.fillText(`${defender.DPS.toFixed(1)}`, uiStartTextMiddleLeft + 5, (this.UICellSize * 4) + 64);
+
+        Game.CONTEXT.textAlign = "right";
+        Game.CONTEXT.fillText(`Kills:`, uiStartTextMiddleLeft - 5, (this.UICellSize * 4) + 80);
+        Game.CONTEXT.textAlign = "left";
+        Game.CONTEXT.fillText(`${defender.Kills.toFixed(0)}`, uiStartTextMiddleLeft + 5, (this.UICellSize * 4) + 80);
+      }
+
+      if (defender.CanUpgrade) {
+        Game.CONTEXT.textAlign = "center";
+        Game.CONTEXT.fillText('Upgrade Provides:', uiStartTextCenter, (this.UICellSize * 4) + (16 * 8));
+        let width = Game.CONTEXT.measureText(defender.UpgradeDescription).width;
+        let uiwidth = ((this.UICellSize * 2) - 8);
+
+        if (width > uiwidth) {
+          let words = defender.UpgradeDescription.split(' ');
+          let currentLine = '';
+          let lineMultiplier = 9;
+          for (let j = 0; j < words.length; j++) {
+            let testLine = currentLine + (currentLine ? ' ' : '') + words[j];
+            let testWidth = Game.CONTEXT.measureText(testLine).width;
+
+            if (testWidth > uiwidth) {
+              Game.CONTEXT.fillText(currentLine, uiStartTextCenter, (this.UICellSize * 4) + (16 * lineMultiplier));
+              currentLine = words[j];
+              lineMultiplier++;
+            }
+            else {
+              currentLine = testLine;
+            }
+          }
+
+          if (currentLine) {
+            Game.CONTEXT.fillText(currentLine, uiStartTextCenter, (this.UICellSize * 4) + (16 * lineMultiplier));
+          }
+        }
+        else
+          Game.CONTEXT.fillText(defender.UpgradeDescription, uiStartTextCenter, (this.UICellSize * 4) + 32);
+      }
     }
     else if (this.selectedAttacker) {
 

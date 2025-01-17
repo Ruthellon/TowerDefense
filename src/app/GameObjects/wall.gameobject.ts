@@ -13,6 +13,9 @@ export class Wall extends Defender {
   public get Description(): string {
     return "It's a wall, it does wall things.";
   }
+  public get UpgradeDescription(): string {
+    return "";
+  }
   public get Range(): number {
     return 0;
   }
@@ -47,6 +50,7 @@ export class Wall extends Defender {
   public override get Value(): number | null {
     return 1;
   }
+
   public override Load(): void {
     super.Load();
     this.color = '#662222';

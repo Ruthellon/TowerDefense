@@ -6,7 +6,6 @@ import { Base } from "./base.gameobject";
 export abstract class Defender extends Base {
   public abstract get Cost(): number | null;
   public abstract get CanUpgrade(): boolean;
-  //public abstract get UpgradeTime(): number;
   public abstract get Level(): number;
   public abstract get Range(): number;
   public abstract get Damage(): number;
@@ -15,6 +14,7 @@ export abstract class Defender extends Base {
   public abstract get CanShootAerial(): boolean;
   public abstract get Name(): string;
   public abstract get Description(): string;
+  public abstract get UpgradeDescription(): string;
 
   protected abstract get TimeToUpgrade(): number;
 
@@ -25,6 +25,11 @@ export abstract class Defender extends Base {
   protected enemyInRange: Attacker | null = null;
   protected get EnemyInRange(): Attacker | null {
     return this.enemyInRange;
+  }
+
+  private kills: number = 0;
+  public get Kills(): number {
+    return this.kills;
   }
 
   private previousFillColor = '';
@@ -58,7 +63,9 @@ export abstract class Defender extends Base {
     }
     else if (this.EnemyInRange && this.Range) {
       if (this.cooldownTimer <= 0) {
-        this.EnemyInRange.ReduceHealth(this.Damage);
+        if (this.EnemyInRange.ReduceHealth(this.Damage)) {
+          this.kills++;
+        }
 
         this.cooldownTimer = this.ShootingCooldown;
       }

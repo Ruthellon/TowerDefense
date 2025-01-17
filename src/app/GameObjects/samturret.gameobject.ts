@@ -12,6 +12,10 @@ export class SAMTurret extends Defender {
   public get Description(): string {
     return this.description;
   }
+  private upgradeDescription = '';
+  public get UpgradeDescription(): string {
+    return this.upgradeDescription;
+  }
   protected override location = new Vector3(0, 0, 2);
   private canUpgrade = true;
   public get CanUpgrade(): boolean {
