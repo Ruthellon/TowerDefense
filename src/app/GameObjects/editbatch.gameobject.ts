@@ -31,7 +31,8 @@ export class EditBatch extends Base {
     this.valuePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 25, eLayerTypes.UI);
     this.sizePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 100, eLayerTypes.UI);
     this.damagePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 175, eLayerTypes.UI);
-    this.startLocalPrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 250, eLayerTypes.UI);
+    this.shieldValuePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 250, eLayerTypes.UI);
+    this.startLocalPrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 325, eLayerTypes.UI);
 
     this.numEnemiesPrompt.SetSize(75, 50);
     this.timeBetweenPrompt.SetSize(75, 50);
@@ -42,6 +43,7 @@ export class EditBatch extends Base {
     this.damagePrompt.SetSize(75, 50);
     this.startLocalPrompt.SetSize(75, 50);
     this.canFlyPrompt.SetSize(75, 50);
+    this.shieldValuePrompt.SetSize(75, 50);
 
     this.numEnemiesPrompt.SetText('5');
     this.timeBetweenPrompt.SetText('500');
@@ -52,6 +54,7 @@ export class EditBatch extends Base {
     this.damagePrompt.SetText('1');
     this.startLocalPrompt.SetText('1,2');
     this.canFlyPrompt.SetText('0');
+    this.shieldValuePrompt.SetText('0');
 
     this.numEnemiesPrompt.SetPrompt('Set number of enemies for batch (1 - 50):');
     this.timeBetweenPrompt.SetPrompt('Set time between spawns (in milliseconds) (100 - 5000):');
@@ -62,6 +65,7 @@ export class EditBatch extends Base {
     this.damagePrompt.SetPrompt('Set damage enemy deals (1 - 100):');
     this.startLocalPrompt.SetPrompt('Set staring location (1 - ???):');
     this.canFlyPrompt.SetPrompt('Set if enemies should fly (0 false, 1 true):');
+    this.shieldValuePrompt.SetPrompt('Set value of enemies shield (0 - 1000):');
 
     this.numEnemiesPrompt.SetVerifyFunction((text: string | null) => {
       if (text) {
@@ -257,6 +261,26 @@ export class EditBatch extends Base {
 
       return '1';
     });
+    this.shieldValuePrompt.SetVerifyFunction((text: string | null) => {
+      if (text) {
+        let textAsNumber = Number(text);
+
+        if (isNaN(textAsNumber)) {
+          alert('Enter a valid number');
+          return '0';
+        }
+
+        if (textAsNumber < 0)
+          return '0';
+
+        if (textAsNumber > 1000)
+          return '1000';
+
+        return textAsNumber.toFixed(0);
+      }
+
+      return '0';
+    });
 
     this.numEnemiesPrompt.SetLabel('Number of Enemies:');
     this.timeBetweenPrompt.SetLabel('Time Between:');
@@ -267,6 +291,7 @@ export class EditBatch extends Base {
     this.damagePrompt.SetLabel('Damage:');
     this.startLocalPrompt.SetLabel('Starting Spot:');
     this.canFlyPrompt.SetLabel('Can Fly:');
+    this.shieldValuePrompt.SetLabel('Shield Value:');
 
     this.numEnemiesPrompt.Load();
     this.timeBetweenPrompt.Load();
@@ -277,6 +302,7 @@ export class EditBatch extends Base {
     this.damagePrompt.Load();
     this.startLocalPrompt.Load();
     this.canFlyPrompt.Load();
+    this.shieldValuePrompt.Load();
 
     this.gameObjects.push(this.numEnemiesPrompt);
     this.gameObjects.push(this.timeBetweenPrompt);
@@ -287,6 +313,7 @@ export class EditBatch extends Base {
     this.gameObjects.push(this.damagePrompt);
     this.gameObjects.push(this.startLocalPrompt);
     this.gameObjects.push(this.canFlyPrompt);
+    this.gameObjects.push(this.shieldValuePrompt);
   }
 
   public override Draw(deltaTime: number) {
@@ -397,6 +424,13 @@ export class EditBatch extends Base {
     this.canFlyPrompt.SetText(can ? '1' : '0');
   }
 
+  public get ShieldValue(): number {
+    return Number(this.shieldValuePrompt.Text!);
+  }
+  public SetShieldValue(val: number): void {
+    this.shieldValuePrompt.SetText(val.toFixed(0));
+  }
+
   private closeButton: Button = new Button();
 
   private numEnemiesPrompt: TextBox = new TextBox();
@@ -408,4 +442,5 @@ export class EditBatch extends Base {
   private damagePrompt: TextBox = new TextBox();
   private startLocalPrompt: TextBox = new TextBox();
   private canFlyPrompt: TextBox = new TextBox();
+  private shieldValuePrompt: TextBox = new TextBox();
 }

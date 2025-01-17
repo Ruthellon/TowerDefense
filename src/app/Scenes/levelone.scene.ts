@@ -85,8 +85,9 @@ export class LevelOneScene extends DefenseBaseLevel {
     else if (this.CurrentRound === 1) {
       newAttacker.SetSize(20, 20);
       newAttacker.SetStartingSpeed(7);
-      newAttacker.SetStartingHealth(15);
+      newAttacker.SetStartingHealth(10);
       newAttacker.SetValue(3);
+      newAttacker.SetShieldValue(6);
     }
     else if (this.CurrentRound === 2) {
       newAttacker.SetSize(30, 30);
@@ -97,8 +98,9 @@ export class LevelOneScene extends DefenseBaseLevel {
     else if (this.CurrentRound === 3) {
       newAttacker.SetSize(30, 30);
       newAttacker.SetStartingSpeed(8);
-      newAttacker.SetStartingHealth(24);
+      newAttacker.SetStartingHealth(15);
       newAttacker.SetValue(3);
+      newAttacker.SetShieldValue(10);
     }
     else if (this.CurrentRound === 4) {
       this.secondsBetweenMonsters = .75;
@@ -122,14 +124,16 @@ export class LevelOneScene extends DefenseBaseLevel {
       if (attackerCount % 2 === 0) {
         newAttacker.SetSize(20, 20);
         newAttacker.SetStartingSpeed(10);
-        newAttacker.SetStartingHealth(21);
+        newAttacker.SetStartingHealth(12);
         newAttacker.SetValue(3);
+        newAttacker.SetShieldValue(10);
       }
       else {
         newAttacker.SetSize(40, 40);
         newAttacker.SetStartingSpeed(7);
-        newAttacker.SetStartingHealth(27);
+        newAttacker.SetStartingHealth(17);
         newAttacker.SetValue(3);
+        newAttacker.SetShieldValue(10);
       }
     }
     newAttacker.SetLocation(this.StartingCells[0].X * this.GridCellSize,

@@ -37,14 +37,33 @@ export abstract class Attacker extends Base {
     return this.canFly;
   }
 
-  private distanceLeftX = 0;
-  private distanceLeftY = 0;
+  public get HasShield(): boolean {
+    return this.currentShield > 0;
+  }
+
+  private shieldRecharge = 1;
+  private currentShield = 0;
+  private startingShieldValue = 0;
+  public get ShieldValue(): number {
+    return this.currentShield;
+  }
+
   public override Update(deltaTime: number) {
     if (this.path.length === 0)
       return;
 
     if (this.target === null)
       return;
+
+    if (this.startingShieldValue > 0) {
+      if (this.shieldRecharge <= 0) {
+        this.currentShield = this.startingShieldValue;
+        this.shieldRecharge = 2;
+      }
+      else {
+        this.shieldRecharge -= deltaTime;
+      }
+    }
 
     let distanceTo = this.target.distanceTo(new Vector2(this.CenterMassLocation.X, this.CenterMassLocation.Y));
 
@@ -61,7 +80,6 @@ export abstract class Attacker extends Base {
     }
 
     let result = this.MoveTo(deltaTime);
-    //console.log(result);
 
     this.location.X = result.X;
     this.location.Y = result.Y;
@@ -80,10 +98,38 @@ export abstract class Attacker extends Base {
     Game.CONTEXT.strokeRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
     Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
     Game.CONTEXT.lineWidth = 1;
+
+    if (this.HasShield) {
+      let shieldPercent = this.currentShield / this.startingShieldValue;
+      // Draw the circle
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.arc(this.Location.X + (this.size.X / 2), this.Location.Y + (this.Size.Y / 2), this.Size.X, 0, 2 * Math.PI);
+      if (shieldPercent >= .66)
+        Game.CONTEXT.strokeStyle = '#00ff00ff';
+      if (shieldPercent >= .33 && shieldPercent < .66)
+        Game.CONTEXT.strokeStyle = '#00ff0099';
+      if (shieldPercent >= 0 && shieldPercent < .33)
+        Game.CONTEXT.strokeStyle = '#00ff0033';
+      Game.CONTEXT.lineWidth = 2;
+      Game.CONTEXT.stroke();
+    }
   }
 
-  public ReduceHealth(reduceBy: number): boolean {
-    this.health -= reduceBy;
+  public ReduceHealth(reduceBy: number, isPlasma: boolean = false): boolean {
+    if (this.HasShield) {
+      if (isPlasma) {
+        this.currentShield -= (reduceBy * 2);
+      }
+      else {
+        this.currentShield -= Math.floor(reduceBy * .5);
+      }
+    }
+    else {
+      this.health -= reduceBy;
+    }
+
+    this.shieldRecharge = 2;
+
     if (this.health <= 0)
       return true;
 
@@ -109,6 +155,11 @@ export abstract class Attacker extends Base {
 
   public SetCanFly(canFly: boolean): void {
     this.canFly = canFly;
+  }
+
+  public SetShieldValue(value: number): void {
+    this.startingShieldValue = value;
+    this.currentShield = value;
   }
 
   protected gridSize: number = 0;

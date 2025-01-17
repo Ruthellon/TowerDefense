@@ -285,8 +285,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       return;
     }
 
-    this.updateDefenderStuff(deltaTime);
-
     if (!this.LevelStarted) {
       if (this.secondsToStart <= 0) {
         this.levelStarted = true;
@@ -349,6 +347,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         }
       }
     }
+
+    this.updateDefenderStuff(deltaTime);
 
     super.Update(deltaTime);
   }

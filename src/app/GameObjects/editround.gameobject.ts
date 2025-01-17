@@ -123,6 +123,7 @@ export class EditRound extends Base {
       batchEdit.SetEnemyCooldown(batch.TimeBetweenStart * 1000);
       batchEdit.SetEnemyCanFly(batch.EnemyCanFly);
       batchEdit.SetNumberEnemies(batch.EnemyCountStart);
+      batchEdit.SetShieldValue(batch.ShieldValue);
     }
 
     this.gameObjects.push(batchEdit);

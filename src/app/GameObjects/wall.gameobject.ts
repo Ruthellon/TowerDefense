@@ -25,6 +25,9 @@ export class Wall extends Defender {
   public get CanShootAerial(): boolean {
     return false;
   }
+  public get IsPlasmaWeapon(): boolean {
+    return false;
+  }
   protected override location = new Vector3(0, 0, 1);
   public get UpgradeCost(): number {
     return 0;

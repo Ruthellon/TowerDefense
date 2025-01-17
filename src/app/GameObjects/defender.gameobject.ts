@@ -15,6 +15,7 @@ export abstract class Defender extends Base {
   public abstract get Name(): string;
   public abstract get Description(): string;
   public abstract get UpgradeDescription(): string;
+  public abstract get IsPlasmaWeapon(): boolean;
 
   protected abstract get TimeToUpgrade(): number;
 
@@ -61,22 +62,29 @@ export abstract class Defender extends Base {
         this.isUpgrading = false;
       }
     }
-    else if (this.EnemyInRange && this.Range) {
+    else if (this.EnemyInRange != null) {
       if (this.cooldownTimer <= 0) {
-        if (this.EnemyInRange.ReduceHealth(this.Damage)) {
+        if (this.EnemyInRange.ReduceHealth(this.Damage, this.IsPlasmaWeapon)) {
           this.kills++;
+          this.enemyInRange = null;
         }
 
         this.cooldownTimer = this.ShootingCooldown;
       }
 
-      let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
-        Math.max(this.EnemyInRange.Location.X, Math.min(this.CenterMassLocation.X, this.EnemyInRange.Location.X + this.EnemyInRange.Size.X)),
-        Math.max(this.EnemyInRange.Location.Y, Math.min(this.CenterMassLocation.Y, this.EnemyInRange.Location.Y + this.EnemyInRange.Size.Y)),
-        this.EnemyInRange.Location.Z)));
+      if (this.EnemyInRange != null) {
+        if (this.IsPlasmaWeapon && !this.EnemyInRange.HasShield)
+          this.enemyInRange = null;
+        else {
+          let distance = Math.floor(this.CenterMassLocation.distanceTo(new Vector3(
+            Math.max(this.EnemyInRange.Location.X, Math.min(this.CenterMassLocation.X, this.EnemyInRange.Location.X + this.EnemyInRange.Size.X)),
+            Math.max(this.EnemyInRange.Location.Y, Math.min(this.CenterMassLocation.Y, this.EnemyInRange.Location.Y + this.EnemyInRange.Size.Y)),
+            this.EnemyInRange.Location.Z)));
 
-      if (distance > this.Range || this.EnemyInRange.Health <= 0) {
-        this.enemyInRange = null;
+          if (distance > this.Range) {
+            this.enemyInRange = null;
+          }
+        }
       }
     }
 
@@ -142,7 +150,8 @@ export abstract class Defender extends Base {
   }
 
   public FindTarget(enemies: Attacker[]) {
-    if (!this.enemyInRange && this.Range) {
+    if (!this.enemyInRange && this.Range && enemies.length > 0) {
+      let bestChoice: Attacker | undefined;
       for (let i = 0; i < enemies.length; i++) {
         let enemy = enemies[i];
 
@@ -155,10 +164,23 @@ export abstract class Defender extends Base {
           enemy.Location.Z)));
 
         if (distance <= this.Range) {
-          this.enemyInRange = enemies[i];
-          break;
+          if (this.IsPlasmaWeapon && enemy.HasShield) {
+            bestChoice = enemy;
+            break;
+          }
+
+          if (!this.IsPlasmaWeapon && !enemy.HasShield) {
+            bestChoice = enemy;
+            break;
+          }
+
+          if (!bestChoice)
+            bestChoice = enemy;
         }
       }
+
+      if (bestChoice)
+        this.enemyInRange = bestChoice;
     }
   }
 

@@ -55,6 +55,9 @@ export class PlasmaTurret extends Defender {
   public get Damage(): number {
     return this.damage;
   }
+  public get IsPlasmaWeapon(): boolean {
+    return true;
+  }
 
   public override Load(): void {
     super.Load();

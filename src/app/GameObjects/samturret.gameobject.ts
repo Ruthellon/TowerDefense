@@ -55,6 +55,9 @@ export class SAMTurret extends Defender {
   public get Damage(): number {
     return this.damage;
   }
+  public get IsPlasmaWeapon(): boolean {
+    return false;
+  }
 
   public override Load(): void {
     super.Load();

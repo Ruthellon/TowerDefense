@@ -147,6 +147,7 @@ export class BlankLevelScene extends DefenseBaseLevel {
         newAttacker.SetStartingHealth(batch.EnemyHealth);
         newAttacker.SetValue(batch.EnemyValue);
         newAttacker.SetCanFly(batch.EnemyCanFly);
+        newAttacker.SetShieldValue(batch.ShieldValue);
 
         if (batch.EnemyCanFly)
           newAttacker.SetColor('#BB22BB');
