@@ -164,8 +164,10 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       if (newDefender.Cost && Game.Credits < newDefender.Cost)
         return;
 
+      let cost = newDefender.Cost;
       if (this.theGrid.AddObstacle(newDefender, !this.RoundStarted)) {
-        Game.SubtractCredits(newDefender.Cost!);
+        if (cost != null)
+          Game.SubtractCredits(cost);
 
         this.theGrid.Obstacles.forEach((def) => {
           if (def instanceof Defender) {
@@ -285,6 +287,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       return;
     }
 
+    this.updateDefenderStuff(deltaTime);
+
     if (!this.LevelStarted) {
       if (this.secondsToStart <= 0) {
         this.levelStarted = true;
@@ -348,9 +352,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
     }
 
-    this.updateDefenderStuff(deltaTime);
-
     super.Update(deltaTime);
+
   }
 
   /*
@@ -533,8 +536,13 @@ export abstract class DefenseBaseLevel extends BaseLevel {
               Game.CONTEXT.fillText(this.defenderDisplay.Description, uiStartText, (this.UICellSize * 4) + 48);
             }
 
+            Game.CONTEXT.textAlign = "center";
+            if (this.defenderDisplay.Cost != null) {
+              Game.CONTEXT.fillText(`Cost: ${this.defenderDisplay.Cost.toFixed(0)}`, (Game.CANVAS_WIDTH - (this.UICellSize * 1)), (this.UICellSize * 6) - 32);
+            }
+
             if (this.defenderDisplay.Damage > 0)
-              Game.CONTEXT.fillText(`DPS: ${this.defenderDisplay.DPS.toFixed(1)}`, uiStartText, (this.UICellSize * 6) - 16);
+              Game.CONTEXT.fillText(`DPS: ${this.defenderDisplay.DPS.toFixed(1)}`, (Game.CANVAS_WIDTH - (this.UICellSize * 1)), (this.UICellSize * 6) - 16);
           }
         }
       }
@@ -781,7 +789,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
       }
     });
     
-
     this.LoadGameObject(this.startButton);
     this.LoadGameObject(this.restartButton);
     this.LoadGameObject(this.homeButton);

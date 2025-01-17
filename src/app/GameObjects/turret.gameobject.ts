@@ -99,7 +99,7 @@ export class Turret extends Defender {
       this.cost = 80;
       this.value += 40;
       this.timeToUpgrade = 15;
-      this.upgradeDescription = 'Bigger bump to Damage, Speed, and Range.'
+      this.upgradeDescription = 'Bigger bump to Damage, Speed, and Range.';
     }
     else if (this.level === 4) {
       this.level = 5;

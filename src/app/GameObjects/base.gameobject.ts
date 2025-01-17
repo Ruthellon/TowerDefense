@@ -72,11 +72,19 @@ export abstract class Base extends IGameObject {
   }
   protected collisionBox: Rect | null = null;
   public get CollisionBox(): Rect | null {
-    return this.collisionBox;
+    if (this.collisionBox === null)
+      return null;
+
+    return new Rect(this.Location.X + this.collisionBox.X, this.Location.Y + this.collisionBox.Y,
+      this.collisionBox.Width, this.collisionBox.Height);
   }
   protected objectRect: Rect = new Rect(0, 0, 0, 0);
   protected get ObjectRect(): Rect {
     return this.objectRect;
+  }
+
+  public get IsTrigger(): boolean {
+    return false;
   }
 
   public OnCollision(collision: IGameObject) {

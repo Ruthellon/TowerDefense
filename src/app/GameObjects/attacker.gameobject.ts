@@ -1,4 +1,4 @@
-import { Vector2 } from "../Utility/classes.model";
+import { Rect, Vector2 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { Base } from "./base.gameobject";
 
@@ -41,11 +41,17 @@ export abstract class Attacker extends Base {
     return this.currentShield > 0;
   }
 
-  private shieldRecharge = 1;
+  private shieldRechargeRate = 3;
+  private currentRecharge = 3;
   private currentShield = 0;
   private startingShieldValue = 0;
   public get ShieldValue(): number {
     return this.currentShield;
+  }
+
+  public override Load() {
+    super.Load();
+    this.collisionBox = new Rect(0, 0, this.Size.X, this.Size.Y);
   }
 
   public override Update(deltaTime: number) {
@@ -56,12 +62,12 @@ export abstract class Attacker extends Base {
       return;
 
     if (this.startingShieldValue > 0) {
-      if (this.shieldRecharge <= 0) {
+      if (this.currentRecharge <= 0) {
         this.currentShield = this.startingShieldValue;
-        this.shieldRecharge = 2;
+        this.currentRecharge = this.shieldRechargeRate;
       }
       else {
-        this.shieldRecharge -= deltaTime;
+        this.currentRecharge -= deltaTime;
       }
     }
 
@@ -92,7 +98,7 @@ export abstract class Attacker extends Base {
       Game.CONTEXT.strokeStyle = '#000000';
       Game.CONTEXT.fillStyle = this.Color;
     }
-    let percentFilled = (this.health / this.startingHealth);
+    let percentFilled = Math.max(0, (this.health / this.startingHealth));
 
     Game.CONTEXT.lineWidth = 4;
     Game.CONTEXT.strokeRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
@@ -128,7 +134,7 @@ export abstract class Attacker extends Base {
       this.health -= reduceBy;
     }
 
-    this.shieldRecharge = 2;
+    this.currentRecharge = this.shieldRechargeRate;
 
     if (this.health <= 0)
       return true;

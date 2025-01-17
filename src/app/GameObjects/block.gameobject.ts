@@ -4,8 +4,5 @@ import { Game } from "../Utility/game.model";
 import { Attacker } from "./attacker.gameobject";
 import { IGameObject } from "./gameobject.interface";
 
-export class Block extends Attacker {
-    public override OnCollision(collision: IGameObject): void {
-    }
-  
+export class Block extends Attacker {  
 }

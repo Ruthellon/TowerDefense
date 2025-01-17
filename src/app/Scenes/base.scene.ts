@@ -1,4 +1,6 @@
+import { Attacker } from "../GameObjects/attacker.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
+import { Missile } from "../GameObjects/missile.gameobject";
 import { IScene } from "./scene.interface";
 
 
@@ -11,28 +13,30 @@ export abstract class BaseLevel extends IScene {
     );
 
     for (let i = 0; i < this.objectsToDestroy.length; i++) {
-      for (let j = 0; j < this.GameObjects.length; j++) {
-        if (this.objectsToDestroy[i] === this.GameObjects[j]) {
-          this.GameObjects.splice(j, 1);
-          break;
-        }
+      if (this.objectsToDestroy[i].CollisionBox != null) {
+        this.colliderLocations.splice(this.colliderLocations.findIndex((obj) => obj === this.objectsToDestroy[i]), 1);
       }
+      this.GameObjects.splice(this.GameObjects.findIndex((obj) => obj === this.objectsToDestroy[i]), 1);
     }
     this.objectsToDestroy = [];
 
-    this.colliderLocations = [];
     this.GameObjects.forEach((obj) => {
-      if (obj.CollisionBox) {
-        this.colliderLocations.forEach((collider) => {
-          if (collider.CollisionBox!.IsOverlapping(obj.CollisionBox!)) {
-            obj.OnCollision(collider);
-            collider.OnCollision(obj);
-          }
-        });
-        this.colliderLocations.push(obj);
-      }
-      if (!obj.IsHidden && obj.IsEnabled)
+      if (!obj.IsHidden && obj.IsEnabled) {
         obj.Update(deltaTime);
+
+        if (obj.CollisionBox && obj.IsTrigger) {
+          this.colliderLocations.forEach((collider) => {
+            if (obj instanceof Missile && collider instanceof Attacker) {
+              let i = 0;
+              i++;
+            }
+            if (obj !== collider && collider.CollisionBox!.IsOverlapping(obj.CollisionBox!)) {
+              obj.OnCollision(collider);
+              collider.OnCollision(obj);
+            }
+          });
+        }
+      }
     });
   }
 
@@ -48,6 +52,9 @@ export abstract class BaseLevel extends IScene {
 
   LoadGameObject(gameObject: IGameObject) {
     gameObject.Load();
+    if (gameObject.CollisionBox != null)
+      this.colliderLocations.push(gameObject);
+
     this.gameObjects.push(gameObject);
   }
 

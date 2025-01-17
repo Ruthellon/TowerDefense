@@ -23,6 +23,10 @@ export class BlankLevelScene extends DefenseBaseLevel {
   protected get PlayerStartingHealth(): number {
     return this.startingHealth;
   }
+  private availableDefenders = [eDefenderTypes.BasicTurret, eDefenderTypes.PlasmaTurret];
+  protected override get AvailableDefenders(): eDefenderTypes[] {
+    return this.availableDefenders;
+  }
   private secondsBetweenMonsters: number = 1;
   protected override get SecondsBetweenMonsters(): number {
     return 1;
@@ -221,8 +225,8 @@ export class BlankLevelScene extends DefenseBaseLevel {
       round.EnemyBatches.forEach((batch) => {
         count += batch.EnemyCountStart;
 
-        if (batch.EnemyCanFly && this.AvailableDefenders.findIndex((type) => type === eDefenderTypes.SAMTurret) === -1) {
-          this.AvailableDefenders.push(eDefenderTypes.SAMTurret);
+        if (batch.EnemyCanFly && this.availableDefenders.findIndex((type) => type === eDefenderTypes.SAMTurret) === -1) {
+          this.availableDefenders.push(eDefenderTypes.SAMTurret);
         }
       });
 

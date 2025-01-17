@@ -386,7 +386,7 @@ export class EditBatch extends Base {
       return cells;
     }
     else {
-      return [Number(this.startLocalPrompt.Text!)]
+      return [Number(this.startLocalPrompt.Text!) - 1]
     }
   }
   public SetStartCells(nums: number[]): void {

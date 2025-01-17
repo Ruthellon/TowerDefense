@@ -153,6 +153,9 @@ export abstract class UtilityBase extends IGameObject {
   public SetCollisionBox(x: number, y: number, width: number, height: number): void {
 
   }
+  public get IsTrigger(): boolean {
+    return false;
+  }
   public OnCollision(collision: IGameObject): void {
 
   }

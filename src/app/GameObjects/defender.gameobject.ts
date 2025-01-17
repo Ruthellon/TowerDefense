@@ -64,7 +64,7 @@ export abstract class Defender extends Base {
     }
     else if (this.EnemyInRange != null) {
       if (this.cooldownTimer <= 0) {
-        if (this.EnemyInRange.ReduceHealth(this.Damage, this.IsPlasmaWeapon)) {
+        if (this.FireWeapon(this.EnemyInRange)) {
           this.kills++;
           this.enemyInRange = null;
         }
@@ -81,7 +81,7 @@ export abstract class Defender extends Base {
             Math.max(this.EnemyInRange.Location.Y, Math.min(this.CenterMassLocation.Y, this.EnemyInRange.Location.Y + this.EnemyInRange.Size.Y)),
             this.EnemyInRange.Location.Z)));
 
-          if (distance > this.Range) {
+          if (distance > this.Range || this.EnemyInRange.Health <= 0) {
             this.enemyInRange = null;
           }
         }
@@ -150,7 +150,7 @@ export abstract class Defender extends Base {
   }
 
   public FindTarget(enemies: Attacker[]) {
-    if (!this.enemyInRange && this.Range && enemies.length > 0) {
+    if (this.EnemyInRange === null && this.Range && enemies.length > 0) {
       let bestChoice: Attacker | undefined;
       for (let i = 0; i < enemies.length; i++) {
         let enemy = enemies[i];
@@ -182,6 +182,10 @@ export abstract class Defender extends Base {
       if (bestChoice)
         this.enemyInRange = bestChoice;
     }
+  }
+
+  protected FireWeapon(enemy: Attacker): boolean {
+    return enemy.ReduceHealth(this.Damage, this.IsPlasmaWeapon);
   }
 
   protected altColor: string | undefined;

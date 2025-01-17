@@ -1,5 +1,6 @@
 import { Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
+import { Attacker } from "./attacker.gameobject";
 import { Defender } from "./defender.gameobject";
 
 export class PlasmaTurret extends Defender {
@@ -12,7 +13,7 @@ export class PlasmaTurret extends Defender {
   public get Description(): string {
     return this.description;
   }
-  private upgradeDescription = '';
+  private upgradeDescription = 'Small bump to Damage and Speed.';
   public get UpgradeDescription(): string {
     return this.upgradeDescription;
   }
@@ -37,7 +38,7 @@ export class PlasmaTurret extends Defender {
   public override get ShootingCooldown(): number {
     return this.shootingCooldown;
   }
-  private value: number | null = 10;
+  private value: number = 10;
   public override get Value(): number | null {
     return this.value;
   }
@@ -65,6 +66,7 @@ export class PlasmaTurret extends Defender {
     this.range = this.Size.X * 1.5;
     this.color = '#5555aa';
     this.altColor = '#888888';
+    this.cost = 15;
   }
 
   public override Upgrade(levelStarted: boolean) {
@@ -75,24 +77,25 @@ export class PlasmaTurret extends Defender {
       this.altColor = '#22dd22';
       this.damage = 2;
       this.shootingCooldown = .45;
-      this.cost = 10;
-      this.value = 20;
+      this.cost = 20;
+      this.value += 15;
     }
     else if (this.level === 2) {
       this.level = 3;
       this.altColor = '#2222dd';
       this.damage = 3;
       this.shootingCooldown = .4;
-      this.cost = 10;
-      this.value = 30;
+      this.cost = 40;
+      this.value += 20;
     }
     else if (this.level === 3) {
       this.level = 4;
       this.altColor = '#dd22dd';
       this.damage = 4;
       this.shootingCooldown = .35;
-      this.cost = 20;
-      this.value = 40;
+      this.cost = 80;
+      this.value += 40;
+      this.upgradeDescription = 'Bigger bump to Damage, Speed, and Range.';
     }
     else if (this.level === 4) {
       this.level = 5;
@@ -102,7 +105,7 @@ export class PlasmaTurret extends Defender {
       this.damage = 8;
       this.shootingCooldown = .25;
       this.cost = null;
-      this.value = 70;
+      this.value += 80;
     }
   }
 }

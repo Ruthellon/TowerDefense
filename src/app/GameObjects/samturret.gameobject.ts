@@ -1,6 +1,8 @@
 import { Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
+import { Attacker } from "./attacker.gameobject";
 import { Defender } from "./defender.gameobject";
+import { Missile } from "./missile.gameobject";
 
 export class SAMTurret extends Defender {
   public get Name(): string {
@@ -33,7 +35,7 @@ export class SAMTurret extends Defender {
   public override get Cost(): number | null {
     return this.cost;
   }
-  private shootingCooldown = 1.5;
+  private shootingCooldown = 3.0;
   public override get ShootingCooldown(): number {
     return this.shootingCooldown;
   }
@@ -42,12 +44,12 @@ export class SAMTurret extends Defender {
     return this.value;
   }
   public get CanShootGround(): boolean {
-    return true;
-  }
-  public get CanShootAerial(): boolean {
     return false;
   }
-  private range: number = 150;
+  public get CanShootAerial(): boolean {
+    return true;
+  }
+  private range: number = 300;
   public get Range(): number {
     return this.range;
   }
@@ -62,7 +64,7 @@ export class SAMTurret extends Defender {
   public override Load(): void {
     super.Load();
 
-    this.range = this.Size.X * 1.5;
+    this.range = this.Size.X * 3.0;
     this.color = '#aa55aa';
     this.altColor = '#888888';
   }
@@ -103,5 +105,14 @@ export class SAMTurret extends Defender {
       this.cost = null;
       this.value = 50;
     }
+  }
+
+  public override FireWeapon(enemy: Attacker): boolean {
+    let missile = new Missile();
+    missile.SetLocation(this.CenterMassLocation.X, this.CenterMassLocation.Y, this.Location.Z);
+    missile.SetTarget(enemy);
+    missile.SetSize(this.Size.X / 4, this.Size.Y / 4);
+    Game.TheScene.LoadGameObject(missile);
+    return false;
   }
 }
