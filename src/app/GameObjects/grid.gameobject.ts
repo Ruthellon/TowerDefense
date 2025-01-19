@@ -136,6 +136,7 @@ export class Grid extends Base {
           this.mouseHighlight = new Vector2((this.mouseHighlightCell.X * this.gridCellSize) + this.remainderX,
             (this.mouseHighlightCell.Y * this.gridCellSize) + this.remainderY);
         }
+        this.mousePreviousClickCell = null;
       }
       else {
         this.mouseHighlightCell = null;
