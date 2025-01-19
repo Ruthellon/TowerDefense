@@ -339,12 +339,12 @@ export class Grid extends Base {
     }
 
     cells.forEach((c) => {
-      this.grid[c.X][c.Y] = ePathCellStatus.Blocked;
+      this.grid[c.X][c.Y] += ePathCellStatus.Blocked;
     });
 
     if (calculatePath && !this.CalculatePaths()) {
       cells.forEach((c) => {
-        this.grid[c.X][c.Y] = ePathCellStatus.Open;
+        this.grid[c.X][c.Y] -= ePathCellStatus.Blocked;
       });
       return false;
     }
