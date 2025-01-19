@@ -578,6 +578,7 @@ export class EditStageSettings extends Base {
 
         enemyBatch.EnemyValue = batch.EnemyValue;
         enemyBatch.TimeBetweenStart = (batch.EnemyCooldownTime / 1000);
+        enemyBatch.BatchDelayTime = (batch.BatchDelayTime / 1000);
         enemyBatch.EnemyCanFly = batch.EnemiesCanFly;
         enemyBatch.ShieldValue = batch.ShieldValue;
         round.EnemyBatches.push(enemyBatch);

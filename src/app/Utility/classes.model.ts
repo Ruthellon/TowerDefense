@@ -131,6 +131,7 @@ export class BlankSceneInfo {
 export class EnemyBatch {
   public EnemyCountStart: number = 0;
   public TimeBetweenStart: number = 0;
+  public BatchDelayTime: number = 0;
   public EnemySpeed: number = 0;
   public EnemyHealth: number = 0;
   public EnemyValue: number = 0;

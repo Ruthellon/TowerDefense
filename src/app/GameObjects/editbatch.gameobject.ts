@@ -9,11 +9,15 @@ export class EditBatch extends Base {
   public override get Value(): number | null {
     return null;
   }
+  private shouldDelete: boolean = false;
+  public ShouldDelete(): boolean {
+    return this.shouldDelete;
+  }
 
   public override Load() {
     super.Load();
 
-    this.closeButton.SetLocation(this.ObjectRect.Center.X - 50, this.ObjectRect.Center.Y + 150, eLayerTypes.UI);
+    this.closeButton.SetLocation(this.ObjectRect.BottomRight.X - 125, this.ObjectRect.BottomRight.Y - 25, eLayerTypes.UI);
     this.closeButton.SetSize(100, 50);
     this.closeButton.SetText('Close');
     this.closeButton.SetClickFunction(() => {
@@ -22,11 +26,22 @@ export class EditBatch extends Base {
     this.closeButton.Load();
     this.gameObjects.push(this.closeButton);
 
+    this.deleteButton.SetLocation(this.ObjectRect.BottomRight.X - 250, this.ObjectRect.BottomRight.Y - 25, eLayerTypes.UI);
+    this.deleteButton.SetSize(100, 50);
+    this.deleteButton.SetText('Delete');
+    this.deleteButton.SetClickFunction(() => {
+      this.isHidden = true;
+      this.shouldDelete = true;
+    });
+    this.deleteButton.Load();
+    this.gameObjects.push(this.deleteButton);
+    
     this.numEnemiesPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 25, eLayerTypes.UI);
     this.timeBetweenPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 100, eLayerTypes.UI);
-    this.speedPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 175, eLayerTypes.UI);
-    this.healthPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 250, eLayerTypes.UI);
-    this.canFlyPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 325, eLayerTypes.UI);
+    this.timeDelayPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 175, eLayerTypes.UI);
+    this.speedPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 250, eLayerTypes.UI);
+    this.healthPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 325, eLayerTypes.UI);
+    this.canFlyPrompt.SetLocation(this.ObjectRect.Center.X - 125, this.Location.Y + 400, eLayerTypes.UI);
 
     this.valuePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 25, eLayerTypes.UI);
     this.sizePrompt.SetLocation(this.ObjectRect.Center.X + 125, this.Location.Y + 100, eLayerTypes.UI);
@@ -36,6 +51,7 @@ export class EditBatch extends Base {
 
     this.numEnemiesPrompt.SetSize(75, 50);
     this.timeBetweenPrompt.SetSize(75, 50);
+    this.timeDelayPrompt.SetSize(75, 50);
     this.speedPrompt.SetSize(75, 50);
     this.healthPrompt.SetSize(75, 50);
     this.valuePrompt.SetSize(75, 50);
@@ -47,6 +63,7 @@ export class EditBatch extends Base {
 
     this.numEnemiesPrompt.SetText('5');
     this.timeBetweenPrompt.SetText('500');
+    this.timeDelayPrompt.SetText('0');
     this.speedPrompt.SetText('5');
     this.healthPrompt.SetText('15');
     this.valuePrompt.SetText('3');
@@ -58,6 +75,7 @@ export class EditBatch extends Base {
 
     this.numEnemiesPrompt.SetPrompt('Set number of enemies for batch (1 - 50):');
     this.timeBetweenPrompt.SetPrompt('Set time between spawns (in milliseconds) (100 - 5000):');
+    this.timeDelayPrompt.SetPrompt('Set time between spawns (in milliseconds) (0 - 30000):');
     this.speedPrompt.SetPrompt('Set speed of enemy (1 - 20):');
     this.healthPrompt.SetPrompt('Set health of enemy (1 - 1000):');
     this.valuePrompt.SetPrompt('Set value of enemy (0 - 1000):');
@@ -106,6 +124,26 @@ export class EditBatch extends Base {
       }
 
       return '500';
+    });
+    this.timeDelayPrompt.SetVerifyFunction((text: string | null) => {
+      if (text) {
+        let textAsNumber = Number(text);
+
+        if (isNaN(textAsNumber)) {
+          alert('Enter a valid number');
+          return '0';
+        }
+
+        if (textAsNumber < 0)
+          return '0';
+
+        if (textAsNumber > 30000)
+          return '30000';
+
+        return textAsNumber.toFixed(0);
+      }
+
+      return '0';
     });
     this.speedPrompt.SetVerifyFunction((text: string | null) => {
       if (text) {
@@ -284,6 +322,7 @@ export class EditBatch extends Base {
 
     this.numEnemiesPrompt.SetLabel('Number of Enemies:');
     this.timeBetweenPrompt.SetLabel('Time Between:');
+    this.timeDelayPrompt.SetLabel('Start Delay:');
     this.speedPrompt.SetLabel('Speed:');
     this.healthPrompt.SetLabel('Health:');
     this.valuePrompt.SetLabel('Credit Value:');
@@ -295,6 +334,7 @@ export class EditBatch extends Base {
 
     this.numEnemiesPrompt.Load();
     this.timeBetweenPrompt.Load();
+    this.timeDelayPrompt.Load();
     this.speedPrompt.Load();
     this.healthPrompt.Load();
     this.valuePrompt.Load();
@@ -306,6 +346,7 @@ export class EditBatch extends Base {
 
     this.gameObjects.push(this.numEnemiesPrompt);
     this.gameObjects.push(this.timeBetweenPrompt);
+    this.gameObjects.push(this.timeDelayPrompt);
     this.gameObjects.push(this.speedPrompt);
     this.gameObjects.push(this.healthPrompt);
     this.gameObjects.push(this.valuePrompt);
@@ -417,6 +458,13 @@ export class EditBatch extends Base {
     this.timeBetweenPrompt.SetText(num.toFixed(0));
   }
 
+  public get BatchDelayTime(): number {
+    return Number(this.timeDelayPrompt.Text!);
+  }
+  public SetBatchDelayTime(num: number): void {
+    this.timeDelayPrompt.SetText(num.toFixed(0));
+  }
+
   public get EnemiesCanFly(): boolean {
     return (this.canFlyPrompt.Text! === '1');
   }
@@ -431,10 +479,12 @@ export class EditBatch extends Base {
     this.shieldValuePrompt.SetText(val.toFixed(0));
   }
 
+  private deleteButton: Button = new Button();
   private closeButton: Button = new Button();
 
   private numEnemiesPrompt: TextBox = new TextBox();
   private timeBetweenPrompt: TextBox = new TextBox();
+  private timeDelayPrompt: TextBox = new TextBox();
   private speedPrompt: TextBox = new TextBox();
   private healthPrompt: TextBox = new TextBox();
   private valuePrompt: TextBox = new TextBox();

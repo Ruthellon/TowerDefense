@@ -121,6 +121,7 @@ export class EditRound extends Base {
       batchEdit.SetStartCells(batch.EnemyStartCells);
       batchEdit.SetEnemyValue(batch.EnemyValue);
       batchEdit.SetEnemyCooldown(batch.TimeBetweenStart * 1000);
+      batchEdit.SetBatchDelayTime(batch.BatchDelayTime * 1000);
       batchEdit.SetEnemyCanFly(batch.EnemyCanFly);
       batchEdit.SetNumberEnemies(batch.EnemyCountStart);
       batchEdit.SetShieldValue(batch.ShieldValue);

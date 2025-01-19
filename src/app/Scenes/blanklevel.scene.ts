@@ -134,6 +134,11 @@ export class BlankLevelScene extends DefenseBaseLevel {
 
     for (let i = 0; i < round.EnemyBatches.length; i++) {
       let batch = round.EnemyBatches[i];
+      if (batch.BatchDelayTime > 0) {
+        batch.BatchDelayTime -= deltaTime;
+        continue;
+      }
+
       if (batch.TimeBetweenCurrent <= 0 && batch.EnemyCountCurrent < batch.EnemyCountStart) {
         let newAttacker = new Block();
         newAttacker.SetDamage(batch.EnemyDamage);
