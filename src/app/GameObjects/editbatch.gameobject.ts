@@ -17,7 +17,7 @@ export class EditBatch extends Base {
   public override Load() {
     super.Load();
 
-    this.closeButton.SetLocation(this.ObjectRect.BottomRight.X - 125, this.ObjectRect.BottomRight.Y - 25, eLayerTypes.UI);
+    this.closeButton.SetLocation(this.ObjectRect.BottomRight.X - 125, this.ObjectRect.BottomRight.Y - 75, eLayerTypes.UI);
     this.closeButton.SetSize(100, 50);
     this.closeButton.SetText('Close');
     this.closeButton.SetClickFunction(() => {
@@ -26,7 +26,7 @@ export class EditBatch extends Base {
     this.closeButton.Load();
     this.gameObjects.push(this.closeButton);
 
-    this.deleteButton.SetLocation(this.ObjectRect.BottomRight.X - 250, this.ObjectRect.BottomRight.Y - 25, eLayerTypes.UI);
+    this.deleteButton.SetLocation(this.ObjectRect.BottomRight.X - 250, this.ObjectRect.BottomRight.Y - 75, eLayerTypes.UI);
     this.deleteButton.SetSize(100, 50);
     this.deleteButton.SetText('Delete');
     this.deleteButton.SetClickFunction(() => {
