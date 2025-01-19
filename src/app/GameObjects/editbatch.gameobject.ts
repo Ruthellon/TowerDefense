@@ -391,7 +391,7 @@ export class EditBatch extends Base {
   }
   public SetStartCells(nums: number[]): void {
     let text = (nums[0] + 1).toFixed(0);
-    if (nums.length > 3 && ((nums[nums.length - 1] + 1) - (nums[0] + 1)) === nums.length) {
+    if (nums.length > 3 && ((nums[nums.length - 1]) - (nums[0]) + 1) === nums.length) {
       text += '-' + (nums[nums.length - 1] + 1).toFixed(0);
     }
     else {
