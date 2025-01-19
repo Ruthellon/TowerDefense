@@ -80,9 +80,17 @@ export class EditRound extends Base {
   public override Update(deltaTime: number) {
     if (!this.isHidden && this.isEnabled) {
       this.GameObjects.forEach((obj) => {
-        if (!obj.IsHidden && obj.IsEnabled)
+        if (!obj.IsHidden && obj.IsEnabled) {
           obj.Update(deltaTime);
+        }
       });
+
+      for (let i = 0; i < this.batchButtons.length; i++) {
+        if (this.BatchEditors[i].ShouldDelete) {
+          this.DestroyGameObject(this.BatchEditors[i]);
+          this.batchButtons.splice(i, 1);
+        }
+      }
     }
   }
 

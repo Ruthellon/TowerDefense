@@ -10,7 +10,7 @@ export class EditBatch extends Base {
     return null;
   }
   private shouldDelete: boolean = false;
-  public ShouldDelete(): boolean {
+  public get ShouldDelete(): boolean {
     return this.shouldDelete;
   }
 
