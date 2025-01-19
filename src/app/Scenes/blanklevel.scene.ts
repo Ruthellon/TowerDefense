@@ -150,13 +150,13 @@ export class BlankLevelScene extends DefenseBaseLevel {
         newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCells[startCell]].X * this.GridCellSize,
           this.StartingCells[batch.EnemyStartCells[startCell]].Y * this.GridCellSize,
           eLayerTypes.Object - i);
-        newAttacker.SetPath(this.GetPath(batch.EnemyStartCells[startCell]), this.GridCellSize);
         newAttacker.SetSize(batch.EnemySize, batch.EnemySize);
         newAttacker.SetStartingSpeed(batch.EnemySpeed);
         newAttacker.SetStartingHealth(batch.EnemyHealth);
         newAttacker.SetValue(batch.EnemyValue);
         newAttacker.SetCanFly(batch.EnemyCanFly);
         newAttacker.SetShieldValue(batch.ShieldValue);
+        newAttacker.SetPath(this.GetPath(batch.EnemyStartCells[startCell]), this.GridCellSize);
 
         if (batch.EnemyCanFly)
           newAttacker.SetColor('#BB22BB');
