@@ -66,29 +66,25 @@ export class Grid extends Base {
       }
     });
 
-    let mouseHighlight: Vector2 | undefined;
     if (Game.MOUSE_LOCATION.X > 0 && Game.MOUSE_LOCATION.Y > 0) {
-      if (this.PlayableArea.ContainsPoint(Game.MOUSE_LOCATION)) {
+      if (this.PlayableArea.ContainsPoint(Game.MOUSE_LOCATION) && !this.isDevMode) {
         let vectorX = Math.floor(Math.max((Game.MOUSE_LOCATION.X - this.remainderX - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.X) / this.gridCellSize);
         let vectorY = Math.floor(Math.max((Game.MOUSE_LOCATION.Y - this.remainderY - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.Y) / this.gridCellSize);
-        mouseHighlight = new Vector2(vectorX, vectorY);
-        this.mouseHighlightCell = new Vector2(Math.min((vectorX * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
+        this.mouseHighlightCell = new Vector2(vectorX, vectorY);
+        this.mouseHighlight = new Vector2(Math.min((vectorX * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
           Math.min((vectorY * this.gridCellSize) + this.remainderY, (this.PlayableArea.BottomRight.Y - this.obstacleCellSize)));
       }
       else if (this.isDevMode) {
         let vectorX = Math.floor((Game.MOUSE_LOCATION.X - this.remainderX) / this.gridCellSize);
         let vectorY = Math.floor((Game.MOUSE_LOCATION.Y - this.remainderY) / this.gridCellSize);
-        mouseHighlight = new Vector2(vectorX, vectorY);
-        this.mouseHighlightCell = new Vector2((vectorX * this.gridCellSize) + this.remainderX,
+        this.mouseHighlightCell = new Vector2(vectorX, vectorY);
+        this.mouseHighlight = new Vector2((vectorX * this.gridCellSize) + this.remainderX,
           (vectorY * this.gridCellSize) + this.remainderY);
-      }
-      else {
-        this.mouseHighlightCell = null;
       }
     }
 
     if (Game.MOUSE_PRESSED) {
-      if (this.PlayableArea.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
+      if (this.PlayableArea.ContainsPoint(Game.MOUSE_PRESS_LOCATION) && !this.isDevMode) {
         let vectorX = Math.floor(Math.max((Game.MOUSE_PRESS_LOCATION.X - this.remainderX - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.X) / this.gridCellSize);
         let vectorY = Math.floor(Math.max((Game.MOUSE_PRESS_LOCATION.Y - this.remainderY - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.Y) / this.gridCellSize);
 
@@ -103,36 +99,48 @@ export class Grid extends Base {
     }
     else if (this.mousePreviousClickCell) {
       let mouseClickCell: Vector2 = new Vector2();
-      if (this.PlayableArea.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
+      if (this.PlayableArea.ContainsPoint(Game.MOUSE_PRESS_LOCATION) && !this.isDevMode) {
         let vectorX = Math.floor(Math.max((Game.MOUSE_PRESS_LOCATION.X - this.remainderX - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.X) / this.gridCellSize);
         let vectorY = Math.floor(Math.max((Game.MOUSE_PRESS_LOCATION.Y - this.remainderY - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.Y) / this.gridCellSize);
 
         mouseClickCell = new Vector2(vectorX, vectorY);
       }
-      else if (!this.isDevMode) {
+      else if (this.isDevMode) {
         let vectorX = Math.floor((Game.MOUSE_PRESS_LOCATION.X - this.remainderX) / this.gridCellSize);
         let vectorY = Math.floor((Game.MOUSE_PRESS_LOCATION.Y - this.remainderY) / this.gridCellSize);
 
         mouseClickCell = new Vector2(vectorX, vectorY);
       }
 
-      if (mouseHighlight && mouseHighlight.isEqual(mouseClickCell) && mouseClickCell.isEqual(this.mousePreviousClickCell)) {
+      if (this.mouseHighlightCell !== null && mouseClickCell.isEqual(this.mouseHighlightCell) && mouseClickCell.isEqual(this.mousePreviousClickCell)) {
         if (this.clickFunction) {
           this.clickFunction();
         }
 
         this.mouseHighlightCell = null;
+        this.mouseHighlight = null;
         this.mousePreviousClickCell = null;
       }
-      else if (!mouseHighlight) {
-        if (this.PlayableArea.ContainsPoint(Game.MOUSE_PRESS_LOCATION)) {
+      else if (this.mouseHighlightCell === null) {
+        if (this.PlayableArea.ContainsPoint(Game.MOUSE_PRESS_LOCATION) && !this.isDevMode) {
           this.mouseHighlightCell = new Vector2(Math.min((mouseClickCell.X * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
             Math.min((mouseClickCell.X * this.gridCellSize) + this.remainderY, (this.PlayableArea.BottomRight.Y - this.obstacleCellSize)));
+
+          this.mouseHighlight = new Vector2(Math.min((this.mouseHighlightCell.X * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
+            Math.min((this.mouseHighlightCell.Y * this.gridCellSize) + this.remainderY, (this.PlayableArea.BottomRight.Y - this.obstacleCellSize)));
         }
         else if (this.isDevMode) {
           this.mouseHighlightCell = new Vector2((mouseClickCell.X * this.gridCellSize) + this.remainderX,
             (mouseClickCell.Y * this.gridCellSize) + this.remainderY);
+
+          this.mouseHighlight = new Vector2((this.mouseHighlightCell.X * this.gridCellSize) + this.remainderX,
+            (this.mouseHighlightCell.Y * this.gridCellSize) + this.remainderY);
         }
+      }
+      else {
+        this.mouseHighlightCell = null;
+        this.mouseHighlight = null;
+        this.mousePreviousClickCell = null;
       }
     }
   }
@@ -210,16 +218,16 @@ export class Grid extends Base {
 
     super.Draw(deltaTime);
 
-    if (this.mouseHighlightCell) {
+    if (this.mouseHighlight) {
       Game.CONTEXT.lineWidth = 5;
       Game.CONTEXT.strokeStyle = '#ffffff';
       
-      if (this.PlayableArea.ContainsPoint(this.mouseHighlightCell)) {
-        Game.CONTEXT.strokeRect(this.mouseHighlightCell.X, this.mouseHighlightCell.Y,
+      if (this.PlayableArea.ContainsPoint(this.mouseHighlight) && !this.isDevMode) {
+        Game.CONTEXT.strokeRect(this.mouseHighlight.X, this.mouseHighlight.Y,
           this.obstacleCellSize, this.obstacleCellSize);
       }
       else if (this.isDevMode) {
-        Game.CONTEXT.strokeRect(this.mouseHighlightCell.X, this.mouseHighlightCell.Y,
+        Game.CONTEXT.strokeRect(this.mouseHighlight.X, this.mouseHighlight.Y,
           this.gridCellSize, this.gridCellSize);
       }
     }
@@ -578,6 +586,7 @@ export class Grid extends Base {
 
   private mousePreviousClickCell: Vector2 | null = null;
   private mouseHighlightCell: Vector2 | null = null;
+  private mouseHighlight: Vector2 | null = null;
 
   private showAttackerPath: boolean = false;
   private showGrid: boolean = false;
