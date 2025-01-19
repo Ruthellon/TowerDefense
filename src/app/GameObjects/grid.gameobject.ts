@@ -67,22 +67,19 @@ export class Grid extends Base {
     });
 
     if (Game.MOUSE_LOCATION.X > 0 && Game.MOUSE_LOCATION.Y > 0) {
-      if (this.previousMouse === null || !this.previousMouse.isEqual(Game.MOUSE_LOCATION)) {
-        this.previousMouse = Game.MOUSE_LOCATION;
-        if (this.PlayableArea.ContainsPoint(Game.MOUSE_LOCATION) && !this.isDevMode) {
-          let vectorX = Math.floor(Math.max((Game.MOUSE_LOCATION.X - this.remainderX - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.X) / this.gridCellSize);
-          let vectorY = Math.floor(Math.max((Game.MOUSE_LOCATION.Y - this.remainderY - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.Y) / this.gridCellSize);
-          this.mouseHighlightCell = new Vector2(vectorX, vectorY);
-          this.mouseHighlight = new Vector2(Math.min((vectorX * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
-            Math.min((vectorY * this.gridCellSize) + this.remainderY, (this.PlayableArea.BottomRight.Y - this.obstacleCellSize)));
-        }
-        else if (this.isDevMode) {
-          let vectorX = Math.floor((Game.MOUSE_LOCATION.X - this.remainderX) / this.gridCellSize);
-          let vectorY = Math.floor((Game.MOUSE_LOCATION.Y - this.remainderY) / this.gridCellSize);
-          this.mouseHighlightCell = new Vector2(vectorX, vectorY);
-          this.mouseHighlight = new Vector2((vectorX * this.gridCellSize) + this.remainderX,
-            (vectorY * this.gridCellSize) + this.remainderY);
-        }
+      if (this.PlayableArea.ContainsPoint(Game.MOUSE_LOCATION) && !this.isDevMode) {
+        let vectorX = Math.floor(Math.max((Game.MOUSE_LOCATION.X - this.remainderX - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.X) / this.gridCellSize);
+        let vectorY = Math.floor(Math.max((Game.MOUSE_LOCATION.Y - this.remainderY - ((this.obstacleCellSize - this.gridCellSize) / 2)), this.PlayableArea.Y) / this.gridCellSize);
+        this.mouseHighlightCell = new Vector2(vectorX, vectorY);
+        this.mouseHighlight = new Vector2(Math.min((vectorX * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
+          Math.min((vectorY * this.gridCellSize) + this.remainderY, (this.PlayableArea.BottomRight.Y - this.obstacleCellSize)));
+      }
+      else if (this.isDevMode) {
+        let vectorX = Math.floor((Game.MOUSE_LOCATION.X - this.remainderX) / this.gridCellSize);
+        let vectorY = Math.floor((Game.MOUSE_LOCATION.Y - this.remainderY) / this.gridCellSize);
+        this.mouseHighlightCell = new Vector2(vectorX, vectorY);
+        this.mouseHighlight = new Vector2((vectorX * this.gridCellSize) + this.remainderX,
+          (vectorY * this.gridCellSize) + this.remainderY);
       }
     }
 
@@ -137,6 +134,11 @@ export class Grid extends Base {
           this.mouseHighlight = new Vector2((this.mouseHighlightCell.X * this.gridCellSize) + this.remainderX,
             (this.mouseHighlightCell.Y * this.gridCellSize) + this.remainderY);
         }
+        this.mousePreviousClickCell = null;
+      }
+      else {
+        this.mouseHighlightCell = null;
+        this.mouseHighlight = null;
         this.mousePreviousClickCell = null;
       }
     }
@@ -580,8 +582,6 @@ export class Grid extends Base {
   private gridRows: number = 0;
   private uiCellSize: number = 100;
   private obstacleCellSize: number = 100;
-
-  private previousMouse: Vector2 | null = null;
 
   private mousePreviousClickCell: Vector2 | null = null;
   private mouseHighlightCell: Vector2 | null = null;
