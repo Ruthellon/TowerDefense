@@ -126,15 +126,13 @@ export class Grid extends Base {
       }
       else if (this.mouseHighlightCell === null) {
         if (this.PlayableArea.ContainsPoint(Game.MOUSE_PRESS_LOCATION) && !this.isDevMode) {
-          this.mouseHighlightCell = new Vector2(Math.min((mouseClickCell.X * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
-            Math.min((mouseClickCell.X * this.gridCellSize) + this.remainderY, (this.PlayableArea.BottomRight.Y - this.obstacleCellSize)));
+          this.mouseHighlightCell = mouseClickCell;
 
           this.mouseHighlight = new Vector2(Math.min((this.mouseHighlightCell.X * this.gridCellSize) + this.remainderX, (this.PlayableArea.BottomRight.X - this.obstacleCellSize)),
             Math.min((this.mouseHighlightCell.Y * this.gridCellSize) + this.remainderY, (this.PlayableArea.BottomRight.Y - this.obstacleCellSize)));
         }
         else if (this.isDevMode) {
-          this.mouseHighlightCell = new Vector2((mouseClickCell.X * this.gridCellSize) + this.remainderX,
-            (mouseClickCell.Y * this.gridCellSize) + this.remainderY);
+          this.mouseHighlightCell = mouseClickCell;
 
           this.mouseHighlight = new Vector2((this.mouseHighlightCell.X * this.gridCellSize) + this.remainderX,
             (this.mouseHighlightCell.Y * this.gridCellSize) + this.remainderY);
