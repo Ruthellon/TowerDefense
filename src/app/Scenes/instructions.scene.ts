@@ -89,6 +89,9 @@ export class InstructionsScene extends BaseLevel {
     this.fetchCustomsButton.SetText('Open Custom List');
     this.fetchCustomsButton.SetClickFunction(async () => {
       this.customSceneOpen = true;
+      this.gameObjects.forEach((go) => {
+        go.SetEnabled(false);
+      });
 
       this.sceneButtons = [];
       this.scenes = await Game.GetCustomScenes();
@@ -104,6 +107,8 @@ export class InstructionsScene extends BaseLevel {
         sceneButton.SetClickFunction(async () => {
           this.selectedSceneIndex = i;
           this.selectedScene = await Game.GetCustomScene(this.scenes[i].unid);
+
+          this.sceneButtons.forEach((butt) => butt.SetEnabled(false));
         });
         sceneButton.Load();
         this.sceneButtons.push(sceneButton);
@@ -162,7 +167,13 @@ export class InstructionsScene extends BaseLevel {
     this.customClose.SetLocation((Game.CANVAS_WIDTH / 2 + 390), 35, eLayerTypes.UI);
     this.customClose.SetSize(50, 50);
     this.customClose.SetText('X');
-    this.customClose.SetClickFunction(() => this.customSceneOpen = false);
+    this.customClose.SetClickFunction(() => {
+      this.customSceneOpen = false;
+
+      this.gameObjects.forEach((go) => {
+        go.SetEnabled(true);
+      });
+    });
     this.customClose.Load();
 
 
@@ -197,7 +208,11 @@ export class InstructionsScene extends BaseLevel {
     this.closeCustomWindowButton.SetLocation((Game.CANVAS_WIDTH / 2 - 100), 375, eLayerTypes.UI);
     this.closeCustomWindowButton.SetSize(200, 50);
     this.closeCustomWindowButton.SetText('Close');
-    this.closeCustomWindowButton.SetClickFunction(() => this.selectedScene = null);
+    this.closeCustomWindowButton.SetClickFunction(() => {
+      this.selectedScene = null;
+
+      this.sceneButtons.forEach((butt) => butt.SetEnabled(true));
+    });
     this.closeCustomWindowButton.Load();
 
     this.editStageButton.SetLocation(Game.CANVAS_WIDTH / 2 - 100, Game.CANVAS_HEIGHT / 2, eLayerTypes.UI);

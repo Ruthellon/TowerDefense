@@ -63,6 +63,15 @@ export class EditRound extends Base {
           this.batchButtons[i].SetText(this.batchEditors[i].NumberEnemies.toFixed(0));
         }
       }
+
+      if (this.indexOpen !== undefined) {
+        if (this.batchEditors[this.indexOpen].IsHidden) {
+          this.indexOpen = undefined;
+
+          this.batchButtons.forEach((butt) => butt.SetEnabled(true));
+          this.addBatchButton.SetEnabled(true);
+        }
+      }
     }
   }
 
@@ -121,10 +130,15 @@ export class EditRound extends Base {
     batchButt.SetText(batchEdit.NumberEnemies.toFixed(0));
     batchButt.SetClickFunction(() => {
       this.batchEditors[count].SetHidden(false);
+      this.indexOpen = count;
+      this.batchButtons.forEach((butt) => butt.SetEnabled(false));
+      this.addBatchButton.SetEnabled(false);
     });
     this.LoadGameObject(batchButt);
     this.batchButtons.push(batchButt);
   }
+
+  private indexOpen: number | undefined;
 
   private batchButtons: Button[] = [];
   private batchEditors: EditBatch[] = [];
