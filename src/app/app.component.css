@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh; /* Full viewport height */
-  width: 100vw; /* Full viewport width */
+  /*width: 100vw;*/ /* Full viewport width */
   background: #f0f0f0; /* Optional background color */
   overflow: hidden; /* Prevent scrollbars */
 }

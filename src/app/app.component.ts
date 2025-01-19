@@ -148,8 +148,6 @@ export class AppComponent implements AfterViewInit {
     this.update((deltaTime / 1000));
     this.draw((deltaTime / 1000));
 
-    Game.SetMouseLocation(-1, -1);
-
     requestAnimationFrame(this.animate.bind(this));
   }
 
