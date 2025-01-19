@@ -141,11 +141,6 @@ export class Grid extends Base {
         }
         this.mousePreviousClickCell = null;
       }
-      else {
-        this.mouseHighlightCell = null;
-        this.mouseHighlight = null;
-        this.mousePreviousClickCell = null;
-      }
     }
   }
 
