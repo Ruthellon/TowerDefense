@@ -9,10 +9,6 @@ export class EditBatch extends Base {
   public override get Value(): number | null {
     return null;
   }
-  private shouldDelete: boolean = false;
-  public get ShouldDelete(): boolean {
-    return this.shouldDelete;
-  }
 
   public override Load() {
     super.Load();
@@ -31,7 +27,7 @@ export class EditBatch extends Base {
     this.deleteButton.SetText('Delete');
     this.deleteButton.SetClickFunction(() => {
       this.isHidden = true;
-      this.shouldDelete = true;
+      this.SetNumberEnemies(0);
     });
     this.deleteButton.Load();
     this.gameObjects.push(this.deleteButton);

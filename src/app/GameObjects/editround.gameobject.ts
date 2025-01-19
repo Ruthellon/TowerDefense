@@ -42,33 +42,6 @@ export class EditRound extends Base {
     });
     this.addBatchButton.Load();
     this.gameObjects.push(this.addBatchButton);
-    
-    //this.enemyCountPrompt.SetLocation(this.ObjectRect.Center.X - 75, this.Location.Y + 50, eLayerTypes.UI + 1);
-    //this.enemyCountPrompt.SetSize(150, 50);
-    //this.enemyCountPrompt.SetText('10');
-    //this.enemyCountPrompt.SetPrompt('Set Enemy Count (1 - 1000)');
-    //this.enemyCountPrompt.SetVerifyFunction((text: string | null) => {
-    //  if (text) {
-    //    let textAsNumber = Number(text);
-
-    //    if (isNaN(textAsNumber)) {
-    //      alert('Enter a valid number');
-    //      return '10';
-    //    }
-
-    //    if (textAsNumber < 1)
-    //      return '1';
-
-    //    if (textAsNumber > 1000)
-    //      return '1000';
-
-    //    return textAsNumber.toFixed(0);
-    //  }
-
-    //  return '10';
-    //});
-    //this.enemyCountPrompt.Load();
-    //this.gameObjects.push(this.enemyCountPrompt);
 
     this.enemyCountLabel.SetLocation(this.ObjectRect.Center.X - 75, this.Location.Y + 50, eLayerTypes.UI + 1);
     this.enemyCountLabel.SetSize(150, 50);
@@ -86,9 +59,8 @@ export class EditRound extends Base {
       });
 
       for (let i = 0; i < this.batchButtons.length; i++) {
-        if (this.BatchEditors[i].ShouldDelete) {
-          this.DestroyGameObject(this.BatchEditors[i]);
-          this.batchButtons.splice(i, 1);
+        if (this.batchButtons[i].ButtonText! !== this.batchEditors[i].NumberEnemies.toFixed(0)) {
+          this.batchButtons[i].SetText(this.batchEditors[i].NumberEnemies.toFixed(0));
         }
       }
     }
@@ -119,7 +91,8 @@ export class EditRound extends Base {
     batchEdit.SetSize(700, 500);
     batchEdit.SetLocation(this.ObjectRect.Center.X - 350, this.ObjectRect.Center.Y - 250, eLayerTypes.UI + 5);
     batchEdit.SetHidden(true);
-    batchEdit.Load();
+    this.LoadGameObject(batchEdit);
+    this.batchEditors.push(batchEdit);
 
     if (batch) {
       batchEdit.SetEnemyDamage(batch.EnemyDamage);
@@ -135,9 +108,6 @@ export class EditRound extends Base {
       batchEdit.SetShieldValue(batch.ShieldValue);
     }
 
-    this.gameObjects.push(batchEdit);
-    this.batchEditors.push(batchEdit);
-
     let batchButt = new Button();
 
     let x = this.Location.X + 25;
@@ -148,19 +118,16 @@ export class EditRound extends Base {
     let count = this.batchButtons.length;
     batchButt.SetLocation(x, y, eLayerTypes.UI + 1);
     batchButt.SetSize(50, 50);
-    batchButt.SetText((this.batchButtons.length + 1).toFixed(0));
+    batchButt.SetText(batchEdit.NumberEnemies.toFixed(0));
     batchButt.SetClickFunction(() => {
       this.batchEditors[count].SetHidden(false);
     });
-    batchButt.Load();
-    this.gameObjects.push(batchButt);
+    this.LoadGameObject(batchButt);
     this.batchButtons.push(batchButt);
   }
 
   private batchButtons: Button[] = [];
   private batchEditors: EditBatch[] = [];
-
-  private enemyCountPrompt: TextBox = new TextBox();
 
   private enemyCountLabel: Label = new Label();
 

@@ -6,6 +6,9 @@ import { UtilityBase } from "./utilitybase.gameobject";
 export class Button extends UtilityBase {
   private altColor = '#ffffff'
   private text: string | null = null;
+  public get ButtonText(): string | null {
+    return this.text;
+  }
 
   public override Load() {
     super.Load();

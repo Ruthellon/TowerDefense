@@ -563,25 +563,27 @@ export class EditStageSettings extends Base {
       let round = new EnemyRound();
 
       editor.BatchEditors.forEach((batch) => {
-        let enemyBatch = new EnemyBatch();
-        enemyBatch.EnemyCountStart = batch.NumberEnemies;
-        enemyBatch.EnemyDamage = batch.EnemyDamage;
-        enemyBatch.EnemyHealth = batch.EnemyHealth;
-        enemyBatch.EnemySize = batch.EnemySize;
-        enemyBatch.EnemySpeed = batch.EnemySpeed;
-        enemyBatch.EnemyStartCells = batch.StartCells;
+        if (batch.NumberEnemies > 0) {
+          let enemyBatch = new EnemyBatch();
+          enemyBatch.EnemyCountStart = batch.NumberEnemies;
+          enemyBatch.EnemyDamage = batch.EnemyDamage;
+          enemyBatch.EnemyHealth = batch.EnemyHealth;
+          enemyBatch.EnemySize = batch.EnemySize;
+          enemyBatch.EnemySpeed = batch.EnemySpeed;
+          enemyBatch.EnemyStartCells = batch.StartCells;
 
-        enemyBatch.EnemyStartCells.forEach((cell) => {
-          if (cell > highestStartCell)
-            highestStartCell = cell;
-        });
+          enemyBatch.EnemyStartCells.forEach((cell) => {
+            if (cell > highestStartCell)
+              highestStartCell = cell;
+          });
 
-        enemyBatch.EnemyValue = batch.EnemyValue;
-        enemyBatch.TimeBetweenStart = (batch.EnemyCooldownTime / 1000);
-        enemyBatch.BatchDelayTime = (batch.BatchDelayTime / 1000);
-        enemyBatch.EnemyCanFly = batch.EnemiesCanFly;
-        enemyBatch.ShieldValue = batch.ShieldValue;
-        round.EnemyBatches.push(enemyBatch);
+          enemyBatch.EnemyValue = batch.EnemyValue;
+          enemyBatch.TimeBetweenStart = (batch.EnemyCooldownTime / 1000);
+          enemyBatch.BatchDelayTime = (batch.BatchDelayTime / 1000);
+          enemyBatch.EnemyCanFly = batch.EnemiesCanFly;
+          enemyBatch.ShieldValue = batch.ShieldValue;
+          round.EnemyBatches.push(enemyBatch);
+        }
       });
 
       if (round.EnemyBatches.length > 0)
