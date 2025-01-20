@@ -573,8 +573,8 @@ export class EditStageSettings extends Base {
           enemyBatch.EnemyStartCells = batch.StartCells;
 
           enemyBatch.EnemyStartCells.forEach((cell) => {
-            if (cell > highestStartCell)
-              highestStartCell = cell;
+            if ((cell + 1) > highestStartCell)
+              highestStartCell = (cell + 1);
           });
 
           enemyBatch.EnemyValue = batch.EnemyValue;
