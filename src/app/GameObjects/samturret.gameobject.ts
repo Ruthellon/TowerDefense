@@ -35,7 +35,7 @@ export class SAMTurret extends Defender {
   public override get Cost(): number | null {
     return this.cost;
   }
-  private shootingCooldown = 3.0;
+  private shootingCooldown = 10.0;
   public override get ShootingCooldown(): number {
     return this.shootingCooldown;
   }

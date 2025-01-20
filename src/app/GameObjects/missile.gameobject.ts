@@ -48,7 +48,7 @@ export class Missile extends Defender {
     return 0;
   }
   public override get Damage(): number {
-    return 50;
+    return 35;
   }
   public override get Value(): number | null {
     return 0;

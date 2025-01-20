@@ -91,6 +91,7 @@ export abstract class Attacker extends Base {
     this.location.Y = result.Y;
   }
 
+  private angle = 0;
   public override Draw(deltaTime: number): void {
     Game.CONTEXT.fillStyle = '#000000';
     Game.CONTEXT.fillRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
@@ -104,6 +105,32 @@ export abstract class Attacker extends Base {
     Game.CONTEXT.strokeRect(this.location.X, this.location.Y, this.Size.X, this.Size.Y);
     Game.CONTEXT.fillRect(this.location.X, (this.location.Y + (this.Size.Y - (this.Size.Y * percentFilled))), this.Size.X, this.Size.Y * percentFilled);
     Game.CONTEXT.lineWidth = 1;
+
+    if (this.CanFly) {
+      this.angle += (deltaTime * 3) * Math.PI; // Rotate at a rate of PI radians per second
+      let oppAngle = this.angle + (Math.PI);
+      // Draw the rotating line
+      const lineLength = this.Size.X * 2;
+
+      let xEnd = this.CenterMassLocation.X + Math.cos(this.angle) * lineLength;
+      let yEnd = this.CenterMassLocation.Y + Math.sin(this.angle) * lineLength;
+
+      Game.CONTEXT.lineWidth = 7;
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.moveTo(this.CenterMassLocation.X, this.CenterMassLocation.Y);
+      Game.CONTEXT.lineTo(xEnd, yEnd);
+      Game.CONTEXT.strokeStyle = 'black';
+      Game.CONTEXT.stroke();
+
+      xEnd = this.CenterMassLocation.X + Math.cos(oppAngle) * lineLength;
+      yEnd = this.CenterMassLocation.Y + Math.sin(oppAngle) * lineLength;
+      Game.CONTEXT.beginPath();
+      Game.CONTEXT.moveTo(this.CenterMassLocation.X, this.CenterMassLocation.Y);
+      Game.CONTEXT.lineTo(xEnd, yEnd);
+      Game.CONTEXT.strokeStyle = 'black';
+      Game.CONTEXT.stroke();
+      Game.CONTEXT.lineWidth = 1;
+    }
 
     if (this.HasShield) {
       let shieldPercent = this.currentShield / this.startingShieldValue;

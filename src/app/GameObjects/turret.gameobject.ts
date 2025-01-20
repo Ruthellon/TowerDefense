@@ -47,7 +47,7 @@ export class Turret extends Defender {
     return true;
   }
   public get CanShootAerial(): boolean {
-    return false;
+    return true;
   }
   private range: number = 150;
   public get Range(): number {
