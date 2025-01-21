@@ -39,7 +39,7 @@ export class SAMTurret extends Defender {
   public override get ShootingCooldown(): number {
     return this.shootingCooldown;
   }
-  private value: number | null = 25;
+  private value: number = 25;
   public override get Value(): number | null {
     return this.value;
   }
@@ -53,12 +53,14 @@ export class SAMTurret extends Defender {
   public get Range(): number {
     return this.range;
   }
-  private damage: number = 20;
-  public get Damage(): number {
-    return this.damage;
-  }
+  protected override damage: number = 35;
   public get IsPlasmaWeapon(): boolean {
     return false;
+  }
+  private numMissiles: number = 1;
+
+  public override get DPS(): number {
+    return (this.Damage * this.numMissiles) / this.ShootingCooldown;
   }
 
   public override Load(): void {
@@ -67,6 +69,7 @@ export class SAMTurret extends Defender {
     this.range = this.Size.X * 3.0;
     this.color = '#aa55aa';
     this.altColor = '#888888';
+    this.cost! += 5;
   }
 
   public override Upgrade(levelStarted: boolean) {
@@ -74,45 +77,48 @@ export class SAMTurret extends Defender {
     if (this.level === 1) {
       this.level = 2;
       this.altColor = '#22dd22';
-      this.damage = 6;
-      this.shootingCooldown = .9;
-      this.cost = 10;
-      this.value = 10;
+      this.damage += 10;
+      this.shootingCooldown = 9.0;
+      this.cost = 35;
+      this.value += 30;
     }
     else if (this.level === 2) {
       this.level = 3;
       this.altColor = '#2222dd';
-      this.damage = 7;
-      this.shootingCooldown = .8;
-      this.cost = 10;
-      this.value = 20;
+      this.damage += 20;
+      this.shootingCooldown = 8;
+      this.cost = 40;
+      this.value += 35;
     }
     else if (this.level === 3) {
       this.level = 4;
       this.altColor = '#dd22dd';
-      this.damage = 8;
-      this.shootingCooldown = .7;
-      this.cost = 20;
-      this.value = 30;
+      this.damage += 30;
+      this.shootingCooldown = 7.0;
+      this.cost = 100;
+      this.value += 40;
     }
     else if (this.level === 4) {
       this.level = 5;
       this.canUpgrade = false;
       this.altColor = '#dddd22';
-      this.range! *= 1.25;
-      this.damage = 10;
-      this.shootingCooldown = .5;
+      this.range! *= 2.0;
+      this.numMissiles = 2;
+      this.shootingCooldown = 5.0;
       this.cost = null;
-      this.value = 50;
+      this.value += 100;
     }
   }
 
   public override FireWeapon(enemy: Attacker): boolean {
-    let missile = new Missile();
-    missile.SetLocation(this.CenterMassLocation.X, this.CenterMassLocation.Y, this.Location.Z);
-    missile.SetTarget(enemy);
-    missile.SetSize(this.Size.X / 4, this.Size.Y / 4);
-    Game.TheScene.LoadGameObject(missile);
+    for (let i = 0; i < this.numMissiles; i++) {
+      let missile = new Missile();
+      missile.SetLocation(this.CenterMassLocation.X, this.CenterMassLocation.Y, this.Location.Z);
+      missile.SetTarget(enemy);
+      missile.SetSize(this.Size.X / 4, this.Size.Y / 4);
+      missile.SetDamage(this.damage);
+      Game.TheScene.LoadGameObject(missile);
+    }
     return false;
   }
 }

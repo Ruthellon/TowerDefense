@@ -47,9 +47,6 @@ export class Missile extends Defender {
   public override get ShootingCooldown(): number {
     return 0;
   }
-  public override get Damage(): number {
-    return 35;
-  }
   public override get Value(): number | null {
     return 0;
   }

@@ -8,7 +8,6 @@ export abstract class Defender extends Base {
   public abstract get CanUpgrade(): boolean;
   public abstract get Level(): number;
   public abstract get Range(): number;
-  public abstract get Damage(): number;
   public abstract get ShootingCooldown(): number;
   public abstract get CanShootGround(): boolean;
   public abstract get CanShootAerial(): boolean;
@@ -18,6 +17,11 @@ export abstract class Defender extends Base {
   public abstract get IsPlasmaWeapon(): boolean;
 
   protected abstract get TimeToUpgrade(): number;
+
+  protected damage: number = 0;
+  public get Damage(): number {
+    return this.damage;
+  }
 
   public get DPS(): number {
     return this.Damage / this.ShootingCooldown;
@@ -182,6 +186,10 @@ export abstract class Defender extends Base {
       if (bestChoice)
         this.enemyInRange = bestChoice;
     }
+  }
+
+  public SetDamage(damage: number) {
+    this.damage = damage;
   }
 
   protected FireWeapon(enemy: Attacker): boolean {

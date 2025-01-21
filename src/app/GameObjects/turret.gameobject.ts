@@ -53,10 +53,7 @@ export class Turret extends Defender {
   public get Range(): number {
     return this.range;
   }
-  private damage: number = 5;
-  public get Damage(): number {
-    return this.damage;
-  }
+  protected override damage: number = 5;
   public get IsPlasmaWeapon(): boolean {
     return false;
   }
@@ -76,7 +73,7 @@ export class Turret extends Defender {
     if (this.level === 1) {
       this.level = 2;
       this.altColor = '#22dd22';
-      this.damage = 6;
+      this.damage += 1;
       this.shootingCooldown = 1.4;
       this.cost = 20;
       this.value += 10;
@@ -85,7 +82,7 @@ export class Turret extends Defender {
     else if (this.level === 2) {
       this.level = 3;
       this.altColor = '#2222dd';
-      this.damage = 7;
+      this.damage += 2;
       this.shootingCooldown = 1.3;
       this.cost = 40;
       this.value += 20;
@@ -94,7 +91,7 @@ export class Turret extends Defender {
     else if (this.level === 3) {
       this.level = 4;
       this.altColor = '#dd22dd';
-      this.damage = 8;
+      this.damage += 3;
       this.shootingCooldown = 1.2;
       this.cost = 80;
       this.value += 40;
@@ -105,8 +102,8 @@ export class Turret extends Defender {
       this.level = 5;
       this.canUpgrade = false;
       this.altColor = '#dddd22';
-      this.range! *= 1.25;
-      this.damage = 10;
+      this.range! *= 2;
+      this.damage *= 2;
       this.shootingCooldown = 1.0;
       this.cost = null;
       this.value += 80;
