@@ -5,7 +5,7 @@ import { Defender } from "../GameObjects/defender.gameobject";
 import { IGameObject } from "../GameObjects/gameobject.interface";
 import { Turret } from "../GameObjects/turret.gameobject";
 import { Wall } from "../GameObjects/wall.gameobject";
-import { Rect, Vector2, Vector3 } from "../Utility/classes.model";
+import { BlankSceneInfo, EnemyRound, Rect, Vector2, Vector3 } from "../Utility/classes.model";
 import { Game } from "../Utility/game.model";
 import { ePathCellStatus, PathFinder } from "../Utility/pathfinding.service";
 import { BaseLevel } from "./base.scene";
@@ -15,6 +15,7 @@ import { Sprite } from "../GameObjects/Utilities/sprite.gameobject";
 import { Grid } from "../GameObjects/grid.gameobject";
 import { PlasmaTurret } from "../GameObjects/plasmaturret.gameobject";
 import { SAMTurret } from "../GameObjects/samturret.gameobject";
+import { Block } from "../GameObjects/block.gameobject";
 
 export enum eDefenderTypes {
   Wall,
@@ -24,20 +25,37 @@ export enum eDefenderTypes {
 }
 
 export abstract class DefenseBaseLevel extends BaseLevel {
-  protected abstract get GridCellSize(): number;
-  protected abstract get DefenderSize(): number;
-  protected abstract get StartingCells(): Vector2[];
-  protected abstract get EndingCells(): Vector2[];
-  protected abstract get PlayerStartingHealth(): number;
-  protected abstract get EnemyRounds(): number[];
+  protected abstract get LevelJSON(): string;
   protected abstract get CurrentSceneName(): string;
   protected abstract get NextLevelName(): string;
-  protected abstract get SecondsBetweenMonsters(): number;
+  protected abstract get CurrentSceneDisplayName(): string;
   protected abstract get SecondsToStart(): number;
   protected abstract get LevelUnid(): number;
 
-  protected abstract CreateNewAttacker(attackerCount: number): Attacker;
-  protected abstract PlayerWonScreen(): void;
+  protected playerStartingHealth = 10;
+  protected get PlayerStartingHealth(): number {
+    return this.playerStartingHealth;
+  }
+  protected gridCellSize = 100;
+  protected get GridCellSize(): number {
+    return this.gridCellSize;
+  }
+  protected defenderSize = 100;
+  protected get DefenderSize(): number {
+    return this.defenderSize;
+  }
+  private startingCells = [new Vector2(0, 4)];
+  protected get StartingCells(): Vector2[] {
+    return this.startingCells;
+  }
+  private endingCells = [new Vector2(14, 4)];
+  protected get EndingCells(): Vector2[] {
+    return this.endingCells;
+  }
+  private enemyRounds = [5, 5, 5, 10, 10, 15];
+  protected get EnemyRounds(): number[] {
+    return this.enemyRounds;
+  }
 
   protected get UICellSize(): number {
     return 100;
@@ -82,8 +100,9 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     return this.isGameOver;
   }
 
+  protected availableDefenders: eDefenderTypes[] = [eDefenderTypes.BasicTurret, eDefenderTypes.PlasmaTurret];
   protected get AvailableDefenders(): eDefenderTypes[] {
-    return [eDefenderTypes.BasicTurret, eDefenderTypes.PlasmaTurret];
+    return this.availableDefenders;
   }
 
   private newDefender: eDefenderTypes = eDefenderTypes.Wall;
@@ -131,12 +150,48 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   }
 
   protected HandleAttackers(deltaTime: number) {
-    if (this.secondsSinceLastMonster <= 0 && this.enemiesSpawned < this.EnemyRounds[this.currentRound]) {
-      this.spawnAttacker();
-      this.secondsSinceLastMonster = this.SecondsBetweenMonsters;
-    }
-    else {
-      this.secondsSinceLastMonster -= deltaTime;
+    let round = this.rounds[this.CurrentRound];
+
+    for (let i = 0; i < round.EnemyBatches.length; i++) {
+      let batch = round.EnemyBatches[i];
+      if (batch.BatchDelayTime > 0) {
+        batch.BatchDelayTime -= deltaTime;
+        continue;
+      }
+
+      if (batch.TimeBetweenCurrent <= 0 && batch.EnemyCountCurrent < batch.EnemyCountStart) {
+        let newAttacker = new Block();
+        newAttacker.SetDamage(batch.EnemyDamage);
+
+        let startCell = 0;
+        if (batch.EnemyStartCells.length > 1)
+          startCell = Math.floor(Math.random() * ((batch.EnemyStartCells.length - 1) + 1));
+
+        newAttacker.SetLocation(this.StartingCells[batch.EnemyStartCells[startCell]].X * this.GridCellSize,
+          this.StartingCells[batch.EnemyStartCells[startCell]].Y * this.GridCellSize,
+          eLayerTypes.Object - i);
+        newAttacker.SetSize(batch.EnemySize, batch.EnemySize);
+        newAttacker.SetStartingSpeed(batch.EnemySpeed);
+        newAttacker.SetStartingHealth(batch.EnemyHealth);
+        newAttacker.SetValue(batch.EnemyValue);
+        newAttacker.SetCanFly(batch.EnemyCanFly);
+        newAttacker.SetShieldValue(batch.ShieldValue);
+        newAttacker.SetPath(this.GetPath(batch.EnemyStartCells[startCell]), this.GridCellSize);
+
+        if (batch.EnemyCanFly)
+          newAttacker.SetColor('#BB22BB');
+        else
+          newAttacker.SetColor('#22BB22');
+
+        this.LoadGameObject(newAttacker);
+        this.attackers.push(newAttacker);
+
+        batch.EnemyCountCurrent++;
+        batch.TimeBetweenCurrent = batch.TimeBetweenStart;
+      }
+      else if (batch.EnemyCountCurrent < batch.EnemyCountStart) {
+        batch.TimeBetweenCurrent -= deltaTime;
+      }
     }
   }
 
@@ -154,6 +209,24 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   */
 
   Load(): void {
+    let sceneInfo: BlankSceneInfo = JSON.parse(this.LevelJSON);
+
+    let obstaclesToAdd = false;
+    if (sceneInfo) {
+      this.gridCellSize = sceneInfo.GridSize;
+      this.defenderSize = sceneInfo.GridSize * sceneInfo.DefSizeMulti;
+      this.startingCells = sceneInfo.StartingCells;
+      this.endingCells = sceneInfo.EndingCells;
+
+      Game.SetStartingCredits(sceneInfo.Credits);
+
+      this.playerStartingHealth = sceneInfo.Health;
+      if (sceneInfo.ObstacleCells.length > 0)
+        obstaclesToAdd = true;
+      //this.SetObstacles(sceneInfo.ObstacleCells);
+      this.setRounds(sceneInfo.Rounds);
+    }
+
     this.theGrid.SetLocation(0, 0, eLayerTypes.Background);
     this.theGrid.SetSize(Game.CANVAS_WIDTH, Game.CANVAS_HEIGHT);
     this.theGrid.SetGridCellSize(this.GridCellSize);
@@ -194,12 +267,23 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     });
     this.LoadGameObject(this.theGrid);
     this.StartingCells.forEach((cell) => {
-      this.theGrid.AddStartPoint(cell);
+      this.theGrid.AddStartPoint(new Vector2(cell.X, cell.Y));
     });
     this.EndingCells.forEach((cell) => {
-      this.theGrid.AddEndPoint(cell);
+      this.theGrid.AddEndPoint(new Vector2(cell.X, cell.Y));
     });
     this.theGrid.CalculatePaths();
+
+    if (obstaclesToAdd) {
+      sceneInfo.ObstacleCells.forEach((cell) => {
+        let wall = new Wall();
+        wall.SetSize(this.theGrid.GridCellSize, this.theGrid.GridCellSize);
+        wall.SetColor('#770000');
+        wall.SetEnabled(false);
+        this.theGrid.AddObstacle(wall, true, new Vector2(cell.X, cell.Y), true);
+      });
+      this.theGrid.ClearSelectedObstacle();
+    }
 
     this.playerHealth = this.PlayerStartingHealth;
     this.secondsToStart = this.SecondsToStart;
@@ -388,7 +472,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
         this.restartButton.Draw(deltaTime);
       }
       else {
-        this.PlayerWonScreen();
         this.nextLevelButton.Draw(deltaTime);
       }
 
@@ -567,6 +650,12 @@ export abstract class DefenseBaseLevel extends BaseLevel {
 
     Game.CONTEXT.lineWidth = 1;
 
+    if (!this.IsGameOver) {
+      Game.CONTEXT.fillStyle = '#ffffff';
+      Game.CONTEXT.font = '22px serif';
+      Game.CONTEXT.textAlign = "center";
+      Game.CONTEXT.fillText(`${this.CurrentSceneDisplayName} - Round ${this.CurrentRound + 1} / ${this.EnemyRounds.length}`, Game.CANVAS_WIDTH / 2, Game.CANVAS_HEIGHT - 50);
+    }
   }
 
   private previousSelectedObstacle: Defender | undefined;
@@ -815,6 +904,27 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   }
 
 
+  private setRounds(rounds: EnemyRound[]) {
+    this.rounds = rounds;
+
+    this.enemyRounds = [];
+
+    this.rounds.forEach((round) => {
+      let count = 0;
+
+      round.EnemyBatches.forEach((batch) => {
+        count += batch.EnemyCountStart;
+
+        if (batch.EnemyCanFly && this.availableDefenders.findIndex((type) => type === eDefenderTypes.SAMTurret) === -1) {
+          this.availableDefenders.push(eDefenderTypes.SAMTurret);
+        }
+      });
+
+      this.enemyRounds.push(count);
+    });
+  }
+
+
   private gatherGridInfo(): any {
     //let rows = [];
     //for (let y = 0; y < this.grid[0].length; y++) {
@@ -852,14 +962,6 @@ export abstract class DefenseBaseLevel extends BaseLevel {
     return null;
   }
 
-  private spawnAttacker(): void {
-    let mon = this.CreateNewAttacker(this.enemiesSpawned);
-
-    this.LoadGameObject(mon);
-    this.attackers.push(mon);
-    this.enemiesSpawned++;
-  }
-
   private updateSettings(deltaTime: number): void {
     this.settingsButton.Update(deltaTime);
     this.resumeButton.Update(deltaTime);
@@ -882,6 +984,8 @@ export abstract class DefenseBaseLevel extends BaseLevel {
   private floor: Sprite = new Sprite();
   private startingCredits: number = 0;
   private selectedAttacker: Attacker | undefined;
+
+  private rounds: EnemyRound[] = [];
 
   protected theGrid: Grid = new Grid();
 
